@@ -10,7 +10,7 @@ web-build
 node_modules
 npm-debug.log
 yarn-error.log
-
+Lakaters.jks
 # Ruby
 .direnv
 
