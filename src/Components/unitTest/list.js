@@ -4,7 +4,7 @@ import { View, Text } from "react-native";
 import { Card } from "react-native-paper";
 import { localhost } from "../../Helpers/urls";
 import Questions from "../../Components/unitTest/Questions";
-import { authAxios } from "../../Helpers/authAxios";
+// import { authAxios } from "../../Helpers/authAxios";
 
 const CourseDetail = ({ route }) => {
   const [test, setTest] = useState(null);

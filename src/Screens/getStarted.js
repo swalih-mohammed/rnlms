@@ -1,10 +1,6 @@
 import React from "react";
-import { connect } from "react-redux";
-import CourseList from "../Components/course/list";
 import {
   SafeAreaView,
-  TouchableOpacity,
-  ActivityIndicator,
   StyleSheet,
   View,
   Text,
@@ -21,16 +17,12 @@ const GetStarted = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.TopContainer}>
-        <View style={styles.ImgWrapper}>
-          <Image
-            style={styles.photo}
-            source={require("../../assets/getStarted4.png")}
-          />
-        </View>
         <View style={{ alignItems: "center" }}>
-          <Text style={styles.title}>Lakaters</Text>
-          <View>
-            <Text>A Platform For Lanaguage Learing</Text>
+          <View style={styles.ImgWrapper}>
+            <Image
+              style={styles.photo}
+              source={require("../../assets/logo.png")}
+            />
           </View>
         </View>
       </View>
@@ -62,21 +54,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    justifyContent: "center"
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF"
   },
   TopContainer: {
-    flex: 4
+    flex: 2,
+    justifyContent: "center",
+    alignItems: "center"
   },
   BottomContainer: {
-    flex: 2
+    flex: 1
   },
   ImgWrapper: {
-    width: width * 0.95,
-    height: height * 0.5
+    width: width * 0.8,
+    height: height * 0.4,
+    // marginTop: 20
+    justifyContent: "center",
+    alignItems: "center"
   },
   photo: {
-    width: "100%",
-    height: "75%",
+    width: "70%",
+    height: "55%",
     borderRadius: 10
   },
   title: {

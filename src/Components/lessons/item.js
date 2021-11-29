@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { View, FlatList, TouchableOpacity, Text } from "react-native";
-import { List, Card, Avatar } from "react-native-paper";
+import {
+  View,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  Image
+} from "react-native";
+import { List, Card, Avatar, Title, Paragraph } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { COLORS, SIZES } from "../../Helpers/constants";
 import * as Animatable from "react-native-animatable";
@@ -76,23 +82,73 @@ const LessonItem = ({ LessonItem }) => {
           {LessonItem.lessonCompleted ? (
             <Card.Title
               title={LessonItem.title}
-              subtitle={LessonItem.subtitle}
+              subtitle={"LESSON " + LessonItem.order}
               right={Completed}
-              left={LeftContent}
+              // left={LeftContent}
+              left={
+                <Avatar.Image
+                  size={24}
+                  source={{
+                    uri: lesson.photo
+                  }}
+                />
+              }
               titleStyle={{ fontSize: 15 }}
             />
           ) : (
-            <Card.Title
-              title={LessonItem.title}
-              subtitle={LessonItem.subtitle}
-              right={NotCompleted}
-              left={LeftContent}
-              titleStyle={{ fontSize: 15 }}
-            />
+            <Card>
+              <View style={styles.container}>
+                <View style={styles.LeftContainer}>
+                  <Avatar.Image
+                    size={60}
+                    source={{
+                      uri: LessonItem.photo
+                    }}
+                  />
+                </View>
+                <View style={styles.MiddleContainer}>
+                  <Title>{LessonItem.title} </Title>
+                  <Paragraph>{LessonItem.subtitle}</Paragraph>
+                </View>
+                <View style={styles.RightContainer}>
+                  <Completed />
+                </View>
+              </View>
+            </Card>
           )}
         </TouchableOpacity>
       </Card>
     </Animatable.View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 10,
+    paddingBottom: 10,
+    flexDirection: "row",
+    justifyContent: "center"
+  },
+
+  LeftContainer: {
+    flex: 2,
+    justifyContent: "center"
+  },
+  MiddleContainer: {
+    flex: 6,
+    justifyContent: "center",
+    marginLeft: 5
+  },
+  RightContainer: {
+    flex: 1,
+    justifyContent: "center"
+    // marginLeft: 5,
+    // marginRight: 5
+  },
+  photo: {
+    width: 180,
+    height: 150
+  }
+});
 export default LessonItem;

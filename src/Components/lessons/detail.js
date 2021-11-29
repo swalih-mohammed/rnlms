@@ -15,7 +15,7 @@ import Player from "./SoundPlayer";
 const { width, height } = Dimensions.get("window");
 import { localhost } from "../../Helpers/urls";
 import { useNavigation } from "@react-navigation/native";
-import TestPlayer from "./lessonItem";
+import LessonItem from "./lesssonItem2";
 
 function LessonDetail({ route }) {
   const navigation = useNavigation();
@@ -36,7 +36,6 @@ function LessonDetail({ route }) {
       const response = await axios.get(`${localhost}/lessons/${id}`);
       setLesson(response.data);
       // console.log(response.data);
-
       setLoading(false);
     } catch (err) {
       setError(err);
@@ -53,9 +52,12 @@ function LessonDetail({ route }) {
         <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
       ) : null}
       {lesson.Lesson_items ? (
-        <TestPlayer
+        <LessonItem
           lessonId={lesson.id}
           unitId={lesson.unit}
+          sectionId={lesson.section}
+          language={lesson.language1 ? lesson.language1 : lesson.language2}
+          // language={lesson.language1}
           hasQuiz={lesson.has_quiz}
           Tracks={lesson.Lesson_items}
           QuizId={lesson.has_quiz ? lesson.quiz[0].id : 0}

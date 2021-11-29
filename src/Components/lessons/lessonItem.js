@@ -9,7 +9,7 @@ import {
   TouchableOpacity
 } from "react-native";
 import Constants from "expo-constants";
-import { Button, IconButton } from "react-native-paper";
+import { Button, IconButton, Card } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Audio } from "expo-av";
 const { width, height } = Dimensions.get("window");
@@ -51,7 +51,11 @@ export default function AudioPLayer({
   }, [CurrentSong]);
 
   const Unload = async () => {
-    await sound.current.unloadAsync();
+    try {
+      await sound.current.unloadAsync();
+    } catch (error) {
+      console.log(error);
+    }
   };
   const find_last_track_index = () => {
     const track_length = Tracks.length;
@@ -90,27 +94,29 @@ export default function AudioPLayer({
   const LoadAudio = async () => {
     SetLoaded(false);
     SetLoading(true);
-    const checkLoading = await sound.current.getStatusAsync();
-    if (checkLoading.isLoaded === false) {
-      try {
-        const result = await sound.current.loadAsync({
-          uri: CurrentSong.audio
-        });
-        if (result.isLoaded === false) {
+    try {
+      const checkLoading = await sound.current.getStatusAsync();
+      if (checkLoading.isLoaded === false) {
+        try {
+          const result = await sound.current.loadAsync({
+            uri: CurrentSong.audio
+          });
+          if (result.isLoaded === false) {
+            SetLoading(false);
+            console.log("Error in Loading Audio");
+          } else {
+            SetLoading(false);
+            PlayAudio();
+            SetLoaded(true);
+          }
+        } catch (error) {
+          console.log(error);
           SetLoading(false);
-          console.log("Error in Loading Audio");
-        } else {
-          SetLoading(false);
-          PlayAudio();
-          SetLoaded(true);
         }
-      } catch (error) {
-        console.log(error);
+      } else {
         SetLoading(false);
       }
-    } else {
-      SetLoading(false);
-    }
+    } catch (error) {}
   };
 
   const NextSong = () => {
@@ -136,8 +142,13 @@ export default function AudioPLayer({
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.TopContainer}>
-        <View style={styles.ImgWrapper}>
+        {/* <View style={styles.ImgWrapper}>
           <Image style={styles.photo} source={{ uri: CurrentSong.photo }} />
+        </View> */}
+        <View style={styles.ImgWrapper}>
+          <Card>
+            <Card.Cover source={{ uri: CurrentSong.photo }} />
+          </Card>
         </View>
       </View>
       <View style={styles.BottomContainer}>

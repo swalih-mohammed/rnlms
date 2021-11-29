@@ -16,7 +16,7 @@ const CourseDetail = ({ route }) => {
     getTest();
   }, []);
 
-  const { lessonId, QuizId, unitId } = route.params;
+  const { lessonId, QuizId, unitId, sectionId } = route.params;
 
   const getTest = async () => {
     // console.log(123);
@@ -44,6 +44,7 @@ const CourseDetail = ({ route }) => {
               questions={questions.questions}
               lessonId={lessonId}
               unitId={unitId}
+              sectionId={sectionId}
             />
           ) : null}
         </>

@@ -1,7 +1,11 @@
 import { registerRootComponent } from "expo";
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
+import {
+  DefaultTheme,
+  configureFonts,
+  Provider as PaperProvider
+} from "react-native-paper";
 import { Provider as StoreProvider } from "react-redux";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -14,25 +18,48 @@ import { PersistGate } from "redux-persist/integration/react";
 import { createStackNavigator } from "@react-navigation/stack";
 import HomeScreen from "./src/Components/course/list";
 import CourseDetail from "./src/Components/course/detail";
+import SectionDetail from "./src/Components/section/detail";
 import UnitDetail from "./src/Components/unit/detail";
 import LessonDetail from "./src/Components/lessons/detail";
 import PhotoLessonList from "./src/Components/lessons/photoLessonList";
 import Account from "./src/Screens/AccountScreen";
 import LoginScreen from "./src/Screens/LoginScreen";
 import SignUp from "./src/Screens/SignUpScreen";
-import Getstarted from "./src/Screens/getStarted";
+import TestDetail from "./src/Components/quiz/list";
 import TestScreen from "./src/Screens/TestScreen";
-
+import DraggingQuiz from "./src/Components/quiz/draggable";
+// import Getstarted from "./src/Screens/getStarted";
 // import LoginScreen from "./src/Screens/Login";
 // import TestDetail from "./src/Components/pacticeTest/list";
-import TestDetail from "./src/Components/quiz/list";
 
 const Stack = createStackNavigator();
 
 // const Tabs = createBottomTabNavigator();
 const Tabs = createMaterialBottomTabNavigator();
+
+const fontConfig = {
+  android: {
+    regular: {
+      fontFamily: "sans-serif",
+      fontWeight: "normal"
+    },
+    medium: {
+      fontFamily: "sans-serif-medium",
+      fontWeight: "normal"
+    },
+    light: {
+      fontFamily: "sans-serif-light",
+      fontWeight: "normal"
+    },
+    thin: {
+      fontFamily: "sans-serif-thin",
+      fontWeight: "normal"
+    }
+  }
+};
 const MyTheme = {
   ...DefaultTheme,
+  fonts: configureFonts(fontConfig),
   colors: {
     ...DefaultTheme.colors,
     notification: "red",
@@ -45,7 +72,8 @@ const MyTheme = {
     // text: "#ffffff",
     background: "#333333",
     white: "#FFFFFF",
-    offWhite: "#F8F0E3"
+    offWhite: "#F8F0E3",
+    gray: "#343a40"
   }
 };
 
@@ -70,6 +98,7 @@ export const TabScreens = () => (
         headerShown: false,
         tabBarIcon: "account"
       }}
+      // screenOptions={{ headerShown: false }}
       component={Account}
     />
   </Tabs.Navigator>
@@ -86,6 +115,10 @@ export default function App() {
                 {/* <Stack.Screen name="TestScreen" component={TestScreen} /> */}
                 <Stack.Screen name="Courses" component={TabScreens} />
                 <Stack.Screen name="Course Details" component={CourseDetail} />
+                <Stack.Screen
+                  name="Section Details"
+                  component={SectionDetail}
+                />
                 <Stack.Screen name="Unit Details" component={UnitDetail} />
                 <Stack.Screen
                   name="Lesson Details"
@@ -118,13 +151,6 @@ export default function App() {
                   }}
                   name="Login"
                   component={LoginScreen}
-                />
-                <Stack.Screen
-                  options={{
-                    headerShown: false
-                  }}
-                  name="Getstarted"
-                  component={Getstarted}
                 />
               </Stack.Navigator>
             </NavigationContainer>

@@ -1,8 +1,9 @@
 import React from "react";
 
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View, Text } from "react-native";
 import { List, Card, Avatar } from "react-native-paper";
 import * as Animatable from "react-native-animatable";
+import { useTheme } from "react-native-paper";
 
 import { useNavigation } from "@react-navigation/native";
 
@@ -12,6 +13,8 @@ const LeftContent = props => (
 
 const UnitItem = ({ unitItem }) => {
   const navigation = useNavigation();
+  const { colors, fonts } = useTheme();
+
   return (
     <Animatable.View
       animation="flipInX"
@@ -24,9 +27,20 @@ const UnitItem = ({ unitItem }) => {
               navigation.navigate("Unit Details", { id: unitItem.id })
             }
           >
+            {/* <Text
+              style={{
+                fontSize: 10,
+                color: colors.gray,
+                fontWeight: "bold",
+                marginLeft: 75,
+                marginTop: 10
+              }}
+            >
+              UNIT {unitItem.id}
+            </Text> */}
             <Card.Title
+              subtitle={"UNIT " + unitItem.order}
               title={unitItem.title}
-              subtitle={unitItem.subtitle}
               left={LeftContent}
               titleStyle={{ fontSize: 15 }}
             />

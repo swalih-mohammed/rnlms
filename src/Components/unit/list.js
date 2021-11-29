@@ -4,11 +4,12 @@ import { View, FlatList, TouchableOpacity, Text } from "react-native";
 import { List, Card, Avatar } from "react-native-paper";
 import { localhost } from "../../Helpers/urls";
 import UnitItem from "./item";
+import { ScrollView } from "react-native-gesture-handler";
 
 const UnitList = ({ units }) => {
   return (
     <>
-      {units ? (
+      {/* {units ? (
         <FlatList
           data={units}
           showsHorizontalScrollIndicator={false}
@@ -17,7 +18,15 @@ const UnitList = ({ units }) => {
             return <UnitItem unitItem={item} />;
           }}
         />
-      ) : null}
+      ) : null} */}
+
+      <>
+        {units.map(unit => (
+          // <div className="image-type">{s}</div>
+          <UnitItem key={unit.id} unitItem={unit} />
+        ))}
+      </>
+      {/* </ScrollView> */}
     </>
   );
 };

@@ -50,6 +50,7 @@ xcuserdata
 .history/
 
 # Android
+*.jks
 *.apk
 *.hprof
 /android/**/build

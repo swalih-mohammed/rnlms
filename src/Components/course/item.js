@@ -1,6 +1,13 @@
 import * as React from "react";
-import { View, Dimensions } from "react-native";
-import { Avatar, Button, Card } from "react-native-paper";
+import { View, Dimensions, StyleSheet, Image, Text } from "react-native";
+import {
+  Avatar,
+  Button,
+  Card,
+  Title,
+  Paragraph,
+  Subheading
+} from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -43,17 +50,27 @@ const CourseItem = ({ item }) => {
               onPress={() =>
                 navigation.navigate("Course Details", { id: item.id })
               }
-              // onPress={() => console.log(item.photo)}
             >
-              <Card.Content>
-                <Card.Cover source={{ uri: item.photo }} />
-                {/* <Title right={LeftContent}>{item.title}</Title> */}
-                <Card.Title
-                  title={item.title}
-                  subtitle={item.subtitle}
-                  // left={LeftContent}
-                />
-              </Card.Content>
+              <View style={styles.container}>
+                <View style={styles.LeftContainer}>
+                  <Image
+                    style={styles.photo}
+                    source={{
+                      uri: item.photo
+                    }}
+                  />
+                </View>
+                <View style={styles.RightContainer}>
+                  {/* <Text style={styles.subtitle}>{item.subtitle}</Text>
+                  <Text style={styles.title}>{item.title}</Text>
+                  <Text style={styles.description}>{item.description}</Text> */}
+                  <Subheading style={{ fontSize: 14 }}>
+                    {item.subtitle}
+                  </Subheading>
+                  <Title style={{ fontSize: 18 }}>{item.title} </Title>
+                  <Paragraph>{item.description}</Paragraph>
+                </View>
+              </View>
             </TouchableOpacity>
           </Card>
         </View>
@@ -61,5 +78,45 @@ const CourseItem = ({ item }) => {
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center"
+  },
+  RightContainer: {
+    flex: 1,
+    justifyContent: "center"
+    // marginLeft: 15,
+    // marginRight: 5
+  },
+  LeftContainer: {
+    flex: 1,
+    justifyContent: "center"
+  },
+  photo: {
+    margin: 10,
+    borderRadius: 10,
+    width: 150,
+    height: 150
+  },
+  title: {
+    fontSize: 15,
+    // fontFamily: "Georgia",
+    paddingTop: 10,
+    paddingBottom: 10,
+    fontWeight: "bold"
+  },
+  subtitle: {
+    fontSize: 15
+    // fontFamily: "Lucida Console"
+  },
+  description: {
+    fontSize: 15,
+    paddingBottom: 2
+    // fontFamily: "Arial"
+  }
+});
 
 export default CourseItem;

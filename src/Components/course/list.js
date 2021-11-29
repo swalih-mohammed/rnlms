@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
+import { Button } from "react-native-paper";
 
 import {
   StyleSheet,
@@ -14,6 +15,7 @@ import { localhost } from "../../Helpers/urls";
 import CourseItem from "../../Components/course/item";
 import { useNavigation } from "@react-navigation/native";
 import GetStarted from "../../Screens/getStarted";
+// import * as Speech from "expo-speech";
 
 const CourseList = props => {
   const navigation = useNavigation();
@@ -24,15 +26,21 @@ const CourseList = props => {
 
   useEffect(() => {
     getCourses();
-    // console.log(props);
-    if (props.token) {
-      console.log("no");
-      () => navigation.navigate("Getstarted");
-    }
+    // SpeakArabic();
   }, []);
+
+  // SpeakArabic = () => {
+  //   console.log("speaking");
+  //   // Speech.speak("ا", { language: "ar" });
+  // };
+  // // const speak = () => {
+  // //   const thingToSay = "Apple";
+  // //   Speech.speak(thingToSay);
+  // // };
 
   const getCourses = async () => {
     try {
+      // console.log("fetching");
       setLoading(true);
       const response = await axios.get(`${localhost}/courses`);
       setCourses(response.data);
@@ -65,8 +73,10 @@ const CourseList = props => {
                 return <CourseItem item={item} />;
               }}
             />
+            // <Button onPress={speak}>Test</Button>
           )}
         </>
+        // <Text>hi</Text>
       )}
     </>
   );
@@ -79,8 +89,9 @@ const mapStateToProps = state => {
   };
 };
 
-// export default CourseList;
 export default connect(
   mapStateToProps,
   null
 )(CourseList);
+
+// export default CourseList;

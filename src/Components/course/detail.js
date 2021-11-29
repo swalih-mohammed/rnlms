@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { View, ActivityIndicator } from "react-native";
-
-import { Card, Avatar } from "react-native-paper";
+import {
+  View,
+  ActivityIndicator,
+  Image,
+  StyleSheet,
+  SafeAreaView,
+  FlatList
+} from "react-native";
+import { Card, Avatar, Title, Paragraph } from "react-native-paper";
 import { localhost } from "../../Helpers/urls";
 import SectionList from "../../Components/section/list";
+import SectionItem from "../section/item";
 
 const LeftContent = props => <Avatar.Icon {...props} icon="school" />;
 
@@ -35,13 +42,17 @@ const CourseDetail = ({ route }) => {
     }
   };
 
+  if (!course) {
+    return null;
+  }
+
   return (
     <>
       {loading ? (
         <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
       ) : (
         <>
-          {course ? (
+          <View>
             <Card>
               <View>
                 <Card.Title
@@ -51,13 +62,52 @@ const CourseDetail = ({ route }) => {
                 />
               </View>
             </Card>
-          ) : null}
+          </View>
+
           {sections ? (
-            <SectionList sections={sections} hasUnits={course.has_units} />
-          ) : null}
+            // <View>
+            <FlatList
+              data={sections}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={item => item.id.toString()}
+              renderItem={({ item }) => {
+                return <SectionItem sectionItem={item} />;
+              }}
+            />
+          ) : // </View>
+          null}
         </>
       )}
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  photo: {
+    margin: 10,
+    borderRadius: 10,
+    width: 150,
+    height: 100
+  },
+  container: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    marginBottom: 10
+  },
+  RightContainer: {
+    flex: 1,
+    justifyContent: "center",
+    marginLeft: 5,
+    marginRight: 5
+  },
+  LeftContainer: {
+    flex: 1,
+    justifyContent: "center"
+  },
+  photo: {
+    width: 180,
+    height: 150
+  }
+});
 export default CourseDetail;

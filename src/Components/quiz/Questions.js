@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 // import axios from "axios";
 import { createASNT } from "../../store/actions/assignments";
 import { useNavigation } from "@react-navigation/native";
 import AudioPlayerWiouthControl from "../../Helpers/PlayerWithoutControl";
+import { useTheme } from "react-native-paper";
+import * as Speech from "expo-speech";
+
 // import Test from "../../Helpers/testAudio";
 
 import {
@@ -28,9 +31,18 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 
 const Quiz = props => {
   const navigation = useNavigation();
+  const { colors } = useTheme();
 
-  const { questions, testID, token, username, lessonId, unitId } = props;
-  // console.log(questions);
+  const {
+    questions,
+    testID,
+    token,
+    username,
+    lessonId,
+    unitId,
+    sectionId
+  } = props;
+  // console.log(sectionId);
 
   const allQuestions = questions;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -42,6 +54,15 @@ const Quiz = props => {
   const [showNextButton, setShowNextButton] = useState(false);
   const [showScoreModal, setShowScoreModal] = useState(false);
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    // getTest();
+    speakQuestion(allQuestions[currentQuestionIndex]?.question);
+  }, [allQuestions[currentQuestionIndex]?.question]);
+
+  const speakQuestion = text => {
+    Speech.speak(text);
+  };
 
   const validateAnswer = selectedOption => {
     // console.log(selectedOption.is_correct_choice);
@@ -70,11 +91,9 @@ const Quiz = props => {
       };
       props.createASNT(token, data);
       // console.log("submitting");
-      navigation.navigate("Unit Details", { id: unitId });
-
-      // setTimeout(() => {
-      //   navigation.navigate("Unit Details", { id: unitId });
-      // }, 2000);
+      sectionId != null
+        ? navigation.navigate("Section Details", { id: sectionId })
+        : navigation.navigate("Unit Details", { id: unitId });
     } catch (err) {
       setError(err);
       console.log(err);
@@ -84,8 +103,6 @@ const Quiz = props => {
   const handleNext = () => {
     // console.log(showScoreModal);
     if (currentQuestionIndex == allQuestions.length - 1) {
-      // Last Question
-      // Show Score Modal
       setShowScoreModal(true);
     } else {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -118,6 +135,7 @@ const Quiz = props => {
   };
 
   const renderQuestion = () => {
+    // speakQuestion(allQuestions[currentQuestionIndex]?.question);
     return (
       <View
         style={{
@@ -127,8 +145,8 @@ const Quiz = props => {
         {/* Question */}
         <Text
           style={{
-            color: COLORS.white,
-            fontSize: 16
+            color: COLORS.black,
+            fontSize: 20
           }}
         >
           {allQuestions[currentQuestionIndex]?.question}
@@ -333,14 +351,16 @@ const Quiz = props => {
           flex: 1,
           paddingVertical: 40,
           paddingHorizontal: 16,
-          backgroundColor: COLORS.background,
+          backgroundColor: COLORS.white,
           position: "relative"
         }}
       >
         {/* ProgressBar */}
         <View style={{ flex: 1 }}>{renderProgressBar()}</View>
 
-        <View style={{ flex: 4 }}>
+        <View
+          style={{ flex: 4, justifyContent: "center", alignSelf: "center" }}
+        >
           {/* Question */}
           {renderQuestion()}
         </View>

@@ -33,13 +33,17 @@ function SoundPlayer({ audio, unitId, lessonId, showSlider, showQuiz }) {
   React.useEffect(() => {
     (async () => {
       sound.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-      await sound.current.loadAsync({ uri: audio }, {}, true);
+      try {
+        await sound.current.loadAsync({ uri: audio }, {}, true);
+      } catch (error) {
+        print(err);
+      }
     })();
   }, []);
 
   const LoadAudio = async () => {
-    const checkLoading = await sound.current.getStatusAsync();
     try {
+      const checkLoading = await sound.current.getStatusAsync();
       const result = await sound.current.loadAsync({ uri: audio }, {}, true);
       //   console.log(result);
       if (result.isLoaded === false) {
@@ -70,7 +74,7 @@ function SoundPlayer({ audio, unitId, lessonId, showSlider, showQuiz }) {
     }
   };
   const PauseAudio = async () => {
-    console.log("pausing audio");
+    // console.log("pausing audio");
     try {
       const result = await sound.current.getStatusAsync();
       if (result.isLoaded) {
