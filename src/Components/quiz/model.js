@@ -92,10 +92,11 @@ const CourseDetail = ({
                     (score / qlength) * 100 > 79 ? COLORS.success : COLORS.error
                 }}
               >
-                {(score / qlength) * 100}
+                {Math.floor((score / qlength) * 100)}
               </Text>
               <Text
                 style={{
+                  marginLeft: 2,
                   fontSize: 20,
                   color:
                     (score / qlength) * 100 > 79 ? COLORS.success : COLORS.error

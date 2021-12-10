@@ -6,28 +6,32 @@ import { useNavigation } from "@react-navigation/native";
 import AudioPlayerWiouthControl from "../../Helpers/PlayerWithoutControl";
 import { useTheme } from "react-native-paper";
 import * as Speech from "expo-speech";
+import Qustion from "./Question";
+import ProgressBar from "./Progress";
+import Progress from "./DaragAndDrop/Header";
+import PhotOptions from "./MultipleChoice/PhotoOption";
+import TextChoices from "./MultipleChoice/TextOptions";
+import NextButton from "./NextButton";
+// import NextButton from "./MultipleChoice/HandleNext";
 
 // import Test from "../../Helpers/testAudio";
 
 import {
   View,
-  Text,
   SafeAreaView,
   StatusBar,
-  Image,
-  TouchableOpacity,
-  Modal,
   Animated,
   Dimensions,
   StyleSheet
 } from "react-native";
 import { COLORS, SIZES } from "../../Helpers/constants";
 const { width, height } = Dimensions.get("window");
+import ScoreModal from "./model";
 
 // import { localhost } from "../../Helpers/urls";
 // import { authAxios } from "../../Helpers/authAxios";
-import ScoreModal from "./model";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+// import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+// import Icon from "react-native-vector-icons/AntDesign";
 
 const Quiz = props => {
   const navigation = useNavigation();
@@ -54,22 +58,27 @@ const Quiz = props => {
   const [showNextButton, setShowNextButton] = useState(false);
   const [showScoreModal, setShowScoreModal] = useState(false);
   const [error, setError] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
+
+  const [progress, setProgress] = useState(new Animated.Value(0));
+  const progressAnim = progress.interpolate({
+    inputRange: [0, allQuestions.length],
+    outputRange: ["0%", "100%"]
+  });
 
   useEffect(() => {
-    // getTest();
     speakQuestion(allQuestions[currentQuestionIndex]?.question);
   }, [allQuestions[currentQuestionIndex]?.question]);
 
-  const speakQuestion = text => {
-    Speech.speak(text);
+  const speakQuestion = () => {
+    Speech.speak(allQuestions[currentQuestionIndex]?.question);
+    // Speech.speak(text);
   };
 
   const validateAnswer = selectedOption => {
-    // console.log(selectedOption.is_correct_choice);
-    // console.log(allQuestions[currentQuestionIndex]["answer"]);
-    // let correct_option = allQuestions[currentQuestionIndex]["answer"];
     setCurrentOptionSelected(selectedOption);
     setIsOptionsDisabled(true);
+    setShowAnswer(true);
     if (selectedOption.is_correct_choice) {
       // console.log(score);
       setScore(score + 1);
@@ -102,6 +111,7 @@ const Quiz = props => {
 
   const handleNext = () => {
     // console.log(showScoreModal);
+    setShowAnswer(false);
     if (currentQuestionIndex == allQuestions.length - 1) {
       setShowScoreModal(true);
     } else {
@@ -134,211 +144,6 @@ const Quiz = props => {
     }).start();
   };
 
-  const renderQuestion = () => {
-    // speakQuestion(allQuestions[currentQuestionIndex]?.question);
-    return (
-      <View
-        style={{
-          marginVertical: 40
-        }}
-      >
-        {/* Question */}
-        <Text
-          style={{
-            color: COLORS.black,
-            fontSize: 20
-          }}
-        >
-          {allQuestions[currentQuestionIndex]?.question}
-        </Text>
-      </View>
-    );
-  };
-  const renderOptions = () => {
-    return (
-      <View>
-        {allQuestions[currentQuestionIndex].has_photo_choices ? (
-          <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-            {allQuestions[currentQuestionIndex].photo_choices.map(option => (
-              <TouchableOpacity
-                key={option.id}
-                onPress={() => validateAnswer(option)}
-              >
-                {/* <View style={styles.ImgWrapper}> */}
-                <Image
-                  style={styles.option_photo}
-                  source={{ uri: option.photo }}
-                />
-                {/* </View> */}
-              </TouchableOpacity>
-            ))}
-          </View>
-        ) : (
-          <>
-            {allQuestions[currentQuestionIndex]?.text_choices.map(option => (
-              <TouchableOpacity
-                onPress={() => validateAnswer(option)}
-                disabled={isOptionsDisabled}
-                key={option.id}
-                style={{
-                  borderWidth: 3,
-                  borderColor:
-                    option.id == correctOption
-                      ? COLORS.success
-                      : option.id == currentOptionSelected
-                      ? COLORS.error
-                      : COLORS.secondary + "40",
-                  backgroundColor:
-                    option == correctOption
-                      ? COLORS.success + "20"
-                      : option == currentOptionSelected
-                      ? COLORS.error + "20"
-                      : COLORS.secondary + "20",
-                  height: 60,
-                  borderRadius: 20,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  paddingHorizontal: 20,
-                  marginVertical: 10
-                }}
-              >
-                <Text style={{ fontSize: 13, color: COLORS.white }}>
-                  {option.title}
-                </Text>
-
-                {/* Show Check Or Cross Icon based on correct answer*/}
-                {option.id == correctOption ? (
-                  <View
-                    style={{
-                      width: 30,
-                      height: 30,
-                      borderRadius: 30 / 2,
-                      backgroundColor: COLORS.success,
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }}
-                  >
-                    <MaterialCommunityIcons
-                      name="check"
-                      style={{
-                        color: COLORS.white,
-                        fontSize: 20
-                      }}
-                    />
-                  </View>
-                ) : option.id == currentOptionSelected ? (
-                  <View
-                    style={{
-                      width: 30,
-                      height: 30,
-                      borderRadius: 30 / 2,
-                      backgroundColor: COLORS.error,
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }}
-                  >
-                    <MaterialCommunityIcons
-                      name="close"
-                      style={{
-                        color: COLORS.white,
-                        fontSize: 20
-                      }}
-                    />
-                  </View>
-                ) : null}
-              </TouchableOpacity>
-            ))}
-            {/* text choices emd   */}
-          </>
-        )}
-      </View>
-    );
-  };
-  const renderNextButton = () => {
-    if (showNextButton) {
-      return (
-        <>
-          {/* {currentQuestionIndex == allQuestions.length - 1 ? (
-            <TouchableOpacity
-              onPress={handleSubmitTest}
-              style={{
-                marginTop: 20,
-                width: "100%",
-                backgroundColor: COLORS.accent,
-                padding: 20,
-                borderRadius: 5
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 20,
-                  color: COLORS.white,
-                  textAlign: "center"
-                }}
-              >
-                Submit
-              </Text>
-            </TouchableOpacity> */}
-
-          <TouchableOpacity
-            onPress={handleNext}
-            style={{
-              marginTop: 20,
-              width: "100%",
-              backgroundColor: COLORS.accent,
-              padding: 20,
-              borderRadius: 5
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 20,
-                color: COLORS.white,
-                textAlign: "center"
-              }}
-            >
-              Next
-            </Text>
-          </TouchableOpacity>
-        </>
-      );
-    } else {
-      return null;
-    }
-  };
-
-  const [progress, setProgress] = useState(new Animated.Value(0));
-  const progressAnim = progress.interpolate({
-    inputRange: [0, allQuestions.length],
-    outputRange: ["0%", "100%"]
-  });
-  const renderProgressBar = () => {
-    return (
-      <View
-        style={{
-          width: "100%",
-          height: 1,
-          borderRadius: 5,
-          backgroundColor: "#00000020"
-        }}
-      >
-        <Animated.View
-          style={[
-            {
-              height: 1,
-              borderRadius: 5,
-              backgroundColor: COLORS.accent
-            },
-            {
-              width: progressAnim
-            }
-          ]}
-        ></Animated.View>
-      </View>
-    );
-  };
-
   return (
     <SafeAreaView
       style={{
@@ -355,22 +160,59 @@ const Quiz = props => {
           position: "relative"
         }}
       >
-        {/* ProgressBar */}
-        <View style={{ flex: 1 }}>{renderProgressBar()}</View>
+        {/* {renderProgressBar()} */}
+        <View style={{ flex: 1 }}>
+          <ProgressBar
+            progressIndex={progress}
+            allQuestionsLength={allQuestions.length}
+          />
+        </View>
 
+        {/* {renderQuestion()} */}
         <View
           style={{ flex: 4, justifyContent: "center", alignSelf: "center" }}
         >
-          {/* Question */}
-          {renderQuestion()}
+          <Qustion
+            TitleQuestion={allQuestions[currentQuestionIndex]?.question}
+          />
         </View>
 
-        {/* Options */}
-        <View style={{ flex: 12 }}>{renderOptions()}</View>
+        {/* {renderOptions() photo choices  */}
+        {allQuestions[currentQuestionIndex].has_photo_choices ? (
+          <View style={{ flex: 12 }}>
+            <PhotOptions
+              showAnswer={showAnswer}
+              validateAnswer={validateAnswer}
+              Photos={allQuestions[currentQuestionIndex].photo_choices}
+            />
+          </View>
+        ) : null}
+        {/* {renderOptions() text choices  */}
+        {allQuestions[currentQuestionIndex].has_text_choices ? (
+          <View style={{ flex: 12 }}>
+            <TextChoices
+              showAnswer={showAnswer}
+              correctOption={correctOption}
+              validateAnswer={validateAnswer}
+              isOptionsDisabled={isOptionsDisabled}
+              currentOptionSelected={currentOptionSelected}
+              correctOption={3}
+              Choices={allQuestions[currentQuestionIndex].text_choices}
+            />
+          </View>
+        ) : null}
 
         {/* Next Button */}
-        <View style={{ flex: 3 }}>{renderNextButton()}</View>
-        {/* audi */}
+        <View
+          style={{ flex: 3, justifyContent: "center", alignItems: "center" }}
+        >
+          <NextButton
+            showNextButton={showNextButton}
+            handleNext={handleNext}
+            speakQuestion={speakQuestion}
+          />
+        </View>
+        {/* render audio */}
 
         {allQuestions[currentQuestionIndex].has_audio ? (
           <AudioPlayerWiouthControl
@@ -424,22 +266,17 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   ImgWrapper: {
-    width: 90,
-    height: 40
-    // margin: 5
-    // marginTop: 5
-    // marginBottom: 25
+    width: 100,
+    height: 50
   },
   option_photo: {
     width: width * 0.4,
-    height: 150,
+    height: 160,
     borderRadius: 5,
-    margin: 5
+    margin: 5,
+    borderColor: "red"
   },
   ImgContianer: {
-    // width: "100%",
-    // height: "75%",
-    // display: "flex",
     flex: 1,
     flexDirection: "row",
     flexWrap: "wrap"

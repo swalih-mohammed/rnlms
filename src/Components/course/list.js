@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Button } from "react-native-paper";
+import { MotiView } from "moti";
+import { Skeleton } from "@motify/skeleton";
 
 import {
   StyleSheet,
@@ -15,6 +17,7 @@ import { localhost } from "../../Helpers/urls";
 import CourseItem from "../../Components/course/item";
 import { useNavigation } from "@react-navigation/native";
 import GetStarted from "../../Screens/getStarted";
+import Loader from "../Utils/Loader";
 // import * as Speech from "expo-speech";
 
 const CourseList = props => {
@@ -59,9 +62,12 @@ const CourseList = props => {
   return (
     <>
       {loading || props.tokenLoading ? (
-        <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
+        // <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
+        // <Text>Loading...</Text>
+        <Loader />
       ) : (
         <>
+          {/* <Skeleton /> */}
           {!props.token ? (
             <GetStarted />
           ) : (
@@ -73,6 +79,7 @@ const CourseList = props => {
                 return <CourseItem item={item} />;
               }}
             />
+
             // <Button onPress={speak}>Test</Button>
           )}
         </>

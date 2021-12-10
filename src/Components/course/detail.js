@@ -12,6 +12,7 @@ import { Card, Avatar, Title, Paragraph } from "react-native-paper";
 import { localhost } from "../../Helpers/urls";
 import SectionList from "../../Components/section/list";
 import SectionItem from "../section/item";
+import Loader from "../Utils/Loader";
 
 const LeftContent = props => <Avatar.Icon {...props} icon="school" />;
 
@@ -49,7 +50,8 @@ const CourseDetail = ({ route }) => {
   return (
     <>
       {loading ? (
-        <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
+        // <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
+        <Loader />
       ) : (
         <>
           <View>

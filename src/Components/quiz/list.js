@@ -4,6 +4,7 @@ import { ActivityIndicator } from "react-native";
 import { View, Text } from "react-native";
 import { localhost } from "../../Helpers/urls";
 import Questions from "./Questions";
+import Loader from "../Utils/Loader";
 
 // import Questions from "../../Components/pacticeTest/Qustions";
 const CourseDetail = ({ route }) => {
@@ -36,7 +37,9 @@ const CourseDetail = ({ route }) => {
   return (
     <>
       {loading ? (
-        <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
+        // <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
+        // <Text>Loading...</Text>
+        <Loader />
       ) : (
         <>
           {questions ? (

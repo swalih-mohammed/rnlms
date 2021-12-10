@@ -11,6 +11,7 @@ import {
 } from "react-native";
 // import { Button } from "react-native-paper";
 // import Slider from "@react-native-community/slider";
+import Loader from "../Utils/Loader";
 import Player from "./SoundPlayer";
 const { width, height } = Dimensions.get("window");
 import { localhost } from "../../Helpers/urls";
@@ -49,7 +50,8 @@ function LessonDetail({ route }) {
   return (
     <>
       {loading ? (
-        <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
+        // <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
+        <Loader />
       ) : null}
       {lesson.Lesson_items ? (
         <LessonItem

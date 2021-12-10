@@ -26,8 +26,8 @@ import Account from "./src/Screens/AccountScreen";
 import LoginScreen from "./src/Screens/LoginScreen";
 import SignUp from "./src/Screens/SignUpScreen";
 import TestDetail from "./src/Components/quiz/list";
-import TestScreen from "./src/Screens/TestScreen";
-import DraggingQuiz from "./src/Components/quiz/draggable";
+// import TestScreen from "./src/Screens/TestScreen";
+// import DraggingQuiz from "./src/Components/quiz/dragAndDrop/index";
 // import Getstarted from "./src/Screens/getStarted";
 // import LoginScreen from "./src/Screens/Login";
 // import TestDetail from "./src/Components/pacticeTest/list";
@@ -112,7 +112,7 @@ export default function App() {
           <SafeAreaProvider>
             <NavigationContainer>
               <Stack.Navigator>
-                {/* <Stack.Screen name="TestScreen" component={TestScreen} /> */}
+                {/* <Stack.Screen name="DraggingQuiz" component={DraggingQuiz} /> */}
                 <Stack.Screen name="Courses" component={TabScreens} />
                 <Stack.Screen name="Course Details" component={CourseDetail} />
                 <Stack.Screen
