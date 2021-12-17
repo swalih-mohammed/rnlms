@@ -1,5 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { ReactElement, useState, useContext } from "react";
+import { connect } from "react-redux";
+import { handleValidate, handleNext } from "../../../store/actions/quiz";
 import { View, StyleSheet, Dimensions, Text } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import { Button } from "react-native-paper";
@@ -8,29 +10,33 @@ import SortableWord from "./SortableWord.js";
 import Lines from "./Lines";
 import { MARGIN_LEFT } from "./Layout";
 import { DulingoContext } from "./DulingoContext";
-import { createPath } from "react-native-redash";
+
+// import { QuizContext } from "../QuizContext";
+// import { createPath } from "react-native-redash";
 const containerWidth = Dimensions.get("window").width - MARGIN_LEFT * 2;
 const containerHeight = Dimensions.get("window").height;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    margin: MARGIN_LEFT
+    flex: 4
+    // margin: MARGIN_LEFT,
+    // backgroundColor: "green"
   },
   row: {
-    flex: 1,
+    // flex: 1,
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    opacity: 0
+    opacity: 0,
+    backgroundColor: "red"
   },
   button: {
     backgroundColor: "#59CB01",
     width: "100%",
     height: 45,
     borderRadius: 16,
-    justifyContent: "center",
-    top: 500
+    justifyContent: "center"
+    // top: 500
   },
   label: {
     color: "white",
@@ -42,10 +48,30 @@ const styles = StyleSheet.create({
 
 const WordList = props => {
   const [ready, setReady] = useState(false);
+  const [check, setCheck] = useState(true);
+  console.log(props.numberOfQuestions);
+  // const [
+  //   totalScore,
+  //   setTotalScore,
+  //   correctAnswerList,
+  //   setCorrectAnswerList,
+  //   currentIndex,
+  //   setCurrentIndex,
+  //   score,
+  //   setScore
+  // ] = useContext(QuizContext);
   const [correctAnswerWordIdList, setCorrectAnswerWordIdList] = useState([]);
-  console.log(props);
-  const [correctAnswerList, setCorrectAnswerList] = useContext(DulingoContext);
-  const [isUserAnswerCorrect, SetIsUserAnswerCorrect] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
+
+  // console.log(props);
+  const [
+    correctAnswerList,
+    setCorrectAnswerList,
+    setShowResult,
+    showResult
+  ] = useContext(DulingoContext);
+  // const [isUserAnswerCorrect, SetIsUserAnswerCorrect] = useState(false);
+  // console.log(showResult);
   const offsets = props.children.map(() => ({
     pre_space: useSharedValue(0),
     post_space: useSharedValue(0),
@@ -63,63 +89,89 @@ const WordList = props => {
   }));
 
   const checkAnswer = () => {
-    // setCorrectAnswerList("1", "2");
-    if (offsets) {
-      // console.log(offsets);
-      const test1 = offsets.filter(o => o.order.value === -1);
+    console.log(props.type);
+    if (offsets && props.type !== "NotPos") {
+      console.log(props.type);
+      setCheck(false);
+      const answerBank = offsets.filter(o => o.order.value !== -1);
+      answerBank.sort(
+        (a, b) => parseFloat(a.order.value) - parseFloat(b.order.value)
+      );
+      props.validateAnswer();
+      var userSentance = "";
+      for (let i = 0; i < answerBank.length; i++) {
+        userSentance += answerBank[i].pre_space.value;
+        userSentance += answerBank[i].word.value;
+        userSentance += answerBank[i].post_space.value;
+      }
+      console.log(userSentance);
+      if (userSentance.trim() === props.answer.trim()) {
+        props.validateAnswer;
+        console.log("correct");
+      } else {
+        console.log("not correct");
+      }
+    }
 
-      const sentance = offsets.filter(o => o.order.value === -1);
-      //find total correct answer in a sentance
+    ///   pos question ////////////////
+    if (offsets && props.type !== "NotPos") {
+      console.log(props.type);
+
+      setCheck(false);
+      const totalCorrectWords = [];
+      for (let i = 0; i < offsets.length; i++) {
+        const tags = offsets[i].tags.value;
+        if (tags.includes(props.type)) {
+          // console.log("pos", props.type);
+          totalCorrectWords.push(offsets[i].word_id.value);
+        }
+      }
+      const TotalCorrectAnswer = totalCorrectWords.length;
+      // console.log("totalCurrect answer", TotalCorrectAnswer);
+      const sentance = offsets.filter(o => o.order.value !== -1);
       if (sentance.length > 0) {
-        // console.log(sentance);
         const correctAnswerIdList = [];
-        const question = "Verb";
         for (let i = 0; i < sentance.length; i++) {
-          var pos = sentance[i].tags.value;
-          if (pos.includes(question)) {
+          const tags = sentance[i].tags.value;
+          if (tags.includes(props.type)) {
             correctAnswerIdList.push(sentance[i].word_id.value);
           }
         }
         setCorrectAnswerList(correctAnswerIdList);
-        // console.log(correctAnswerIdList);
+        const userScore = correctAnswerIdList.length / TotalCorrectAnswer;
+        // console.log(userScore);
+        if (userScore > 0.8) {
+          console.log("correct", userScore);
+          // console.log(correctAnswerIdList);
+          // props.validateAnswer();
+          // handleNext2();
+          console.log("correct");
+          handleValidateQuiz();
+        } else {
+          console.log("not correct");
+        }
       }
-
-      // const available_mark = sentance.includes(question);
-      // console.log(sentance);
-      //check how many words have correct POS
-      // var total_words = test1.length;
-      // var score = 0;
-      // if (0 < 1) {
-      //   console.log("firing");
-      //   for (let i = 0; i < test1.length; i++) {
-      //     test1[i].isCorrect.value = true;
-      //     setTest(true);
-      //     var pos = test1[i].tags.value;
-      //     if (pos.includes("Pronoun")) {
-      //       score++;
-      //     }
-      //   }
-      // }
-      // console.log(offsets);
-
-      // if (test1.length > 0) {
-      //   test1.sort(
-      //     (a, b) => parseFloat(a.order.value) - parseFloat(b.order.value)
-      //   );
-      // var userSentance = "";
-      // for (let i = 0; i < test1.length; i++) {
-      //   userSentance += test1[i].pre_space.value;
-      //   userSentance += test1[i].word.value;
-      //   userSentance += test1[i].post_space.value;
-      // }
-
-      // if (props.correctAnswer === userSentance) {
-      //   SetIsUserAnswerCorrect(true);
-      // } else {
-      //   SetIsUserAnswerCorrect(false);
-      // }
-      // }
     }
+  };
+
+  const handleNextQiz = () => {
+    if (props.index !== numberOfQuestions) {
+      const data = {
+        index: props.index + 1
+      };
+      props.handleNext(data);
+    }
+  };
+
+  const handleValidateQuiz = () => {
+    setShowAnswer(true);
+    // setOptionsDisabled(true);
+    // const score = option.is_correct_choice ? 1 : 0;
+    // console.log(score);
+    const data = {
+      score: props.score + 1
+    };
+    props.handleValidate(data);
   };
 
   if (!ready) {
@@ -162,25 +214,61 @@ const WordList = props => {
     );
   }
   return (
-    <View style={styles.container}>
-      <Lines />
-      {props.children.map((child, index) => (
-        <SortableWord
-          key={index}
-          offsets={offsets}
-          index={index}
-          // containerWidth={containerWidth}
-          correctAnswerWordIdList={correctAnswerWordIdList}
+    <>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ fontSize: 20 }}>{props.title}</Text>
+        {/* <Text style={{ fontSize: 20 }}>{correctAnswerList.length}</Text> */}
+      </View>
+      <View style={{ flex: 4 }}>
+        <Lines />
+        {props.children.map((child, index) => (
+          <SortableWord
+            key={index}
+            offsets={offsets}
+            index={index}
+            containerWidth={containerWidth}
+            correctAnswerWordIdList={correctAnswerWordIdList}
+          >
+            {child}
+          </SortableWord>
+        ))}
+      </View>
+      <View style={{ flex: 1 }}>
+        {/* <RectButton
+          style={styles.button}
+          onPress={check ? checkAnswer : props.handleNext}
+          // onPress={check ? checkAnswer : checkAnswer}
         >
-          {child}
-        </SortableWord>
-      ))}
-      {/* <Text>{isUserAnswerCorrect ? "Yes" : "No"}</Text> */}
-      <RectButton style={styles.button} onPress={checkAnswer}>
-        <Text style={styles.label}>CHECK</Text>
-      </RectButton>
-    </View>
+          <Text style={styles.label}>{check ? "CHECK" : "NEXT"}</Text>
+        </RectButton> */}
+        {check ? (
+          <RectButton style={styles.button} onPress={handleValidateQuiz}>
+            <Text style={styles.label}>{"CHECK"}</Text>
+          </RectButton>
+        ) : (
+          <RectButton style={styles.button} onPress={handleNextQiz}>
+            <Text style={styles.label}>{"NEXT"}</Text>
+          </RectButton>
+        )}
+      </View>
+    </>
   );
 };
 
-export default WordList;
+// export default WordList;
+const mapStateToProps = state => {
+  return {
+    index: state.quiz.index,
+    score: state.quiz.score
+  };
+};
+const mapDispatchToProps = dispatch => {
+  return {
+    handleNext: data => dispatch(handleNext(data)),
+    handleValidate: data => dispatch(handleValidate(data))
+  };
+};
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(WordList);

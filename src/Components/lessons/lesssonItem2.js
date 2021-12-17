@@ -8,6 +8,9 @@ import {
   Text,
   TouchableOpacity
 } from "react-native";
+import { connect } from "react-redux";
+import { handleStart } from "../../store/actions/quiz";
+
 import Constants from "expo-constants";
 import { Button, IconButton, Card } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -17,17 +20,19 @@ import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Speech from "expo-speech";
 
-export default function AudioPLayer({
-  Tracks,
-  lessonId,
-  hasQuiz,
-  QuizId,
-  unitId,
-  sectionId,
-  language
-}) {
+function AudioPLayer(props) {
+  const {
+    Tracks,
+    lessonId,
+    hasQuiz,
+    QuizId,
+    unitId,
+    sectionId,
+    language
+  } = props;
+
   const navigation = useNavigation();
-  // console.log(language);
+  // console.log(Tracks[0]);
   const [Loaded, SetLoaded] = React.useState(false);
   const [Loading, SetLoading] = React.useState(false);
   const [CurrentSong, SetCurrentSong] = React.useState(Tracks[0]);
@@ -38,7 +43,8 @@ export default function AudioPLayer({
 
   React.useEffect(() => {
     find_last_track_index();
-    speakText(language);
+    // resetQuiz();
+    // speakText(language);
   }, [CurrentSong]);
 
   const speakText = language => {
@@ -77,6 +83,24 @@ export default function AudioPLayer({
     }
   };
 
+  const resetQuiz = () => {
+    const data = {
+      index: 0,
+      score: 0
+    };
+    props.handleStart(data);
+    // console.log("trigerring");
+    navigateToQuiz();
+  };
+
+  const navigateToQuiz = () => {
+    navigation.navigate("Lesson Test", {
+      QuizId: QuizId,
+      lessonId: lessonId,
+      unitId: unitId,
+      sectionId: sectionId
+    });
+  };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.TopContainer}>
@@ -87,7 +111,7 @@ export default function AudioPLayer({
         <Image
           style={styles.photo}
           source={{
-            uri: CurrentSong.photo
+            uri: CurrentSong.photo.photo
           }}
         />
         {/* </View> */}
@@ -147,17 +171,7 @@ export default function AudioPLayer({
 
           {(Tracks.indexOf(CurrentSong) === lastSongIndex) & hasQuiz ? (
             <View style={{ marginTop: 20 }}>
-              <Button
-                mode="Outlined"
-                onPress={() =>
-                  navigation.navigate("Lesson Test", {
-                    QuizId: QuizId,
-                    lessonId: lessonId,
-                    unitId: unitId,
-                    sectionId: sectionId
-                  })
-                }
-              >
+              <Button mode="Outlined" onPress={resetQuiz}>
                 Take a Quiz
               </Button>
             </View>
@@ -223,3 +237,15 @@ const styles = StyleSheet.create({
     marginTop: 20
   }
 });
+
+// export default AudioPLayer;
+const mapDispatchToProps = dispatch => {
+  return {
+    handleStart: data => dispatch(handleStart(data))
+  };
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(AudioPLayer);

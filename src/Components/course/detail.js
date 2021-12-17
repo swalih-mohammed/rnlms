@@ -50,9 +50,9 @@ const CourseDetail = ({ route }) => {
   return (
     <>
       {loading ? (
-        // <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
-        <Loader />
+        <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
       ) : (
+        // <Loader />
         <>
           <View>
             <Card>

@@ -21,6 +21,8 @@ import * as Animatable from "react-native-animatable";
 
 import LessonItem from "../lessons/item";
 
+const LeftContent = props => <Avatar.Icon {...props} icon="school" />;
+
 const UnitDetail = props => {
   // const { username } = props.username;
   const navigation = useNavigation();
@@ -56,8 +58,6 @@ const UnitDetail = props => {
     }
   };
 
-  const LeftContent = props => <Avatar.Icon {...props} icon="school" />;
-
   if (!unit) {
     return null;
   }
@@ -74,7 +74,7 @@ const UnitDetail = props => {
               <Card.Title
                 title={unit.title}
                 subtitle={"UNIT " + unit.order}
-                left={LeftContent}
+                // left={LeftContent}
                 titleStyle={{ fontSize: 18, fontWeight: "bold" }}
               />
             </TouchableOpacity>

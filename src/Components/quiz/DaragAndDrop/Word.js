@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 
 import { WORD_HEIGHT } from "./Layout";
 import { DulingoContext } from "./DulingoContext";
+import { QuizContext } from "../QuizContext";
 
 const Word = props => {
   const [correctAnswerList] = useContext(DulingoContext);
@@ -15,9 +16,13 @@ const Word = props => {
           style={[
             styles.container,
             {
-              borderColor: checkIfCorrectPOS(correctAnswerList, props.id)
-                ? "green"
-                : "red"
+              borderColor:
+                checkIfCorrectPOS(correctAnswerList, props.id) === "InList"
+                  ? "green"
+                  : checkIfCorrectPOS(correctAnswerList, props.id) ===
+                    "OutOfList"
+                  ? "red"
+                  : "blue"
             }
           ]}
         >
@@ -33,12 +38,12 @@ const checkIfCorrectPOS = (correctAnswerList, word_id) => {
   // console.log(correctAnswerList);
   if (correctAnswerList?.length > 0) {
     if (correctAnswerList.includes(word_id)) {
-      return true;
+      return "InList";
     } else {
-      return false;
+      return "OutOfList";
     }
   } else {
-    return false;
+    return "NoList";
   }
 };
 

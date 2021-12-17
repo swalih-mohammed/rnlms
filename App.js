@@ -88,7 +88,8 @@ export const TabScreens = () => (
       name="Home"
       options={{
         // tabBarColor: "#aacc00",
-        tabBarIcon: "home"
+        tabBarIcon: "home",
+        headerShown: false
       }}
       component={HomeScreen}
     />
@@ -113,13 +114,34 @@ export default function App() {
             <NavigationContainer>
               <Stack.Navigator>
                 {/* <Stack.Screen name="DraggingQuiz" component={DraggingQuiz} /> */}
-                <Stack.Screen name="Courses" component={TabScreens} />
-                <Stack.Screen name="Course Details" component={CourseDetail} />
                 <Stack.Screen
+                  name="Courses"
+                  component={TabScreens}
+                  options={{
+                    headerShown: false
+                  }}
+                />
+                <Stack.Screen
+                  name="Course Details"
+                  options={{
+                    headerShown: false
+                  }}
+                  component={CourseDetail}
+                />
+                <Stack.Screen
+                  options={{
+                    headerShown: false
+                  }}
                   name="Section Details"
                   component={SectionDetail}
                 />
-                <Stack.Screen name="Unit Details" component={UnitDetail} />
+                <Stack.Screen
+                  name="Unit Details"
+                  options={{
+                    headerShown: false
+                  }}
+                  component={UnitDetail}
+                />
                 <Stack.Screen
                   name="Lesson Details"
                   options={{

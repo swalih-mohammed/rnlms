@@ -11,7 +11,6 @@ import { List, Card, Avatar, Title, Paragraph } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { COLORS, SIZES } from "../../Helpers/constants";
 import * as Animatable from "react-native-animatable";
-
 import { localhost } from "../../Helpers/urls";
 import UnitItem from "../unit/item";
 import UnitList from "../unit/list";
@@ -75,47 +74,62 @@ const LessonItem = ({ LessonItem }) => {
     <Animatable.View animation="flipInX" style={{ margin: 5 }}>
       <Card>
         <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("Lesson Details", { id: LessonItem.id })
+          onPress={
+            () => navigation.navigate("Lesson Details", { id: LessonItem.id })
+            // console.log("lesson detals")
           }
         >
-          {LessonItem.lessonCompleted ? (
-            <Card.Title
-              title={LessonItem.title}
-              subtitle={"LESSON " + LessonItem.order}
-              right={Completed}
-              // left={LeftContent}
-              left={
-                <Avatar.Image
-                  size={24}
-                  source={{
-                    uri: lesson.photo
-                  }}
-                />
-              }
-              titleStyle={{ fontSize: 15 }}
-            />
-          ) : (
-            <Card>
-              <View style={styles.container}>
-                <View style={styles.LeftContainer}>
+          <View>
+            {LessonItem.lessonCompleted ? (
+              <Card.Title
+                // title={LessonItem.title}
+                title={"Testing"}
+                subtitle={"LESSON " + LessonItem.order}
+                right={Completed}
+                // left={LeftContent}
+                left={
                   <Avatar.Image
-                    size={60}
+                    size={24}
                     source={{
                       uri: LessonItem.photo
                     }}
                   />
-                </View>
-                <View style={styles.MiddleContainer}>
-                  <Title>{LessonItem.title} </Title>
-                  <Paragraph>{LessonItem.subtitle}</Paragraph>
-                </View>
-                <View style={styles.RightContainer}>
-                  <Completed />
-                </View>
-              </View>
-            </Card>
-          )}
+                }
+                titleStyle={{ fontSize: 15 }}
+              />
+            ) : (
+              <Card>
+                <TouchableOpacity
+                  onPress={
+                    () =>
+                      navigation.navigate("Lesson Details", {
+                        id: LessonItem.id
+                      })
+                    // console.log("lesson detals")
+                  }
+                >
+                  <View style={styles.container}>
+                    <View style={styles.LeftContainer}>
+                      <Avatar.Image
+                        size={60}
+                        source={{
+                          uri: LessonItem.photo
+                        }}
+                      />
+                    </View>
+                    <View style={styles.MiddleContainer}>
+                      {/* <Title>{LessonItem.title} </Title> */}
+                      <Title>{"Test"} </Title>
+                      <Paragraph>{LessonItem.subtitle}</Paragraph>
+                    </View>
+                    <View style={styles.RightContainer}>
+                      <Completed />
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              </Card>
+            )}
+          </View>
         </TouchableOpacity>
       </Card>
     </Animatable.View>

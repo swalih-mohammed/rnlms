@@ -40,7 +40,7 @@ const SortableWord = ({
   const isGestureActive = useSharedValue(false);
   const isAnimating = useSharedValue(false);
   const translation = useVector();
-  const isInBank = useDerivedValue(() => offset.order.value !== -1);
+  const isInBank = useDerivedValue(() => offset.order.value === -1);
   // const isInBank1 = useDerivedValue(() => offset.isCorrect.value === true);
   // console.log(isInBank);
   const onGestureEvent = useAnimatedGestureHandler({
@@ -127,27 +127,16 @@ const SortableWord = ({
       ]
     };
   });
-  // const checkIfCorrectPOS = correctAnswerWordIdList => {
-  //   // console.log(correctAnswerWordIdList);
-  //   if (correctAnswerWordIdList?.length > 0) {
-  //     if (correctAnswerWordIdList.includes(offset.word_id.value)) {
-  //       return true;
-  //     } else {
-  //       return false;
-  //     }
-  //   }
-  // };
+
   return (
     <>
       <Placeholder offset={offset} />
       <Animated.View style={style}>
         <PanGestureHandler onGestureEvent={onGestureEvent}>
           <Animated.View
-          // style={{
-          //   borderColor: checkIfCorrectPOS(correctAnswerWordIdList)
-          //     ? "green"
-          //     : "red"
-          // }}
+            style={{
+              borderColor: StyleSheet.absoluteFill
+            }}
           >
             {children}
           </Animated.View>

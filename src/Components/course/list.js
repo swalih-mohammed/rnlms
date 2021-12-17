@@ -22,6 +22,7 @@ import Loader from "../Utils/Loader";
 
 const CourseList = props => {
   const navigation = useNavigation();
+  const [testData, setTestData] = useState(null);
 
   const [courses, setCourses] = useState(null);
   const [error, setError] = useState(null);
@@ -29,9 +30,12 @@ const CourseList = props => {
 
   useEffect(() => {
     getCourses();
+    // IdentifyActivityType("Translate below");
+    // testApi();
     // SpeakArabic();
   }, []);
 
+  // };
   // SpeakArabic = () => {
   //   console.log("speaking");
   //   // Speech.speak("ا", { language: "ar" });
@@ -55,6 +59,22 @@ const CourseList = props => {
     }
   };
 
+  const testApi = async () => {
+    // console.log(123);
+    const QuizId = 5;
+    try {
+      setLoading(true);
+      const response = await axios.get(`${localhost}/quizzes/${QuizId}`);
+      setTest(response.data);
+      setTestData(response.data);
+      setLoading(false);
+      // console.log(response.data);
+    } catch (err) {
+      setError(err);
+      console.log(error);
+    }
+  };
+
   if (!courses) {
     return null;
   }
@@ -63,9 +83,9 @@ const CourseList = props => {
     <>
       {loading || props.tokenLoading ? (
         // <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
-        // <Text>Loading...</Text>
-        <Loader />
+        <Text>Loading...</Text>
       ) : (
+        // <Loader />
         <>
           {/* <Skeleton /> */}
           {!props.token ? (

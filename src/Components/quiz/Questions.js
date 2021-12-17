@@ -1,17 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { connect } from "react-redux";
 // import axios from "axios";
 import { createASNT } from "../../store/actions/assignments";
+import { handleNext, handleStart } from "../../store/actions/quiz";
 import { useNavigation } from "@react-navigation/native";
 import AudioPlayerWiouthControl from "../../Helpers/PlayerWithoutControl";
-import { useTheme } from "react-native-paper";
+import { useTheme, Button } from "react-native-paper";
 import * as Speech from "expo-speech";
-import Qustion from "./Question";
+import nlp from "compromise";
+import Title from "./Title";
 import ProgressBar from "./Progress";
 import Progress from "./DaragAndDrop/Header";
 import PhotOptions from "./MultipleChoice/PhotoOption";
 import TextChoices from "./MultipleChoice/TextOptions";
 import NextButton from "./NextButton";
+// import DragAndDrop from "./DaragAndDrop/index";
+import DragAndDrop from "./DaragAndDrop/Dulingo";
+import { QuizContext } from "./QuizContext";
+
 // import NextButton from "./MultipleChoice/HandleNext";
 
 // import Test from "../../Helpers/testAudio";
@@ -22,19 +28,18 @@ import {
   StatusBar,
   Animated,
   Dimensions,
-  StyleSheet
+  StyleSheet,
+  Text
 } from "react-native";
 import { COLORS, SIZES } from "../../Helpers/constants";
 const { width, height } = Dimensions.get("window");
 import ScoreModal from "./model";
 
-// import { localhost } from "../../Helpers/urls";
-// import { authAxios } from "../../Helpers/authAxios";
-// import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-// import Icon from "react-native-vector-icons/AntDesign";
-
 const Quiz = props => {
   const navigation = useNavigation();
+  // const [totalScore, setTotalScore, index, setIndex] = useContext(QuizContext);
+  // console.log(totalScore);
+
   const { colors } = useTheme();
 
   const {
@@ -46,7 +51,7 @@ const Quiz = props => {
     unitId,
     sectionId
   } = props;
-  // console.log(sectionId);
+  console.log(questions);
 
   const allQuestions = questions;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -59,7 +64,6 @@ const Quiz = props => {
   const [showScoreModal, setShowScoreModal] = useState(false);
   const [error, setError] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
-
   const [progress, setProgress] = useState(new Animated.Value(0));
   const progressAnim = progress.interpolate({
     inputRange: [0, allQuestions.length],
@@ -67,25 +71,51 @@ const Quiz = props => {
   });
 
   useEffect(() => {
-    speakQuestion(allQuestions[currentQuestionIndex]?.question);
-  }, [allQuestions[currentQuestionIndex]?.question]);
+    // handleResetQuiz();
+    // handleNext2();
+    // console.log(score);
+    // setScore((score = score || 0));
+    // allQuestions[currentQuestionIndex].questionType == "ChoiceTextNoAudio",
+    // allQuestions[index];
+    // speakQuestion(allQuestions[currentQuestionIndex]?.question);
+    // console.log(allQuestions[currentIndex]);
+    // }, [allQuestions[currentQuestionIndex]?.question]);
+  }, []);
 
-  const speakQuestion = () => {
-    Speech.speak(allQuestions[currentQuestionIndex]?.question);
-    // Speech.speak(text);
+  // const speakQuestion = () => {
+  //   Speech.speak(allQuestions[currentQuestionIndex]?.question);
+  //   // Speech.speak(text);
+  // };
+
+  // const validateAnswer = selectedOption => {
+  //   setCurrentOptionSelected(selectedOption);
+  //   setIsOptionsDisabled(true);
+  //   setShowAnswer(true);
+  //   if (selectedOption.is_correct_choice) {
+  //     // var testing = isNaN(score);
+  //     // console.log("testing ", testing, score);
+  //     // setScore(1);
+  //     setScore(parseInt(score)) + parseInt(1);
+  //     setCorrectOption(selectedOption.id);
+  //   }
+  //   setShowNextButton(true);
+  // };
+
+  const handleResetQuiz = () => {
+    const data = {
+      index: 0,
+      score: 0,
+      totalQuestions: questions.length
+    };
+    props.handleStart(data);
+    // console.log("submitting redux");
   };
 
-  const validateAnswer = selectedOption => {
-    setCurrentOptionSelected(selectedOption);
+  const validateAnswer = () => {
     setIsOptionsDisabled(true);
     setShowAnswer(true);
-    if (selectedOption.is_correct_choice) {
-      // console.log(score);
-      setScore(score + 1);
-      // console.log("score", score);
-      setCorrectOption(selectedOption.id);
-    }
-    // Show Next Button
+    setScore(score + 1);
+    console.log(score);
     setShowNextButton(true);
   };
 
@@ -98,7 +128,7 @@ const Quiz = props => {
         lessonId,
         score
       };
-      props.createASNT(token, data);
+      // props.createASNT(token, data);
       // console.log("submitting");
       sectionId != null
         ? navigation.navigate("Section Details", { id: sectionId })
@@ -110,16 +140,20 @@ const Quiz = props => {
   };
 
   const handleNext = () => {
-    // console.log(showScoreModal);
     setShowAnswer(false);
+    console.log("trigerring");
+    // console.log("all q", allQuestions.length);
     if (currentQuestionIndex == allQuestions.length - 1) {
-      setShowScoreModal(true);
+      // setShowScoreModal(true);
+      console.log("last q");
     } else {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setCurrentOptionSelected(null);
-      setCorrectOption(null);
-      setIsOptionsDisabled(false);
-      setShowNextButton(false);
+      console.log("not last");
+      handleNext2();
+      // setCurrentQuestionIndex(currentQuestionIndex + 1);
+      // setCurrentOptionSelected(null);
+      // setCorrectOption(null);
+      // setIsOptionsDisabled(false);
+      // setShowNextButton(false);
     }
     Animated.timing(progress, {
       toValue: currentQuestionIndex + 1,
@@ -127,6 +161,7 @@ const Quiz = props => {
       useNativeDriver: false
     }).start();
   };
+
   const restartQuiz = () => {
     setShowScoreModal(false);
 
@@ -144,81 +179,118 @@ const Quiz = props => {
     }).start();
   };
 
+  const Tokenize = text => {
+    let doc = nlp(text);
+    let doc1 = doc.json();
+    let terms = doc1[0].terms;
+    let words2 = [];
+    for (let i = 0; i < terms.length; i++) {
+      var singleObj = {};
+      // console.log(terms[i].tags);
+      singleObj["id"] = i;
+      singleObj["word"] = terms[i].text;
+      singleObj["tags"] = terms[i].tags;
+      singleObj["pre_space"] = terms[i].pre;
+      singleObj["post_space"] = terms[i].post;
+      words2.push(singleObj);
+    }
+    // console.log(words2);
+    return words2;
+  };
+
+  const handleNext2 = () => {
+    const index = props.index;
+    const score = props.score;
+    const data = {
+      index: index + 1,
+      score: score + 1,
+      totalQuestions: allQuestions.length
+    };
+    props.handleNext1(data);
+  };
+
   return (
     <SafeAreaView
       style={{
         flex: 1
+        // flexDirection: "row"
+        // backgroundColor: "red"
       }}
     >
-      {/* <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} /> */}
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+      <ProgressBar
+        progressIndex={progress}
+        allQuestionsLength={allQuestions.length}
+      />
       <View
         style={{
           flex: 1,
-          paddingVertical: 40,
+          paddingVertical: 10,
           paddingHorizontal: 16,
-          backgroundColor: COLORS.white,
+          // backgroundColor: COLORS.white,
           position: "relative"
+          // backgroundColor: "red"
         }}
       >
-        {/* {renderProgressBar()} */}
-        <View style={{ flex: 1 }}>
-          <ProgressBar
-            progressIndex={progress}
-            allQuestionsLength={allQuestions.length}
-          />
-        </View>
-
-        {/* {renderQuestion()} */}
-        <View
-          style={{ flex: 4, justifyContent: "center", alignSelf: "center" }}
-        >
-          <Qustion
-            TitleQuestion={allQuestions[currentQuestionIndex]?.question}
-          />
-        </View>
-
-        {/* {renderOptions() photo choices  */}
-        {allQuestions[currentQuestionIndex].has_photo_choices ? (
-          <View style={{ flex: 12 }}>
-            <PhotOptions
-              showAnswer={showAnswer}
+        {/* ///render options start  */}
+        {allQuestions[props.index].questionType.type === "CHOICE" ? (
+          <>
+            {allQuestions[props.index].questionType.assetType === "TEXT" ? (
+              <>
+                <TextChoices
+                  numberOfQuestions={allQuestions.length - 1}
+                  showNextButton={showNextButton}
+                  // handleNext={handleNext}
+                  title={allQuestions[props.index].title}
+                  question={allQuestions[props.index].question}
+                  showAnswer={showAnswer}
+                  correctOption={correctOption}
+                  validateAnswer={validateAnswer}
+                  isOptionsDisabled={isOptionsDisabled}
+                  currentOptionSelected={currentOptionSelected}
+                  Choices={allQuestions[props.index].text_choices}
+                  has_audio={
+                    allQuestions[props.index].questionType.type.has_audio
+                  }
+                />
+              </>
+            ) : allQuestions[props.index].questionType.assetType === "PHOTO" ? (
+              <>
+                <PhotOptions
+                  showNextButton={showNextButton}
+                  numberOfQuestions={allQuestions.length - 1}
+                  // handleNext={handleNext}
+                  title={allQuestions[props.index].title}
+                  question={allQuestions[props.index].question}
+                  showAnswer={showAnswer}
+                  validateAnswer={validateAnswer}
+                  Photos={allQuestions[props.index].photo_choices}
+                  has_audio={
+                    allQuestions[props.index].questionType.type.has_audio
+                  }
+                />
+              </>
+            ) : null}
+          </>
+        ) : allQuestions[props.index].questionType.type === "DRAG" ? (
+          <>
+            <DragAndDrop
+              numberOfQuestions={allQuestions.length - 1}
+              title={allQuestions[props.index].title}
+              type={allQuestions[props.index].questionType.pos}
+              qustion={Tokenize(allQuestions[props.index].question)}
+              answer={allQuestions[props.index].answer}
+              // handleNext={handleNext}
               validateAnswer={validateAnswer}
-              Photos={allQuestions[currentQuestionIndex].photo_choices}
             />
-          </View>
-        ) : null}
-        {/* {renderOptions() text choices  */}
-        {allQuestions[currentQuestionIndex].has_text_choices ? (
-          <View style={{ flex: 12 }}>
-            <TextChoices
-              showAnswer={showAnswer}
-              correctOption={correctOption}
-              validateAnswer={validateAnswer}
-              isOptionsDisabled={isOptionsDisabled}
-              currentOptionSelected={currentOptionSelected}
-              correctOption={3}
-              Choices={allQuestions[currentQuestionIndex].text_choices}
-            />
-          </View>
+          </>
         ) : null}
 
-        {/* Next Button */}
-        <View
-          style={{ flex: 3, justifyContent: "center", alignItems: "center" }}
-        >
-          <NextButton
-            showNextButton={showNextButton}
-            handleNext={handleNext}
-            speakQuestion={speakQuestion}
-          />
-        </View>
-        {/* render audio */}
-
-        {allQuestions[currentQuestionIndex].has_audio ? (
+        {/* {allQuestions[currentQuestionIndex].has_audio ? (
           <AudioPlayerWiouthControl
             mp3={allQuestions[currentQuestionIndex].audio}
           />
-        ) : null}
+        ) : null} */}
 
         {/* Score Modal */}
         {showScoreModal ? (
@@ -238,47 +310,19 @@ const Quiz = props => {
 const mapStateToProps = state => {
   return {
     token: state.auth.token,
-    username: state.auth.username
+    username: state.auth.username,
+    index: state.quiz.index,
+    score: state.quiz.score
   };
 };
 const mapDispatchToProps = dispatch => {
   return {
-    createASNT: (token, asnt) => dispatch(createASNT(token, asnt))
+    createASNT: (token, asnt) => dispatch(createASNT(token, asnt)),
+    handleNext1: data => dispatch(handleNext(data)),
+    handleStart: data => dispatch(handleStart(data))
   };
 };
 export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(Quiz);
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "center"
-  },
-  TopContainer: {
-    flex: 6
-  },
-  BottomContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "center"
-  },
-  ImgWrapper: {
-    width: 100,
-    height: 50
-  },
-  option_photo: {
-    width: width * 0.4,
-    height: 160,
-    borderRadius: 5,
-    margin: 5,
-    borderColor: "red"
-  },
-  ImgContianer: {
-    flex: 1,
-    flexDirection: "row",
-    flexWrap: "wrap"
-  }
-});

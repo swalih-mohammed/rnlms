@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { connect } from "react-redux";
+
 import { ActivityIndicator } from "react-native";
 import { View, Text } from "react-native";
 import { localhost } from "../../Helpers/urls";
 import Questions from "./Questions";
 import Loader from "../Utils/Loader";
-
+import { QuizProvider } from "./QuizContext";
+import { handleStart } from "../../store/actions/quiz";
+// import { handleStart } from "../../store/actions/quiz";
 // import Questions from "../../Components/pacticeTest/Qustions";
-const CourseDetail = ({ route }) => {
+
+const QuizList = props => {
   const [test, setTest] = useState(null);
   const [questions, setQuestions] = useState(null);
   const [error, setError] = useState(null);
@@ -17,17 +22,14 @@ const CourseDetail = ({ route }) => {
     getTest();
   }, []);
 
-  const { lessonId, QuizId, unitId, sectionId } = route.params;
+  const { lessonId, QuizId, unitId, sectionId } = props.route.params;
 
   const getTest = async () => {
-    // console.log(123);
     try {
       setLoading(true);
       const response = await axios.get(`${localhost}/quizzes/${QuizId}`);
-      // setTest(response.data);
       setQuestions(response.data);
       setLoading(false);
-      // console.log(response.data);
     } catch (err) {
       setError(err);
       console.log(error);
@@ -38,21 +40,34 @@ const CourseDetail = ({ route }) => {
     <>
       {loading ? (
         // <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
-        // <Text>Loading...</Text>
-        <Loader />
+        <Text>Loading...</Text>
       ) : (
+        // <Loader />
         <>
           {questions ? (
-            <Questions
-              questions={questions.questions}
-              lessonId={lessonId}
-              unitId={unitId}
-              sectionId={sectionId}
-            />
+            <QuizProvider>
+              <Questions
+                questions={questions.questions}
+                lessonId={lessonId}
+                unitId={unitId}
+                sectionId={sectionId}
+              />
+              {/* <Text>{questions.questions.length}</Text> */}
+            </QuizProvider>
           ) : null}
         </>
       )}
     </>
   );
 };
-export default CourseDetail;
+
+const mapDispatchToProps = dispatch => {
+  return {
+    handleStart: data => dispatch(handleStart(data))
+  };
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(QuizList);

@@ -7,7 +7,8 @@ import {
   StyleSheet,
   Dimensions,
   SafeAreaView,
-  Image
+  Image,
+  Text
 } from "react-native";
 // import { Button } from "react-native-paper";
 // import Slider from "@react-native-community/slider";
@@ -19,6 +20,7 @@ import { useNavigation } from "@react-navigation/native";
 import LessonItem from "./lesssonItem2";
 
 function LessonDetail({ route }) {
+  // console.log("lesson detail");
   const navigation = useNavigation();
 
   const [lesson, setLesson] = useState(false);
@@ -27,6 +29,7 @@ function LessonDetail({ route }) {
 
   useEffect(() => {
     getLessonDetail();
+    // console.log(lesson.Lesson_items);
   }, []);
   const { id } = route.params;
 
@@ -50,9 +53,9 @@ function LessonDetail({ route }) {
   return (
     <>
       {loading ? (
-        // <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
-        <Loader />
-      ) : null}
+        <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
+      ) : // <Loader />
+      null}
       {lesson.Lesson_items ? (
         <LessonItem
           lessonId={lesson.id}
@@ -64,7 +67,9 @@ function LessonDetail({ route }) {
           Tracks={lesson.Lesson_items}
           QuizId={lesson.has_quiz ? lesson.quiz[0].id : 0}
         />
-      ) : null}
+      ) : // <Text>testing</Text>
+      // <Text>testing</Text>
+      null}
     </>
   );
 }
