@@ -3,25 +3,36 @@ import { updateObject } from "../utility";
 
 const initialState = {
   index: 0,
-  score: 0
+  score: 0,
+  showAnswer: false,
+  answerList: null,
+  showScoreModal: false
 };
 
 const handleStart = (state, action) => {
   return updateObject(state, {
-    index: action.data.index,
-    score: action.data.score
+    index: 0,
+    score: 0,
+    showAnswer: false,
+    answerList: null,
+    showScoreModal: false
   });
 };
 
 const handleValidate = (state, action) => {
   return updateObject(state, {
-    score: action.data.score
+    score: action.data.score,
+    showAnswer: action.data.showAnswer,
+    answerList: action.data.answerList
   });
 };
 
 const handleNext = (state, action) => {
   return updateObject(state, {
-    index: action.data.index
+    index: action.data.index,
+    showAnswer: action.data.showAnswer,
+    answerList: action.data.answerList,
+    showScoreModal: action.data.showScoreModal
   });
 };
 

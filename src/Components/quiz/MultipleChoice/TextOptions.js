@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 
 import {
-  View,
   TouchableOpacity,
   StyleSheet,
   Dimensions,
   Image,
-  Text
+  Text,
+  View
 } from "react-native";
+import { View as MotiView } from "moti";
+import { Button } from "react-native-paper";
 const { width, height } = Dimensions.get("window");
-import NextButton from "../NextButton";
-
 import { COLORS, SIZES } from "../../../Helpers/constants";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon from "react-native-vector-icons/AntDesign";
@@ -20,25 +20,23 @@ import { handleNext, handleValidate } from "../../../store/actions/quiz";
 const renderOptions = props => {
   const [showAnswer, setShowAnswer] = useState(false);
   const [optionsDisabled, setOptionsDisabled] = useState(false);
-  const [showNextButton, setShowNextButton] = useState(false);
 
   const { Choices, title, question, numberOfQuestions } = props;
 
-  const handleNextQiz = () => {
-    if (props.index !== numberOfQuestions) {
-      const data = {
-        index: props.index + 1
-      };
-      props.handleNext(data);
-    }
+  const handleNextQuiz = () => {
+    const data = {
+      index: props.index !== numberOfQuestions ? props.index + 1 : props.index,
+      showAnswer: false,
+      answerList: null,
+      showScoreModal: props.index === numberOfQuestions ? true : false
+    };
+    props.handleNext(data);
   };
 
   const handleValidateQuiz = option => {
     setShowAnswer(true);
     setOptionsDisabled(true);
-    setShowNextButton(true);
     const score = option.is_correct_choice ? 1 : 0;
-    console.log(score);
     const data = {
       score: props.score + score
     };
@@ -46,9 +44,15 @@ const renderOptions = props => {
   };
 
   return (
-    <View
+    <MotiView
       style={{
-        flex: 1
+        flex: 1,
+        justifyContent: "center"
+      }}
+      from={{ opacity: 0, translateX: 500 }}
+      animate={{ opacity: 1, translateX: 0 }}
+      transition={{
+        type: "timing"
       }}
     >
       <View
@@ -56,13 +60,14 @@ const renderOptions = props => {
           flex: 2,
           justifyContent: "space-around",
           alignItems: "center"
+          // backgroundColor: "red"
         }}
       >
         <Text
           style={{
             color: COLORS.black,
-            fontSize: 20,
-            paddingBottom: 35
+            fontSize: 18,
+            paddingTop: 35
           }}
         >
           {title ? title : null}
@@ -78,7 +83,9 @@ const renderOptions = props => {
       </View>
       <View
         style={{
-          flex: 4
+          flex: 3.5,
+          // backgroundColor: "green",
+          marginHorizontal: 5
         }}
       >
         {Choices.map(option => (
@@ -87,7 +94,7 @@ const renderOptions = props => {
             disabled={optionsDisabled}
             key={option.id}
             style={{
-              borderWidth: 3,
+              borderWidth: 1,
               borderColor:
                 showAnswer && option.is_correct_choice
                   ? COLORS.success
@@ -102,6 +109,7 @@ const renderOptions = props => {
               justifyContent: "space-between",
               paddingHorizontal: 15,
               marginVertical: 5
+              // width: SIZES.width - 10
             }}
           >
             <Text style={{ fontSize: 14, color: "black" }}>{option.title}</Text>
@@ -110,9 +118,9 @@ const renderOptions = props => {
             {showAnswer && option.is_correct_choice ? (
               <View
                 style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 30 / 2,
+                  width: 20,
+                  height: 20,
+                  borderRadius: 20 / 2,
                   backgroundColor: COLORS.success,
                   justifyContent: "center",
                   alignItems: "center"
@@ -122,16 +130,16 @@ const renderOptions = props => {
                   name="check"
                   style={{
                     color: COLORS.white,
-                    fontSize: 20
+                    fontSize: 10
                   }}
                 />
               </View>
             ) : showAnswer && !option.is_correct_choice ? (
               <View
                 style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 30 / 2,
+                  width: 20,
+                  height: 20,
+                  borderRadius: 20 / 2,
                   backgroundColor: COLORS.error,
                   justifyContent: "center",
                   alignItems: "center"
@@ -141,7 +149,7 @@ const renderOptions = props => {
                   name="close"
                   style={{
                     color: COLORS.white,
-                    fontSize: 20
+                    fontSize: 10
                   }}
                 />
               </View>
@@ -149,10 +157,11 @@ const renderOptions = props => {
           </TouchableOpacity>
         ))}
       </View>
-
       <View
         style={{
+          alignItems: "center",
           flex: 1.5
+          // backgroundColor: "red"
         }}
       >
         <TouchableOpacity onPress={() => console.log(123)}>
@@ -161,17 +170,31 @@ const renderOptions = props => {
             style={{
               color: "black",
               fontSize: 30,
-              alignSelf: "center"
+              paddingBottom: 50
             }}
           />
         </TouchableOpacity>
-        <NextButton
-          showNextButton={showNextButton}
-          handleNext={handleNextQiz}
-          // speakQuestion={speakQuestion}
-        />
       </View>
-    </View>
+
+      <View
+        style={{
+          position: "absolute",
+          bottom: 0,
+          right: 0,
+          left: 0,
+          flex: 1
+        }}
+      >
+        <Button
+          mode="contained"
+          onPress={handleNextQuiz}
+          disabled={!showAnswer}
+          style={{ paddingBottom: 10, paddingTop: 10 }}
+        >
+          {showAnswer ? "NEXT" : "SELECT"}
+        </Button>
+      </View>
+    </MotiView>
   );
 };
 
@@ -188,7 +211,9 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
   return {
     index: state.quiz.index,
-    score: state.quiz.score
+    score: state.quiz.score,
+    showAnswer: state.quiz.showAnswer,
+    showScoreModal: state.quiz.showAnswer
   };
 };
 const mapDispatchToProps = dispatch => {

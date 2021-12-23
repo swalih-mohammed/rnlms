@@ -28,13 +28,7 @@ import {
 import Placeholder from "./Placeholder";
 // import { readSync } from "fs";
 
-const SortableWord = ({
-  offsets,
-  index,
-  children,
-  containerWidth,
-  correctAnswerWordIdList
-}) => {
+const SortableWord = ({ offsets, index, children, containerWidth }) => {
   const offset = offsets[index];
   // console.log(correctAnswerWordIdList);
   const isGestureActive = useSharedValue(false);

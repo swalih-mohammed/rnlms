@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Button } from "react-native-paper";
-import { MotiView } from "moti";
-import { Skeleton } from "@motify/skeleton";
+import { View as MotiView } from "moti";
+// import { StatusBar } from "expo-status-bar";
+import { Card, Title } from "react-native-paper";
+import { COLORS, SIZES } from "../../Helpers/constants";
+
+// import { Skeleton } from "@motify/skeleton";
 
 import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
   View,
-  Text
+  Text,
+  StatusBar
 } from "react-native";
 import axios from "axios";
 // import { courseListURL } from "../../Helpers/urls";
@@ -18,12 +23,12 @@ import CourseItem from "../../Components/course/item";
 import { useNavigation } from "@react-navigation/native";
 import GetStarted from "../../Screens/getStarted";
 import Loader from "../Utils/Loader";
+import { SafeAreaView } from "react-native-safe-area-context";
 // import * as Speech from "expo-speech";
 
 const CourseList = props => {
   const navigation = useNavigation();
   const [testData, setTestData] = useState(null);
-
   const [courses, setCourses] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -75,37 +80,49 @@ const CourseList = props => {
     }
   };
 
-  if (!courses) {
-    return null;
-  }
-
   return (
-    <>
+    <SafeAreaView>
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+
       {loading || props.tokenLoading ? (
-        // <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
-        <Text>Loading...</Text>
+        <ActivityIndicator
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        />
       ) : (
-        // <Loader />
         <>
           {/* <Skeleton /> */}
           {!props.token ? (
             <GetStarted />
           ) : (
-            <FlatList
-              data={courses}
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={item => item.id.toString()}
-              renderItem={({ item }) => {
-                return <CourseItem item={item} />;
-              }}
-            />
-
-            // <Button onPress={speak}>Test</Button>
+            <>
+              <View>
+                <Card>
+                  <View
+                    style={{
+                      marginTop: 20,
+                      marginBottom: 20,
+                      justifyContent: "center",
+                      alignSelf: "center"
+                    }}
+                  >
+                    <Title>{"Lakaters"}</Title>
+                  </View>
+                </Card>
+                <FlatList
+                  data={courses}
+                  showsHorizontalScrollIndicator={false}
+                  keyExtractor={item => item.id.toString()}
+                  renderItem={({ item }) => {
+                    return <CourseItem item={item} />;
+                  }}
+                />
+                {/* <Text>hi</Text> */}
+              </View>
+            </>
           )}
         </>
-        // <Text>hi</Text>
       )}
-    </>
+    </SafeAreaView>
   );
 };
 

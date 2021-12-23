@@ -3,14 +3,22 @@ import { View, Animated } from "react-native";
 import { COLORS, SIZES } from "../../Helpers/constants";
 // import console = require("console");
 
-export default function ProgressBar({ progressIndex, allQuestionsLength }) {
-  // console.log(allQuestionsLength);
+export default function ProgressBar({ index, allQuestionsLength }) {
+  // console.log(index);
   const [progress, setProgress] = useState(new Animated.Value(0));
-  const progressAnim = progressIndex.interpolate({
+  const progressAnim = progress.interpolate({
     inputRange: [0, allQuestionsLength],
     outputRange: ["0%", "100%"]
   });
-  // console.log(progressAnim);
+
+  React.useEffect(() => {
+    Animated.timing(progress, {
+      toValue: index + 1,
+      duration: 1000,
+      useNativeDriver: false
+    }).start();
+  }, [index]);
+
   return (
     <View
       style={{

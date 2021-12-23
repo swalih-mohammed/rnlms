@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, StatusBar } from "react-native";
-import { DulingoProvider } from "./DulingoContext";
-import nlp from "compromise";
+// import { View as MotiView } from "moti";
 
 import WordList from "./WordList";
 import Word from "./Word";
-import Header from "./Header";
-import Footer from "./Footer";
 
 const styles = StyleSheet.create({
   container: {
@@ -26,28 +23,29 @@ const Duolingo = ({
 }) => {
   // console.log(type);
   return (
-    <DulingoProvider>
-      {/* <View style={styles.container}> */}
-      {/* <StatusBar hidden /> */}
-      {/* <Header /> */}
+    <>
       {qustion ? (
-        <WordList
-          numberOfQuestions={numberOfQuestions}
-          validateAnswer={validateAnswer}
-          handleNext={handleNext}
-          type={type}
-          answer={answer}
-          title={title}
+        <View
+          style={{ flex: 1 }}
+          // from={{ opacity: 0, translateX: 500 }}
+          // animate={{ opacity: 1, translateX: 0 }}
+          // transition={{
+          //   type: "spring"
+          // }}
         >
-          {qustion.map(word => (
-            <Word test={123} key={word.id} {...word} />
-          ))}
-        </WordList>
+          <WordList
+            numberOfQuestions={numberOfQuestions}
+            type={type}
+            answer={answer}
+            title={title}
+          >
+            {qustion.map(word => (
+              <Word test={123} key={word.id} {...word} />
+            ))}
+          </WordList>
+        </View>
       ) : null}
-
-      {/* <Footer /> */}
-      {/* </View> */}
-    </DulingoProvider>
+    </>
   );
 };
 

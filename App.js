@@ -37,29 +37,34 @@ const Stack = createStackNavigator();
 // const Tabs = createBottomTabNavigator();
 const Tabs = createMaterialBottomTabNavigator();
 
-const fontConfig = {
-  android: {
-    regular: {
-      fontFamily: "sans-serif",
-      fontWeight: "normal"
-    },
-    medium: {
-      fontFamily: "sans-serif-medium",
-      fontWeight: "normal"
-    },
-    light: {
-      fontFamily: "sans-serif-light",
-      fontWeight: "normal"
-    },
-    thin: {
-      fontFamily: "sans-serif-thin",
-      fontWeight: "normal"
-    }
-  }
-};
+// const fetchFonts = async () =>
+//   await Font.loadAsync({
+//     'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
+//   });
+
+// const fontConfig = {
+//   android: {
+//     regular: {
+//       fontFamily: "sans-serif",
+//       fontWeight: "normal"
+//     },
+//     medium: {
+//       fontFamily: "sans-serif-medium",
+//       fontWeight: "normal"
+//     },
+//     light: {
+//       fontFamily: "sans-serif-light",
+//       fontWeight: "normal"
+//     },
+//     thin: {
+//       fontFamily: "sans-serif-thin",
+//       fontWeight: "normal"
+//     }
+//   }
+// };
 const MyTheme = {
   ...DefaultTheme,
-  fonts: configureFonts(fontConfig),
+  // fonts: configureFonts(fontConfig),
   colors: {
     ...DefaultTheme.colors,
     notification: "red",
@@ -70,7 +75,7 @@ const MyTheme = {
     secondary: "#414757",
     error: "#f13a59",
     // text: "#ffffff",
-    background: "#333333",
+    // background: "#333333",
     white: "#FFFFFF",
     offWhite: "#F8F0E3",
     gray: "#343a40"

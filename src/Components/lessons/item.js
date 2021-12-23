@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+
 import axios from "axios";
 import {
   View,
@@ -11,13 +13,16 @@ import { List, Card, Avatar, Title, Paragraph } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { COLORS, SIZES } from "../../Helpers/constants";
 import * as Animatable from "react-native-animatable";
+import { setCourseDetails } from "../../store/actions/course";
 import { localhost } from "../../Helpers/urls";
 import UnitItem from "../unit/item";
 import UnitList from "../unit/list";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "react-native-paper";
+import { View as MotiView } from "moti";
 
-const LessonItem = ({ LessonItem }) => {
+const LessonItem = props => {
+  const { LessonItem } = props;
   const { colors } = useTheme();
 
   // console.log(LessonItem);
@@ -26,6 +31,13 @@ const LessonItem = ({ LessonItem }) => {
   //   const handleShowUnits = () => setShowUnit(!showUnit);
   const LeftContent = props => <Avatar.Icon {...props} icon="lead-pencil" />;
 
+  const handlePress = () => {
+    const data = {
+      lesson: LessonItem.id
+    };
+    props.setCourseDetails(data);
+    navigation.navigate("Lesson Details", { id: LessonItem.id });
+  };
   const Completed = props => (
     <View
       style={{
@@ -71,11 +83,18 @@ const LessonItem = ({ LessonItem }) => {
   );
 
   return (
-    <Animatable.View animation="flipInX" style={{ margin: 5 }}>
+    <MotiView
+      style={{ margin: 5 }}
+      from={{ opacity: 0, translateX: 500 }}
+      animate={{ opacity: 1, translateX: 0, duration: 1000 }}
+      transition={{
+        type: "timing"
+      }}
+    >
       <Card>
         <TouchableOpacity
           onPress={
-            () => navigation.navigate("Lesson Details", { id: LessonItem.id })
+            handlePress
             // console.log("lesson detals")
           }
         >
@@ -132,7 +151,7 @@ const LessonItem = ({ LessonItem }) => {
           </View>
         </TouchableOpacity>
       </Card>
-    </Animatable.View>
+    </MotiView>
   );
 };
 

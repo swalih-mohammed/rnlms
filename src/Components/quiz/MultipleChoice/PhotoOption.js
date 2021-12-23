@@ -2,19 +2,22 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 
 import {
-  View,
   TouchableOpacity,
   StyleSheet,
   Dimensions,
   Image,
-  Text
+  Text,
+  Animated,
+  View
 } from "react-native";
 const { width, height } = Dimensions.get("window");
 import Icon from "react-native-vector-icons/AntDesign";
-
+import { View as MotiView } from "moti";
 import { COLORS, SIZES } from "../../../Helpers/constants";
 import { MARGIN_TOP } from "../DaragAndDrop/Layout";
 import NextButton from "../NextButton";
+import { Button } from "react-native-paper";
+
 import {
   handleStart,
   handleValidate,
@@ -36,21 +39,31 @@ const renderOptions = props => {
 
   const [showAnswer, setShowAnswer] = useState(false);
   const [optionsDisabled, setOptionsDisabled] = useState(false);
+  const [progress, setProgress] = useState(new Animated.Value(0));
 
-  const handleNextQiz = () => {
-    if (props.index !== numberOfQuestions) {
-      const data = {
-        index: props.index + 1
-      };
-      props.handleNext(data);
-    }
+  const handleNextQuiz = () => {
+    // console.log("props.index", props.index);
+    // console.log("props.num questions", props.numberOfQuestions);
+
+    const data = {
+      index:
+        props.index !== props.numberOfQuestions ? props.index + 1 : props.index,
+      showAnswer: false,
+      answerList: null,
+      showScoreModal: props.index === props.numberOfQuestions ? true : false
+    };
+    props.handleNext(data);
+    Animated.timing(progress, {
+      toValue: props.index + 1,
+      duration: 5000,
+      useNativeDriver: false
+    }).start();
   };
 
   const handleValidateQuiz = option => {
     setShowAnswer(true);
     setOptionsDisabled(true);
     const score = option.is_correct_choice ? 1 : 0;
-    console.log(score);
     const data = {
       score: props.score + score
     };
@@ -58,11 +71,22 @@ const renderOptions = props => {
   };
 
   return (
-    <View
+    <MotiView
+      style={{
+        flex: 1
+        // backgroundColor: "red"
+      }}
+      from={{ opacity: 0, translateX: 500 }}
+      animate={{ opacity: 1, translateX: 0 }}
+      transition={{
+        type: "timing"
+      }}
+    >
+      {/* <View
       style={{
         flex: 1
       }}
-    >
+    > */}
       <View
         style={{
           justifyContent: "center",
@@ -73,7 +97,8 @@ const renderOptions = props => {
         <Text
           style={{
             color: COLORS.black,
-            fontSize: 20
+            fontSize: 20,
+            paddingTop: 25
           }}
         >
           {title}
@@ -83,7 +108,9 @@ const renderOptions = props => {
         style={{
           flexDirection: "row",
           flexWrap: "wrap",
-          flex: 3
+          flex: 3.5,
+          // backgroundColor: "red",
+          justifyContent: "center"
         }}
       >
         {Photos.map(option => (
@@ -92,13 +119,14 @@ const renderOptions = props => {
             disabled={optionsDisabled}
             onPress={() => handleValidateQuiz(option)}
             style={{
-              borderWidth: 3,
+              borderWidth: 1,
+              margin: 5,
               borderColor:
                 showAnswer && option.is_correct_choice
                   ? COLORS.success
                   : showAnswer && !option.is_correct_choice
                   ? COLORS.error
-                  : COLORS.secondary + "40"
+                  : COLORS.primary
             }}
           >
             <Image
@@ -110,15 +138,29 @@ const renderOptions = props => {
       </View>
       <View
         style={{
-          flex: 1.5
+          flex: 1.5,
+          alignItems: "center",
+          justifyContent: "center"
+          // backgroundColor: "black"
         }}
       >
         <View
           style={{
-            justifyContent: "center",
-            alignItems: "center"
+            // justifyContent: "flex-",
+            alignItems: "center",
+            // backgroundColor: "red",
+            flex: 1
           }}
         >
+          <Text
+            style={{
+              color: COLORS.black,
+              fontSize: 20,
+              paddingBottom: 25
+            }}
+          >
+            {question}
+          </Text>
           <TouchableOpacity onPress={() => console.log(123)}>
             <Icon
               name="sound"
@@ -129,25 +171,30 @@ const renderOptions = props => {
               }}
             />
           </TouchableOpacity>
-          <Text
-            style={{
-              color: COLORS.black,
-              fontSize: 20
-            }}
-          >
-            {question}
-          </Text>
         </View>
 
-        <View style={{ position: "absolute", bottom: 0, right: 0, left: 0 }}>
-          <NextButton
-            showNextButton={showNextButton}
-            handleNext={handleNextQiz}
-            // speakQuestion={speakQuestion}
-          />
+        <View
+          style={{
+            position: "absolute",
+            // paddingBottom: 10,
+            bottom: 0,
+            right: 0,
+            left: 0,
+            flex: 1
+          }}
+        >
+          <Button
+            mode="contained"
+            onPress={handleNextQuiz}
+            disabled={!showAnswer}
+            style={{ paddingBottom: 10, paddingTop: 10 }}
+          >
+            {showAnswer ? "NEXT" : "SELECT"}
+          </Button>
         </View>
       </View>
-    </View>
+      {/* </View> */}
+    </MotiView>
   );
 };
 
@@ -165,7 +212,9 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
   return {
     index: state.quiz.index,
-    score: state.quiz.score
+    score: state.quiz.score,
+    showAnswer: state.quiz.showAnswer,
+    showScoreModal: state.quiz.showAnswer
   };
 };
 const mapDispatchToProps = dispatch => {

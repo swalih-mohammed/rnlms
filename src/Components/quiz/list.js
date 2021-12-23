@@ -7,7 +7,7 @@ import { View, Text } from "react-native";
 import { localhost } from "../../Helpers/urls";
 import Questions from "./Questions";
 import Loader from "../Utils/Loader";
-import { QuizProvider } from "./QuizContext";
+// import { QuizProvider } from "./QuizContext";
 import { handleStart } from "../../store/actions/quiz";
 // import { handleStart } from "../../store/actions/quiz";
 // import Questions from "../../Components/pacticeTest/Qustions";
@@ -40,21 +40,19 @@ const QuizList = props => {
     <>
       {loading ? (
         // <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
-        <Text>Loading...</Text>
+        <Loader />
       ) : (
-        // <Loader />
         <>
           {questions ? (
-            <QuizProvider>
-              <Questions
-                questions={questions.questions}
-                lessonId={lessonId}
-                unitId={unitId}
-                sectionId={sectionId}
-              />
-              {/* <Text>{questions.questions.length}</Text> */}
-            </QuizProvider>
-          ) : null}
+            // <QuizProvider>
+            <Questions
+              questions={questions.questions}
+              lessonId={lessonId}
+              unitId={unitId}
+              sectionId={sectionId}
+            />
+          ) : // </QuizProvider>
+          null}
         </>
       )}
     </>

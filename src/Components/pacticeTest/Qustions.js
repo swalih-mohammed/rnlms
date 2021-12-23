@@ -30,7 +30,7 @@ const Quiz = props => {
   const [isOptionsDisabled, setIsOptionsDisabled] = useState(false);
   const [score, setScore] = useState(0);
   const [showNextButton, setShowNextButton] = useState(false);
-  const [showScoreModal, setShowScoreModal] = useState(false);
+  // const [showScoreModal, setShowScoreModal] = useState(false);
   const [error, setError] = useState(false);
 
   const validateAnswer = selectedOption => {
@@ -81,7 +81,7 @@ const Quiz = props => {
     }).start();
   };
   const restartQuiz = () => {
-    setShowScoreModal(false);
+    // setShowScoreModal(false);
 
     setCurrentQuestionIndex(0);
     setScore(0);

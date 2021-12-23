@@ -8,9 +8,9 @@ import {
   Text,
   TouchableOpacity
 } from "react-native";
+import PhotoAndTitle from "./LessonPhoto";
 import { connect } from "react-redux";
 import { handleStart } from "../../store/actions/quiz";
-
 import Constants from "expo-constants";
 import { Button, IconButton, Card } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -19,6 +19,7 @@ const { width, height } = Dimensions.get("window");
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Speech from "expo-speech";
+import { COLORS, SIZES } from "../../Helpers/constants";
 
 function AudioPLayer(props) {
   const {
@@ -86,10 +87,12 @@ function AudioPLayer(props) {
   const resetQuiz = () => {
     const data = {
       index: 0,
-      score: 0
+      score: 0,
+      showAnswer: false,
+      answerList: [],
+      showScoreModal: false
     };
     props.handleStart(data);
-    // console.log("trigerring");
     navigateToQuiz();
   };
 
@@ -102,98 +105,106 @@ function AudioPLayer(props) {
     });
   };
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.TopContainer}>
-        {/* <View style={styles.ImgWrapper}> */}
-        {/* <Card>
-            <Card.Cover source={{ uri: CurrentSong.photo }} />
-          </Card> */}
-        <Image
-          style={styles.photo}
-          source={{
-            uri: CurrentSong.photo.photo
-          }}
+    <View style={{ flex: 1 }}>
+      <View style={{ flex: 5, justifyContent: "center" }}>
+        <PhotoAndTitle
+          photo={CurrentSong.photo.photo}
+          title={CurrentSong.title}
         />
-        {/* </View> */}
       </View>
-      <View style={styles.MiddleContainer}>
-        <Text style={styles.title}>{CurrentSong.title} </Text>
-      </View>
-      <View style={styles.BottomContainer}>
-        <View style={styles.Controls}>
-          {Tracks.indexOf(CurrentSong) === 0 ? (
-            <View style={{ marginTop: 20 }}>
-              <Button
-                mode="Outlined"
-                onPress={
-                  sectionId != null
-                    ? () =>
-                        navigation.navigate("Section Details", {
-                          id: sectionId
-                        })
-                    : () => navigation.navigate("Unit Details", { id: unitId })
-                }
-              >
-                Exit
-              </Button>
-            </View>
-          ) : (
-            <MaterialCommunityIcons
-              name="arrow-left"
-              style={{
-                // color: COLORS.white,
-                fontSize: 50,
-                alignSelf: "center",
-                // backgroundColor: "gray",
-                padding: 20
-                // borderRadius: 50
-                // borderWidth: 1,
-                // borderColor: "#34a8eb"
-              }}
-              onPress={PrevSong}
-            />
-          )}
+      {/* <View
+        style={{ flex: 1, backgroundColor: "green", justifyContent: "center" }}
+      > */}
+      <View
+        style={{
+          flex: 1,
+          // backgroundColor: "green",
+          justifyContent: "center",
+          flexDirection: "row",
+          alignItems: "center"
+        }}
+      >
+        {Tracks.indexOf(CurrentSong) === 0 ? (
+          <View>
+            <Button
+              mode="contained"
+              onPress={
+                sectionId != null
+                  ? () =>
+                      navigation.navigate("Section Details", {
+                        id: sectionId
+                      })
+                  : () => navigation.navigate("Unit Details", { id: unitId })
+              }
+            >
+              Exit
+            </Button>
+          </View>
+        ) : (
+          // <MaterialCommunityIcons
+          //   name="arrow-left"
+          //   style={{
+          //     // color: COLORS.white,
+          //     fontSize: 35,
+          //     alignSelf: "center",
+          //     // backgroundColor: "gray",
+          //     padding: 20
+          //     // borderRadius: 50
+          //     // borderWidth: 1,
+          //     // borderColor: "#34a8eb"
+          //   }}
+          //   onPress={PrevSong}
+          // />
+          <Button mode="contained" onPress={PrevSong}>
+            Exit
+          </Button>
+        )}
 
-          <MaterialCommunityIcons
-            name={!isPlaying || didJustFinish ? "play" : "pause"}
-            style={{
-              // color: COLORS.white,
-              fontSize: 50,
-              alignSelf: "center",
-              // backgroundColor: "gray",
-              padding: 20,
-              borderRadius: 50
-              // borderWidth: 1,
-              // borderColor: "#34a8eb"
-            }}
-            onPress={speakText}
-          />
+        <MaterialCommunityIcons
+          name={!isPlaying || didJustFinish ? "play" : "pause"}
+          style={{
+            color: COLORS.black,
+            fontSize: 30,
+            alignSelf: "center",
+            // backgroundColor: "gray",
+            padding: 10,
+            borderRadius: 50,
+            borderWidth: 1,
+            borderColor: COLORS.black,
+            marginLeft: 20,
+            marginRight: 20
+          }}
+          onPress={speakText}
+        />
 
-          {(Tracks.indexOf(CurrentSong) === lastSongIndex) & hasQuiz ? (
-            <View style={{ marginTop: 20 }}>
-              <Button mode="Outlined" onPress={resetQuiz}>
-                Take a Quiz
-              </Button>
-            </View>
-          ) : (
-            <MaterialCommunityIcons
-              name="arrow-right"
-              style={{
-                // color: COLORS.white,
-                fontSize: 50,
-                alignSelf: "center",
-                // backgroundColor: "gray",
-                padding: 20
-                // borderRadius: 50
-                // borderWidth: 1,
-                // borderColor: "#34a8eb"
-              }}
-              onPress={NextSong}
-            />
-          )}
-        </View>
+        {(Tracks.indexOf(CurrentSong) === lastSongIndex) & hasQuiz ? (
+          <View style={{}}>
+            <Button mode="contained" onPress={resetQuiz}>
+              Quiz
+            </Button>
+          </View>
+        ) : (
+          // <MaterialCommunityIcons
+          //   name="arrow-right"
+          //   style={{
+          //     // color: COLORS.white,
+          //     fontSize: 35,
+          //     alignSelf: "center",
+          //     // backgroundColor: "gray",
+          //     padding: 20
+          //     // borderRadius: 50
+          //     // borderWidth: 1,
+          //     // borderColor: "#34a8eb"
+          //   }}
+          //   onPress={NextSong}
+          // />
+          <Button mode="contained" onPress={NextSong}>
+            Next
+          </Button>
+        )}
       </View>
-    </SafeAreaView>
+      {/* </View> */}
+    </View>
   );
 }
 
@@ -204,17 +215,20 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   TopContainer: {
-    flex: 5
+    flex: 5,
+    backgroundColor: "black"
   },
   MiddleContainer: {
     flex: 1,
     flexDirection: "row",
-    justifyContent: "center"
+    justifyContent: "center",
+    backgroundColor: "green"
   },
   BottomContainer: {
-    flex: 1,
+    // flex: 1,
     flexDirection: "row",
-    justifyContent: "center"
+    justifyContent: "center",
+    backgroundColor: "green"
   },
   ImgWrapper: {
     height: height * 0.9,

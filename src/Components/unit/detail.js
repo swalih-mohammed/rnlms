@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 
 // import { View, TouchableOpacity, Text } from "react-native";
 import {
-  SafeAreaView,
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
@@ -18,15 +17,15 @@ import { localhost } from "../../Helpers/urls";
 import UnitTestList from "../unitTest/list";
 import { useNavigation } from "@react-navigation/native";
 import * as Animatable from "react-native-animatable";
-
+import { View as MotiView } from "moti";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Loader from "../Utils/Loader";
 import LessonItem from "../lessons/item";
 
 const LeftContent = props => <Avatar.Icon {...props} icon="school" />;
 
 const UnitDetail = props => {
-  // const { username } = props.username;
   const navigation = useNavigation();
-
   const [unitTest, setUnitTest] = useState(null);
   const [unit, setUnit] = useState(null);
   const [error, setError] = useState(null);
@@ -45,8 +44,6 @@ const UnitDetail = props => {
       try {
         setLoading(true);
         const response = await axios.get(
-          // `${localhost}/courses/units/${unitId}`
-
           `${localhost}/courses/units/${unitId}/${username}`
         );
         setUnit(response.data[0]);
@@ -58,40 +55,42 @@ const UnitDetail = props => {
     }
   };
 
-  if (!unit) {
-    return null;
-  }
   return (
     <>
       {loading ? (
-        <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
+        // <ActivityIndicator
+        //   style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        // />
+        <Loader
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        />
       ) : (
-        <>
-          <Card>
-            <TouchableOpacity
-            // onPress={() => navigation.navigate("VidoePlayerScreen")}
-            >
-              <Card.Title
-                title={unit.title}
-                subtitle={"UNIT " + unit.order}
-                // left={LeftContent}
-                titleStyle={{ fontSize: 18, fontWeight: "bold" }}
-              />
-            </TouchableOpacity>
-          </Card>
-          {unit.lessons ? (
+        <SafeAreaView style={{ flex: 1 }}>
+          <StatusBar style="dark" />
+          {unit && (
+            <Card>
+              <TouchableOpacity>
+                <Card.Title
+                  title={unit.title}
+                  subtitle={"UNIT " + unit.order}
+                  titleStyle={{ fontSize: 18, fontWeight: "bold" }}
+                />
+              </TouchableOpacity>
+            </Card>
+          )}
+
+          {unit && unit.lessons ? (
             <View style={styles.container}>
               <FlatList
                 data={unit.lessons}
                 keyExtractor={item => item.id.toString()}
-                // renderItem={renderItem}
                 renderItem={({ item }) => {
                   return <LessonItem LessonItem={item} unitId={unit.id} />;
                 }}
               />
             </View>
           ) : null}
-        </>
+        </SafeAreaView>
       )}
     </>
   );
@@ -99,13 +98,10 @@ const UnitDetail = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1
-    // marginTop: StatusBar.currentHeight || 0
   },
   item: {
     backgroundColor: "#f9c2ff",
-    // padding: 20,
     marginVertical: 8
-    // marginHorizontal: 16
   },
   title: {
     fontSize: 32
@@ -115,8 +111,6 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
   return {
     token: state.auth.token,
-    // currentAssignment: state.assignments.currentAssignment,
-    // loading: state.assignments.loading,
     username: state.auth.username
   };
 };

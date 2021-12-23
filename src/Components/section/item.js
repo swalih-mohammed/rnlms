@@ -1,53 +1,59 @@
 import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+
 import axios from "axios";
 import { View, TouchableOpacity, Text, StyleSheet, Image } from "react-native";
 import { List, Card, Avatar, Paragraph, Title } from "react-native-paper";
 import * as Animatable from "react-native-animatable";
+import { setCourseDetails } from "../../store/actions/course";
+import Animated, {
+  LightSpeedInLeft,
+  SlideInLeft
+} from "react-native-reanimated";
 import { localhost } from "../../Helpers/urls";
 import { useNavigation } from "@react-navigation/native";
 import UnitItem from "../unit/item";
 import UnitList from "../unit/list";
 import { useTheme } from "react-native-paper";
+import { MotiView } from "moti";
 
-const SectionItem = ({ sectionItem, has_units }) => {
+const SectionItem = props => {
   const { colors, fonts } = useTheme();
-
+  const { sectionItem, has_units } = props;
   // console.log(sectionItem);
   const [showUnit, setShowUnit] = useState(false);
   const navigation = useNavigation();
   const handleShowUnits = () => setShowUnit(!showUnit);
-  const goToLessons = id =>
-    navigation.navigate("Photo Lesson List", { id: sectionItem.id });
+  // const goToLessons = id =>
+  //   navigation.navigate("Photo Lesson List", { id: sectionItem.id });
 
-  const LeftContent = props => {
-    if (sectionItem.photo) return;
-    <Avatar.Icon {...props} icon="view-list" />;
+  // const LeftContent = props => {
+  //   if (sectionItem.photo) return;
+  //   <Avatar.Icon {...props} icon="view-list" />;
+  // };
+
+  const handlePress = () => {
+    const data = {
+      section: sectionItem.id
+    };
+    props.setCourseDetails(data);
+    navigation.navigate("Section Details", { id: sectionItem.id });
   };
 
   return (
     <>
-      {/* {sectionItem.units ? null : null} */}
-
-      <Animatable.View
-        animation="flipInX"
-        style={{ margin: 8, backgroundColor: "#8adebb", borderRadius: 15 }}
+      <Animated.View
+        entering={SlideInLeft}
+        style={[styles.mainContainer]}
+        // style={{ margin: 8, backgroundColor: "#8adebb", borderRadius: 15 }}
+        // from={{ opacity: 0, translateX: 500 }}
+        // animate={{ opacity: 1, translateX: 0, duration: 1000 }}
+        // transition={{
+        //   type: "timing"
+        // }}
       >
         <Card>
-          {/* <TouchableOpacity onPress={handleShowUnits}> */}
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("Section Details", { id: sectionItem.id })
-            }
-          >
-            {/* {sectionItem.photo ? (
-              <Card.Cover source={{ uri: sectionItem.photo }} />
-            ) : null}
-            <View style={styles.SectionIdContainer}></View>
-            <Card.Title
-              title={sectionItem.title}
-              titleStyle={{ fontSize: 18 }}
-              subtitle={"SECTION " + sectionItem.order}
-            /> */}
+          <TouchableOpacity onPress={handlePress}>
             <View style={styles.container}>
               <View style={styles.LeftContainer}>
                 <Image
@@ -61,23 +67,21 @@ const SectionItem = ({ sectionItem, has_units }) => {
                 <Paragraph>{"SECTION " + sectionItem.order}</Paragraph>
                 <Title style={{ fontSize: 18 }}>{sectionItem.title} </Title>
                 <Paragraph>{sectionItem.subtitle}</Paragraph>
-                {/* <Card.Content> */}
-                {/* <Card.Cover source={{ uri: item.photo }} /> */}
-                {/* <Card.Title title={item.title} subtitle={item.subtitle} /> */}
-                {/* </Card.Content> */}
               </View>
             </View>
           </TouchableOpacity>
         </Card>
-      </Animatable.View>
-      {showUnit ? (
-        <>{sectionItem.units ? <UnitList units={sectionItem.units} /> : null}</>
-      ) : null}
+      </Animated.View>
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    margin: 8,
+    backgroundColor: "#8adebb",
+    borderRadius: 15
+  },
   SectionIdContainer: {
     marginLeft: 20,
     marginTop: 10
@@ -110,4 +114,14 @@ const styles = StyleSheet.create({
     height: 100
   }
 });
-export default SectionItem;
+// export default SectionItem;
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setCourseDetails: data => dispatch(setCourseDetails(data))
+  };
+};
+export default connect(
+  null,
+  mapDispatchToProps
+)(SectionItem);

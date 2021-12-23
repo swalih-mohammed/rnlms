@@ -1,17 +1,17 @@
 import * as React from "react";
-import { View, Dimensions, StyleSheet, Image, Text } from "react-native";
-import {
-  Avatar,
-  Button,
-  Card,
-  Title,
-  Paragraph,
-  Subheading
-} from "react-native-paper";
+import { connect } from "react-redux";
+import { View, Dimensions, StyleSheet, Image } from "react-native";
+import { Card, Title, Paragraph, Subheading } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import Animated, {
+  LightSpeedInLeft,
+  SlideInLeft
+} from "react-native-reanimated";
 import { TouchableOpacity } from "react-native";
+import { setCourseDetails } from "../../store/actions/course";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 const { width, height } = Dimensions.get("window");
+import { View as MotiView } from "moti";
 
 const CourseIcon = () => {
   <MaterialCommunityIcons
@@ -25,61 +25,76 @@ const CourseIcon = () => {
   />;
 };
 
-const CourseItem = ({ item }) => {
-  // console.log(item);
+const CourseItem = props => {
+  // const opacityAnim = React.useRef(new Animated.Value(0)).current;
+  // const animatedX = React.useRef(new Animated.Value(100)).current;
+
+  const { item } = props;
   const navigation = useNavigation();
 
-  const LeftContent = props => {
-    if (item.photo) return;
-    <Avatar.Icon {...props} icon="school" />;
+  // React.useEffect(() => {
+  //   Animated.timing(animatedX, {
+  //     toValue: 0,
+  //     duration: 2000,
+  //     useNativeDriver: false
+  //   }).start();
+  // }, []);
+
+  const handlePress = () => {
+    const data = {
+      course: item.id
+    };
+    props.setCourseDetails(data);
+    navigation.navigate("Course Details", { id: item.id });
   };
 
   return (
-    <>
-      {item ? (
-        <View
-          style={{
-            margin: 8,
-            width: width * 0.95,
-            borderRadius: 15,
-            paddingTop: 5
-          }}
-        >
-          <Card ViewStyle={{ maring: 20 }}>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("Course Details", { id: item.id })
-              }
-            >
-              <View style={styles.container}>
-                <View style={styles.LeftContainer}>
-                  <Image
-                    style={styles.photo}
-                    source={{
-                      uri: item.photo
-                    }}
-                  />
-                </View>
-                <View style={styles.RightContainer}>
-                  {/* <Text style={styles.subtitle}>{item.subtitle}</Text>
-                  <Text style={styles.title}>{item.title}</Text>
-                  <Text style={styles.description}>{item.description}</Text> */}
-                  <Subheading style={{ fontSize: 14 }}>
-                    {item.subtitle}
-                  </Subheading>
-                  <Title style={{ fontSize: 18 }}>{item.title} </Title>
-                  <Paragraph>{item.description}</Paragraph>
-                </View>
-              </View>
-            </TouchableOpacity>
-          </Card>
-        </View>
-      ) : null}
-    </>
+    <Animated.View
+      entering={SlideInLeft}
+      style={[styles.mainContainer]}
+
+      // style={{
+      //   margin: 8,
+      //   width: width * 0.95,
+      //   borderRadius: 15,
+      //   paddingTop: 5
+      // }}
+      // from={{ opacity: 0, translateX: 500 }}
+      // animate={{ opacity: 1, translateX: 0, duration: 2000 }}
+      // transition={{
+      //   type: "timing"
+      // }}
+    >
+      <Card ViewStyle={{ maring: 20 }}>
+        <TouchableOpacity onPress={handlePress}>
+          <View style={styles.container}>
+            <View style={styles.LeftContainer}>
+              <Image
+                style={styles.photo}
+                source={{
+                  uri: item.photo
+                }}
+              />
+            </View>
+            <View style={styles.RightContainer}>
+              <Subheading style={{ fontSize: 14 }}>{item.subtitle}</Subheading>
+              <Title style={{ fontSize: 18 }}>{item.title} </Title>
+              <Paragraph>{item.description}</Paragraph>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Card>
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    margin: 8,
+    width: width * 0.95,
+    borderRadius: 15,
+    paddingTop: 5
+  },
   container: {
     flex: 1,
     flexDirection: "row",
@@ -119,4 +134,13 @@ const styles = StyleSheet.create({
   }
 });
 
-export default CourseItem;
+// export default CourseItem;
+const mapDispatchToProps = dispatch => {
+  return {
+    setCourseDetails: data => dispatch(setCourseDetails(data))
+  };
+};
+export default connect(
+  null,
+  mapDispatchToProps
+)(CourseItem);

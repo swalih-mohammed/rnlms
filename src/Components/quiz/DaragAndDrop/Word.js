@@ -1,14 +1,16 @@
 import React, { useContext } from "react";
+import { connect } from "react-redux";
 import { View, Text, StyleSheet } from "react-native";
-
 import { WORD_HEIGHT } from "./Layout";
-import { DulingoContext } from "./DulingoContext";
-import { QuizContext } from "../QuizContext";
+import { COLORS, SIZES } from "../../../Helpers/constants";
+
+// import { DulingoContext } from "./DulingoContext";
+// import { QuizContext } from "../QuizContext";
 
 const Word = props => {
-  const [correctAnswerList] = useContext(DulingoContext);
+  // const [correctAnswerList] = useContext(DulingoContext);
 
-  // console.log(props.id);
+  // console.log(props.answerList);
   return (
     <View style={styles.root}>
       <View>
@@ -17,12 +19,12 @@ const Word = props => {
             styles.container,
             {
               borderColor:
-                checkIfCorrectPOS(correctAnswerList, props.id) === "InList"
-                  ? "green"
-                  : checkIfCorrectPOS(correctAnswerList, props.id) ===
+                checkIfCorrectPOS(props.answerList, props.id) === "InList"
+                  ? COLORS.success
+                  : checkIfCorrectPOS(props.answerList, props.id) ===
                     "OutOfList"
-                  ? "red"
-                  : "blue"
+                  ? COLORS.error
+                  : COLORS.primary
             }
           ]}
         >
@@ -34,10 +36,10 @@ const Word = props => {
   );
 };
 
-const checkIfCorrectPOS = (correctAnswerList, word_id) => {
+const checkIfCorrectPOS = (answerList, word_id) => {
   // console.log(correctAnswerList);
-  if (correctAnswerList?.length > 0) {
-    if (correctAnswerList.includes(word_id)) {
+  if (answerList) {
+    if (answerList.includes(word_id)) {
       return "InList";
     } else {
       return "OutOfList";
@@ -73,4 +75,15 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Word;
+// export default Word;
+const mapStateToProps = state => {
+  return {
+    answerList: state.quiz.answerList,
+    showAnswer: state.quiz.showAnswer
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  null
+)(Word);

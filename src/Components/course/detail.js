@@ -5,7 +5,8 @@ import {
   ActivityIndicator,
   Image,
   StyleSheet,
-  SafeAreaView,
+  // SafeAreaView,
+  StatusBar,
   FlatList
 } from "react-native";
 import { Card, Avatar, Title, Paragraph } from "react-native-paper";
@@ -13,6 +14,7 @@ import { localhost } from "../../Helpers/urls";
 import SectionList from "../../Components/section/list";
 import SectionItem from "../section/item";
 import Loader from "../Utils/Loader";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const LeftContent = props => <Avatar.Icon {...props} icon="school" />;
 
@@ -43,27 +45,28 @@ const CourseDetail = ({ route }) => {
     }
   };
 
-  if (!course) {
-    return null;
-  }
-
   return (
     <>
       {loading ? (
-        <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
+        // <ActivityIndicator
+        //   style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        // />
+        <Loader
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        />
       ) : (
-        // <Loader />
-        <>
+        <SafeAreaView>
+          <StatusBar style="dark" />
           <View>
-            <Card>
-              <View>
+            {course ? (
+              <Card>
                 <Card.Title
                   title={course.title}
                   subtitle={course.subtitle}
                   left={LeftContent}
                 />
-              </View>
-            </Card>
+              </Card>
+            ) : null}
           </View>
 
           {sections ? (
@@ -78,7 +81,7 @@ const CourseDetail = ({ route }) => {
             />
           ) : // </View>
           null}
-        </>
+        </SafeAreaView>
       )}
     </>
   );
