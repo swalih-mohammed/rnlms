@@ -215,10 +215,12 @@ const Questions = props => {
         ) : null} */}
         {/* Score Modal */}
       </View>
-      <ScoreModal
-        handleSubmitTest={handleSubmitTest}
-        qlength={allQuestions.length}
-      />
+      {props.showScoreModal ? (
+        <ScoreModal
+          handleSubmitTest={handleSubmitTest}
+          qlength={allQuestions.length}
+        />
+      ) : null}
     </SafeAreaView>
   );
 };
@@ -228,7 +230,8 @@ const mapStateToProps = state => {
     token: state.auth.token,
     username: state.auth.username,
     index: state.quiz.index,
-    score: state.quiz.score
+    score: state.quiz.score,
+    showScoreModal: state.quiz.showScoreModal
   };
 };
 const mapDispatchToProps = dispatch => {

@@ -7,16 +7,18 @@ import {
   Dimensions,
   Image,
   Text,
-  Animated,
   View
 } from "react-native";
 const { width, height } = Dimensions.get("window");
 import Icon from "react-native-vector-icons/AntDesign";
-import { View as MotiView } from "moti";
+// import { View as MotiView } from "moti";
 import { COLORS, SIZES } from "../../../Helpers/constants";
 import { MARGIN_TOP } from "../DaragAndDrop/Layout";
-import NextButton from "../NextButton";
 import { Button } from "react-native-paper";
+import LottieView from "lottie-react-native";
+// import Loader from "../../Utils/Loader";
+
+import Animated, { LightSpeedInRight } from "react-native-reanimated";
 
 import {
   handleStart,
@@ -25,26 +27,20 @@ import {
 } from "../../../store/actions/quiz";
 
 const renderOptions = props => {
-  const {
-    title,
-    question,
-    Photos,
-    // validateAnswer,
-    // showAnswer,
-    showNextButton,
-    // handleNext,
-    // has_audio,
-    numberOfQuestions
-  } = props;
+  const animation = React.useRef(null);
+
+  const { title, question, Photos } = props;
 
   const [showAnswer, setShowAnswer] = useState(false);
+  const [selectedAnswer, SetSelectedAnswer] = useState(null);
+  const [scored, setScored] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
   const [optionsDisabled, setOptionsDisabled] = useState(false);
   const [progress, setProgress] = useState(new Animated.Value(0));
 
   const handleNextQuiz = () => {
-    // console.log("props.index", props.index);
-    // console.log("props.num questions", props.numberOfQuestions);
-
+    SetSelectedAnswer(null);
+    setScored(false);
     const data = {
       index:
         props.index !== props.numberOfQuestions ? props.index + 1 : props.index,
@@ -63,30 +59,25 @@ const renderOptions = props => {
   const handleValidateQuiz = option => {
     setShowAnswer(true);
     setOptionsDisabled(true);
+    SetSelectedAnswer(option.id);
+    setScored(option.is_correct_choice ? true : false);
     const score = option.is_correct_choice ? 1 : 0;
     const data = {
       score: props.score + score
     };
+    setShowMessage(true);
+    if (showMessage) {
+      animation.current.play(0, 100);
+    }
     props.handleValidate(data);
+    setTimeout(() => setShowMessage(false), 1000);
   };
 
   return (
-    <MotiView
-      style={{
-        flex: 1
-        // backgroundColor: "red"
-      }}
-      from={{ opacity: 0, translateX: 500 }}
-      animate={{ opacity: 1, translateX: 0 }}
-      transition={{
-        type: "timing"
-      }}
+    <Animated.View
+      style={{ flex: 1 }}
+      entering={LightSpeedInRight.duration(1000)}
     >
-      {/* <View
-      style={{
-        flex: 1
-      }}
-    > */}
       <View
         style={{
           justifyContent: "center",
@@ -94,6 +85,19 @@ const renderOptions = props => {
           flex: 1
         }}
       >
+        {showMessage ? (
+          <LottieView
+            ref={animation}
+            source={
+              scored
+                ? require("../../../../assets/lotties/happy_emoji.json")
+                : require("../../../../assets/lotties/sad_emoji.json")
+            }
+            autoPlay={true}
+            loop={false}
+          />
+        ) : null}
+
         <Text
           style={{
             color: COLORS.black,
@@ -109,7 +113,6 @@ const renderOptions = props => {
           flexDirection: "row",
           flexWrap: "wrap",
           flex: 3.5,
-          // backgroundColor: "red",
           justifyContent: "center"
         }}
       >
@@ -121,6 +124,7 @@ const renderOptions = props => {
             style={{
               borderWidth: 1,
               margin: 5,
+              opacity: !showAnswer ? 1 : option.id === selectedAnswer ? 1 : 0.6,
               borderColor:
                 showAnswer && option.is_correct_choice
                   ? COLORS.success
@@ -193,8 +197,7 @@ const renderOptions = props => {
           </Button>
         </View>
       </View>
-      {/* </View> */}
-    </MotiView>
+    </Animated.View>
   );
 };
 

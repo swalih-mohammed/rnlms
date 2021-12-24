@@ -23,6 +23,8 @@ import CourseItem from "../../Components/course/item";
 import { useNavigation } from "@react-navigation/native";
 import GetStarted from "../../Screens/getStarted";
 import Loader from "../Utils/Loader";
+import LottieView from "lottie-react-native";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 // import * as Speech from "expo-speech";
 
@@ -33,8 +35,12 @@ const CourseList = props => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const animation = React.useRef(null);
+
   useEffect(() => {
     getCourses();
+    // animation.current.play(0, 100);
+
     // IdentifyActivityType("Translate below");
     // testApi();
     // SpeakArabic();
@@ -84,6 +90,12 @@ const CourseList = props => {
     <SafeAreaView>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
 
+      {/* <LottieView
+        ref={animation}
+        source={require("../../../assets/lotties/success.json")}
+        autoPlay={true}
+        loop={true}
+      /> */}
       {loading || props.tokenLoading ? (
         <ActivityIndicator
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

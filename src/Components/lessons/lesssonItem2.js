@@ -20,6 +20,7 @@ import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Speech from "expo-speech";
 import { COLORS, SIZES } from "../../Helpers/constants";
+import Animated, { LightSpeedInRight } from "react-native-reanimated";
 
 function AudioPLayer(props) {
   const {
@@ -74,14 +75,13 @@ function AudioPLayer(props) {
     }
   };
 
-  const PrevSong = () => {
-    const currentSongIndex = Tracks.indexOf(CurrentSong);
-    const lastSongIndex = Tracks.indexOf(Tracks[Tracks.length - 1]);
-    if (currentSongIndex === 0) {
-      SetCurrentSong(Tracks[Tracks.length - 1]);
-    } else {
-      SetCurrentSong(Tracks[currentSongIndex - 1]);
-    }
+  const navigateToQuiz = () => {
+    navigation.navigate("Lesson Test", {
+      QuizId: QuizId,
+      lessonId: lessonId,
+      unitId: unitId,
+      sectionId: sectionId
+    });
   };
 
   const resetQuiz = () => {
@@ -96,35 +96,62 @@ function AudioPLayer(props) {
     navigateToQuiz();
   };
 
-  const navigateToQuiz = () => {
-    navigation.navigate("Lesson Test", {
-      QuizId: QuizId,
-      lessonId: lessonId,
-      unitId: unitId,
-      sectionId: sectionId
-    });
+  const handleNext = () => {
+    if (Tracks.indexOf(CurrentSong) === lastSongIndex) {
+      if (hasQuiz) {
+        resetQuiz();
+      } else {
+        console.log("no quiz");
+      }
+    } else {
+      NextSong();
+    }
+  };
+
+  const PrevSong = () => {
+    const currentSongIndex = Tracks.indexOf(CurrentSong);
+    const lastSongIndex = Tracks.indexOf(Tracks[Tracks.length - 1]);
+    if (currentSongIndex === 0) {
+      SetCurrentSong(Tracks[Tracks.length - 1]);
+    } else {
+      SetCurrentSong(Tracks[currentSongIndex - 1]);
+    }
+  };
+
+  const handlePressPrevious = () => {
+    if (Tracks.indexOf(CurrentSong) === 0) {
+      if (sectionId != null) {
+        navigation.navigate("Section Details", {
+          id: sectionId
+        });
+      } else {
+        navigation.navigate("Unit Details", { id: unitId });
+      }
+    } else {
+      PrevSong();
+    }
   };
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flex: 5, justifyContent: "center" }}>
+      <Animated.View
+        entering={LightSpeedInRight.duration(1000)}
+        style={{ flex: 5, justifyContent: "center" }}
+      >
         <PhotoAndTitle
           photo={CurrentSong.photo.photo}
           title={CurrentSong.title}
         />
-      </View>
-      {/* <View
-        style={{ flex: 1, backgroundColor: "green", justifyContent: "center" }}
-      > */}
+      </Animated.View>
+
       <View
         style={{
           flex: 1,
-          // backgroundColor: "green",
           justifyContent: "center",
           flexDirection: "row",
           alignItems: "center"
         }}
       >
-        {Tracks.indexOf(CurrentSong) === 0 ? (
+        {/* {Tracks.indexOf(CurrentSong) === 0 ? (
           <View>
             <Button
               mode="contained"
@@ -141,24 +168,17 @@ function AudioPLayer(props) {
             </Button>
           </View>
         ) : (
-          // <MaterialCommunityIcons
-          //   name="arrow-left"
-          //   style={{
-          //     // color: COLORS.white,
-          //     fontSize: 35,
-          //     alignSelf: "center",
-          //     // backgroundColor: "gray",
-          //     padding: 20
-          //     // borderRadius: 50
-          //     // borderWidth: 1,
-          //     // borderColor: "#34a8eb"
-          //   }}
-          //   onPress={PrevSong}
-          // />
           <Button mode="contained" onPress={PrevSong}>
             Exit
           </Button>
-        )}
+        )} */}
+        <Button
+          mode={Tracks.indexOf(CurrentSong) === 0 ? "contained" : "outlined"}
+          onPress={handlePressPrevious}
+          style={{ borderWidth: 1, borderColor: COLORS.primary }}
+        >
+          {Tracks.indexOf(CurrentSong) === 0 ? "EXIT" : "PREV"}
+        </Button>
 
         <MaterialCommunityIcons
           name={!isPlaying || didJustFinish ? "play" : "pause"}
@@ -170,40 +190,39 @@ function AudioPLayer(props) {
             padding: 10,
             borderRadius: 50,
             borderWidth: 1,
-            borderColor: COLORS.black,
+            borderColor: COLORS.primary,
             marginLeft: 20,
             marginRight: 20
           }}
           onPress={speakText}
         />
 
-        {(Tracks.indexOf(CurrentSong) === lastSongIndex) & hasQuiz ? (
+        <Button
+          mode={
+            (Tracks.indexOf(CurrentSong) === lastSongIndex) & hasQuiz
+              ? "contained"
+              : "outlined"
+          }
+          onPress={handleNext}
+          style={{ borderWidth: 1, borderColor: COLORS.primary }}
+        >
+          {(Tracks.indexOf(CurrentSong) === lastSongIndex) & hasQuiz
+            ? "QUIZ"
+            : "NEXT"}
+        </Button>
+
+        {/* {(Tracks.indexOf(CurrentSong) === lastSongIndex) & hasQuiz ? (
           <View style={{}}>
             <Button mode="contained" onPress={resetQuiz}>
               Quiz
             </Button>
           </View>
         ) : (
-          // <MaterialCommunityIcons
-          //   name="arrow-right"
-          //   style={{
-          //     // color: COLORS.white,
-          //     fontSize: 35,
-          //     alignSelf: "center",
-          //     // backgroundColor: "gray",
-          //     padding: 20
-          //     // borderRadius: 50
-          //     // borderWidth: 1,
-          //     // borderColor: "#34a8eb"
-          //   }}
-          //   onPress={NextSong}
-          // />
           <Button mode="contained" onPress={NextSong}>
             Next
           </Button>
-        )}
+        )} */}
       </View>
-      {/* </View> */}
     </View>
   );
 }

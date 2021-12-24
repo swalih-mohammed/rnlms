@@ -6,10 +6,7 @@ import { View, TouchableOpacity, Text, StyleSheet, Image } from "react-native";
 import { List, Card, Avatar, Paragraph, Title } from "react-native-paper";
 import * as Animatable from "react-native-animatable";
 import { setCourseDetails } from "../../store/actions/course";
-import Animated, {
-  LightSpeedInLeft,
-  SlideInLeft
-} from "react-native-reanimated";
+import Animated, { LightSpeedInRight } from "react-native-reanimated";
 import { localhost } from "../../Helpers/urls";
 import { useNavigation } from "@react-navigation/native";
 import UnitItem from "../unit/item";
@@ -43,7 +40,7 @@ const SectionItem = props => {
   return (
     <>
       <Animated.View
-        entering={SlideInLeft}
+        entering={LightSpeedInRight}
         style={[styles.mainContainer]}
         // style={{ margin: 8, backgroundColor: "#8adebb", borderRadius: 15 }}
         // from={{ opacity: 0, translateX: 500 }}

@@ -8,6 +8,7 @@ import { useTheme } from "react-native-paper";
 import { setCourseDetails } from "../../store/actions/course";
 import { View as MotiView } from "moti";
 import { useNavigation } from "@react-navigation/native";
+import Animated, { LightSpeedInRight } from "react-native-reanimated";
 const LeftContent = props => (
   <Avatar.Icon {...props} icon="format-list-bulleted" />
 );
@@ -23,13 +24,9 @@ const UnitItem = props => {
     navigation.navigate("Unit Details", { id: unitItem.id });
   };
   return (
-    <MotiView
+    <Animated.View
+      entering={LightSpeedInRight.duration(1000)}
       style={{ margin: 8, backgroundColor: "#8adebb", borderRadius: 15 }}
-      from={{ opacity: 0, translateX: 500 }}
-      animate={{ opacity: 1, translateX: 0, duration: 1000 }}
-      transition={{
-        type: "timing"
-      }}
     >
       <Card>
         {unitItem ? (
@@ -43,7 +40,7 @@ const UnitItem = props => {
           </TouchableOpacity>
         ) : null}
       </Card>
-    </MotiView>
+    </Animated.View>
   );
 };
 const mapDispatchToProps = dispatch => {

@@ -20,6 +20,7 @@ import UnitList from "../unit/list";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "react-native-paper";
 import { View as MotiView } from "moti";
+import Animated, { LightSpeedInRight } from "react-native-reanimated";
 
 const LessonItem = props => {
   const { LessonItem } = props;
@@ -83,13 +84,10 @@ const LessonItem = props => {
   );
 
   return (
-    <MotiView
+    <Animated.View
       style={{ margin: 5 }}
-      from={{ opacity: 0, translateX: 500 }}
-      animate={{ opacity: 1, translateX: 0, duration: 1000 }}
-      transition={{
-        type: "timing"
-      }}
+      entering={LightSpeedInRight.duration(1000)}
+      style={{ margin: 8, backgroundColor: "#8adebb", borderRadius: 15 }}
     >
       <Card>
         <TouchableOpacity
@@ -151,7 +149,7 @@ const LessonItem = props => {
           </View>
         </TouchableOpacity>
       </Card>
-    </MotiView>
+    </Animated.View>
   );
 };
 

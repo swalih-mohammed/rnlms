@@ -6,7 +6,13 @@ import { StyleSheet, Dimensions, Text, View } from "react-native";
 import { View as MotiView } from "moti";
 import { RectButton } from "react-native-gesture-handler";
 import { Button } from "react-native-paper";
-import { useSharedValue, runOnUI, runOnJS } from "react-native-reanimated";
+import Animated, {
+  useSharedValue,
+  runOnUI,
+  runOnJS
+} from "react-native-reanimated";
+import { LightSpeedInRight } from "react-native-reanimated";
+import LottieView from "lottie-react-native";
 import SortableWord from "./SortableWord.js";
 import Lines from "./Lines";
 import { MARGIN_LEFT } from "./Layout";
@@ -48,7 +54,11 @@ const styles = StyleSheet.create({
 });
 
 const WordList = props => {
+  const animation = React.useRef(null);
+
   const [ready, setReady] = useState(false);
+  const [scored, setScored] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
 
   const offsets = props.children.map(() => ({
     pre_space: useSharedValue(0),
@@ -74,23 +84,27 @@ const WordList = props => {
       answerList: null,
       showScoreModal: props.index === props.numberOfQuestions ? true : false
     };
-    // console.log("preparing to call hook");
+
     props.handleNext(data);
-    // console.log("hook not called");
   };
 
   const handleValidateQuiz = (passed, correctAnswerIdList) => {
-    // console.log("validateing quiz", passed, correctAnswerIdList);
+    setScored(passed ? true : false);
     const data = {
       score: passed ? props.score + 1 : props.score,
       showAnswer: true,
       answerList: correctAnswerIdList ? correctAnswerIdList : null
     };
+    setShowMessage(true);
+    if (showMessage) {
+      animation.current.play(0, 100);
+    }
     props.handleValidate(data);
+    setTimeout(() => setShowMessage(false), 1000);
   };
 
   const checkAnswer = () => {
-    console.log(123);
+    // console.log(123);
     // handleValidateQuiz();
     // console.log("trigerring");
     if (offsets && props.type === "NotPos") {
@@ -149,7 +163,7 @@ const WordList = props => {
         handleValidateQuiz(true, totalCorrectWords);
       } else {
         // console.log("not correct");
-        console.log(totalCorrectWords);
+        // console.log(totalCorrectWords);
         handleValidateQuiz(false, totalCorrectWords);
       }
     }
@@ -196,11 +210,29 @@ const WordList = props => {
   }
   return (
     <>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Animated.View
+        entering={LightSpeedInRight.duration(1000)}
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
         <Text style={{ fontSize: 18, paddingTop: 25 }}>{props.title}</Text>
+        {showMessage ? (
+          <LottieView
+            ref={animation}
+            source={
+              scored
+                ? require("../../../../assets/lotties/happy_emoji.json")
+                : require("../../../../assets/lotties/sad_emoji.json")
+            }
+            autoPlay={true}
+            loop={false}
+          />
+        ) : null}
         {/* <Text style={{ fontSize: 20 }}>{correctAnswerList.length}</Text> */}
-      </View>
-      <View style={{ flex: 4 }}>
+      </Animated.View>
+      <Animated.View
+        style={{ flex: 4 }}
+        entering={LightSpeedInRight.duration(1000)}
+      >
         <Lines />
         {props.children.map((child, index) => (
           <SortableWord
@@ -213,7 +245,7 @@ const WordList = props => {
             {child}
           </SortableWord>
         ))}
-      </View>
+      </Animated.View>
       <View style={{ flex: 1 }}>
         <View
           style={{
@@ -226,7 +258,8 @@ const WordList = props => {
           }}
         >
           <Button
-            mode="contained"
+            // mode="contained"
+            mode={props.showAnswer ? "contained" : "outlined"}
             onPress={
               props.showAnswer ? () => handleNextQuiz() : () => checkAnswer()
             }

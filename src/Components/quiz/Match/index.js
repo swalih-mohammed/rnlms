@@ -19,14 +19,17 @@ import { COLORS, SIZES } from "../../../Helpers/constants";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon from "react-native-vector-icons/AntDesign";
 import { handleNext, handleValidate } from "../../../store/actions/quiz";
+import Animated, { LightSpeedInRight } from "react-native-reanimated";
+import LottieView from "lottie-react-native";
 
 const renderOptions = props => {
+  const animation = React.useRef(null);
+
   const { title, question, answer, numberOfQuestions } = props;
-  // console.log(title);
   const [showAnswer, setShowAnswer] = useState(false);
-  // const [optionsDisabled, setOptionsDisabled] = useState(false);
-  // const [showNextButton, setShowNextButton] = useState(false);
   const [score, setScore] = useState(0);
+  const [scored, setScored] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
   const [selectedA, setSelectedA] = useState(null);
   const [completedA, setCompletedA] = useState([]);
   const [completedB, setCompletedB] = useState([]);
@@ -87,7 +90,7 @@ const renderOptions = props => {
       answerList: null,
       showScoreModal: props.index === numberOfQuestions ? true : false
     };
-    console.log(data);
+    // console.log(data);
     props.handleNext(data);
   };
 
@@ -95,22 +98,22 @@ const renderOptions = props => {
     setShowAnswer(true);
     // setShowNextButton(true);
     const userScore = score / completedA.length;
+    setScored(userScore > 0.8 ? true : false);
     const data = {
       score: userScore > 0.8 ? props.score + 1 : props.score
     };
+    setShowMessage(true);
+    if (showMessage) {
+      animation.current.play(0, 100);
+    }
     props.handleValidate(data);
+    setTimeout(() => setShowMessage(false), 1000);
   };
 
   return (
-    <MotiView
-      style={{
-        flex: 1
-      }}
-      from={{ opacity: 0, translateX: 500 }}
-      animate={{ opacity: 1, translateX: 0 }}
-      transition={{
-        type: "timing"
-      }}
+    <Animated.View
+      style={{ flex: 1 }}
+      entering={LightSpeedInRight.duration(1000)}
     >
       <View
         style={{
@@ -124,6 +127,18 @@ const renderOptions = props => {
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <Text style={{ fontSize: 18, color: "black" }}>{title}</Text>
+          {showMessage ? (
+            <LottieView
+              ref={animation}
+              source={
+                scored
+                  ? require("../../../../assets/lotties/happy_emoji.json")
+                  : require("../../../../assets/lotties/sad_emoji.json")
+              }
+              autoPlay={true}
+              loop={false}
+            />
+          ) : null}
         </View>
       </View>
       <View
@@ -267,7 +282,8 @@ const renderOptions = props => {
           }}
         >
           <Button
-            mode="contained"
+            // mode="contained"
+            mode={showAnswer ? "contained" : "outlined"}
             onPress={
               showAnswer ? () => handleNextQuiz() : () => handleValidateQuiz()
             }
@@ -278,7 +294,7 @@ const renderOptions = props => {
           </Button>
         </View>
       </View>
-    </MotiView>
+    </Animated.View>
   );
 };
 

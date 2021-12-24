@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { connect } from "react-redux";
-
 import { Modal, View, TouchableOpacity, Text, Dimensions } from "react-native";
 import { COLORS, SIZES } from "../../Helpers/constants";
 import { handleStart } from "../../store/actions/quiz";
 import { Button, Title } from "react-native-paper";
-
 const { width, height } = Dimensions.get("window");
 import LottieView from "lottie-react-native";
+import Loader from "../Utils/Loader";
 import AudioPlayerWithoutControl from "../../Helpers/PlayerWithoutControl";
 
 const ScoreModal = props => {
@@ -15,8 +14,7 @@ const ScoreModal = props => {
 
   const animation = useRef(null);
   useEffect(() => {
-    // animation.current.play();
-    console.log("score modal", props.showScoreModal);
+    // animation.current.play(0, 100);
     if (animation.current) {
       animation.current.play(0, 100);
     }
@@ -29,8 +27,8 @@ const ScoreModal = props => {
   return (
     <Modal
       animationType="slide"
-      transparent={true}
-      visible={props.showScoreModal}
+      // transparent={true}
+      visible={true}
     >
       <View
         style={{
@@ -66,18 +64,16 @@ const ScoreModal = props => {
               <LottieView
                 ref={animation}
                 source={require("../../../assets/lotties/success.json")}
-                autoPlay={false}
+                autoPlay={true}
                 loop={false}
+                autoPlay
               />
             ) : (
               <LottieView
                 ref={animation}
                 source={require("../../../assets/lotties/failure.json")}
-                autoPlay={false}
+                autoPlay={true}
                 loop={false}
-                // autoPlay
-
-                // loop
               />
             )}
           </View>

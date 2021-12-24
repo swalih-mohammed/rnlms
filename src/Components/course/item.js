@@ -3,10 +3,7 @@ import { connect } from "react-redux";
 import { View, Dimensions, StyleSheet, Image } from "react-native";
 import { Card, Title, Paragraph, Subheading } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import Animated, {
-  LightSpeedInLeft,
-  SlideInLeft
-} from "react-native-reanimated";
+import Animated, { LightSpeedInRight } from "react-native-reanimated";
 import { TouchableOpacity } from "react-native";
 import { setCourseDetails } from "../../store/actions/course";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -50,9 +47,8 @@ const CourseItem = props => {
 
   return (
     <Animated.View
-      entering={SlideInLeft}
+      entering={LightSpeedInRight.duration(2000)}
       style={[styles.mainContainer]}
-
       // style={{
       //   margin: 8,
       //   width: width * 0.95,
