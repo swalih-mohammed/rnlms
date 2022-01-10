@@ -8,23 +8,31 @@ import {
   Text,
   TouchableOpacity
 } from "react-native";
+import { useKeepAwake } from "expo-keep-awake";
 import PhotoAndTitle from "./LessonPhoto";
 import { connect } from "react-redux";
 import { handleStart } from "../../store/actions/quiz";
 import Constants from "expo-constants";
-import { Button, IconButton, Card } from "react-native-paper";
+import { Button, Title, Paragraph } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Audio } from "expo-av";
+// import * as Haptics from "expo-haptics";
+
 const { width, height } = Dimensions.get("window");
 import { useNavigation } from "@react-navigation/native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import * as Speech from "expo-speech";
+// import { SafeAreaView } from "react-native-safe-area-context";
+// import * as Speech from "expo-speech";
+import Slider from "@react-native-community/slider";
+
 import { COLORS, SIZES } from "../../Helpers/constants";
 import Animated, { LightSpeedInRight } from "react-native-reanimated";
 
-function AudioPLayer(props) {
+// const soundObject = new Audio.Sound();
+// const sound = new Audio.Sound();
+
+function lessonItem(props) {
   const {
-    Tracks,
+    lessonItems,
     lessonId,
     hasQuiz,
     QuizId,
@@ -34,48 +42,164 @@ function AudioPLayer(props) {
   } = props;
 
   const navigation = useNavigation();
-  // console.log(Tracks[0]);
-  const [Loaded, SetLoaded] = React.useState(false);
-  const [Loading, SetLoading] = React.useState(false);
-  const [CurrentSong, SetCurrentSong] = React.useState(Tracks[0]);
-  const [lastSongIndex, setLastSongIndex] = React.useState(0);
 
-  const [isPlaying, SetIsPlaying] = React.useState(false);
+  // const [Loaded, SetLoaded] = React.useState(false);
+  // const [Loading, SetLoading] = React.useState(false);
+  const [index, setIndex] = React.useState(0);
+  // const [lastSongIndex, setLastSongIndex] = React.useState(0);
+  const [isPlaying, setIsplaying] = React.useState(false);
   const [didJustFinish, setDidJustFinish] = React.useState(false);
+  const [positionMillis, setPositionMillis] = React.useState(0);
+  const [durationMillis, setDurationMillis] = React.useState(0);
+  const [currentPosition, setCurrentPosition] = React.useState(0);
+  // const [sliderValue, setSliderValue] = React.useState(0);
+
+  const sound = React.useRef(new Audio.Sound());
+  const keySound = React.useRef(new Audio.Sound());
 
   React.useEffect(() => {
-    find_last_track_index();
-    // resetQuiz();
-    // speakText(language);
-  }, [CurrentSong]);
+    LoadAudio();
+    // console.log("lessonitem 2 ");
+    return () => {
+      UnloadSound();
+    };
+  }, [index]);
 
-  const speakText = language => {
-    if ((language === "Arabic") | (language === "English")) {
-      // console.log(language);
-      const text = CurrentSong.title;
-      Speech.speak(text, { language: language == "Arabic" ? "ar" : "en" });
-    } else {
-      // console.log(language);
-      return;
+  const UnloadSound = () => {
+    sound.current.unloadAsync();
+    keySound.current.unloadAsync();
+  };
+
+  const LoadAudio = async () => {
+    if (lessonItems[index].audio) {
+      try {
+        const audio = lessonItems[index].audio.audio;
+        const status = await sound.current.getStatusAsync();
+        if (status.isLoaded === false) {
+          const result = await sound.current.loadAsync(
+            { uri: audio },
+            {},
+            false
+          );
+          if (result.isLoaded === false) {
+            return console.log("Error in Loading Audio");
+          }
+        }
+        PlayAudio();
+      } catch (error) {
+        console.log("error in catch", error);
+      }
     }
   };
 
-  const find_last_track_index = () => {
-    const track_length = Tracks.length;
-    setLastSongIndex(track_length - 1);
+  const HandleSliderMove = async value => {
+    // console.log(value);
+    try {
+      const result = await sound.current.getStatusAsync();
+      if (result.isLoaded) {
+        console.log("handling seek");
+        sound.current.setStatusAsync({
+          shouldPlay: true,
+          positionMillis: value * durationMillis
+        });
+      }
+    } catch (error) {
+      setIsplaying(false);
+    }
   };
 
-  const NextSong = () => {
-    const currentSongIndex = Tracks.indexOf(CurrentSong);
-    const lastSongIndex = Tracks.indexOf(Tracks[Tracks.length - 1]);
-    if (currentSongIndex === lastSongIndex) {
-      SetCurrentSong(Tracks[0]);
+  function msToTime(duration) {
+    var milliseconds = Math.floor((duration % 1000) / 100),
+      seconds = Math.floor((duration / 1000) % 60),
+      minutes = Math.floor((duration / (1000 * 60)) % 60),
+      hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+    hours = hours < 10 ? "0" + hours : hours;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+    if (isNaN(minutes) || isNaN(seconds)) return null;
+    return minutes + ":" + seconds;
+  }
+  // console.log(msToTime(durationMillis));
+
+  const onPlaybackStatusUpdate = audio => {
+    if (audio.isLoaded) {
+      setDidJustFinish(false);
+      setPositionMillis(audio.positionMillis);
+      setDurationMillis(audio.durationMillis);
+      if (audio.didJustFinish) {
+        setDidJustFinish(true);
+        setIsplaying(false);
+      }
+    }
+  };
+
+  const PlayAudio = async () => {
+    try {
+      const result = await sound.current.getStatusAsync();
+      sound.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+      if (result.isLoaded) {
+        if (result.isPlaying === false && !didJustFinish) {
+          setIsplaying(true);
+          return sound.current.playAsync();
+        }
+        if (result.isPlaying === false && didJustFinish) {
+          setIsplaying(true);
+          return sound.current.replayAsync();
+        }
+      }
+      LoadAudio();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const PauseAudio = async () => {
+    try {
+      const result = await sound.current.getStatusAsync();
+      if (result.isLoaded) {
+        if (result.isPlaying === true) {
+          setIsplaying(false);
+          return sound.current.pauseAsync();
+        }
+      }
+    } catch (error) {
+      setIsplaying(false);
+    }
+  };
+
+  // below is wokring code
+
+  const handlePressNext = () => {
+    UnloadSound();
+    playKeySound();
+    if (index === lessonItems.length - 1) {
+      if (hasQuiz) {
+        resetQuiz();
+        navigateToQuiz();
+      }
     } else {
-      SetCurrentSong(Tracks[currentSongIndex + 1]);
+      setIndex(index + 1);
+    }
+  };
+
+  const handlePressPrevious = () => {
+    UnloadSound();
+    playKeySound();
+    if (index === 0) {
+      if (sectionId != null) {
+        navigation.navigate("Section Details", {
+          id: sectionId
+        });
+      } else {
+        navigation.navigate("Unit Details", { id: unitId });
+      }
+    } else {
+      setIndex(index - 1);
     }
   };
 
   const navigateToQuiz = () => {
+    UnloadSound();
     navigation.navigate("Lesson Test", {
       QuizId: QuizId,
       lessonId: lessonId,
@@ -96,53 +220,76 @@ function AudioPLayer(props) {
     navigateToQuiz();
   };
 
-  const handleNext = () => {
-    if (Tracks.indexOf(CurrentSong) === lastSongIndex) {
-      if (hasQuiz) {
-        resetQuiz();
-      } else {
-        console.log("no quiz");
+  const sliderValue =
+    positionMillis !== 0 ? positionMillis / durationMillis : 0;
+
+  // key press sound
+
+  const playKeySound = async () => {
+    const checkLoading = await keySound.current.getStatusAsync();
+    if (checkLoading.isLoaded === false) {
+      // console.log("key sound");
+      try {
+        await keySound.current.loadAsync(
+          require("../../../assets/sounds/keyPress.mp3"),
+          { shouldPlay: true }
+        );
+        // await keySound.current.unloadAsync();
+      } catch (error) {
+        console.log(error);
       }
     } else {
-      NextSong();
+      console.log("erro");
     }
   };
-
-  const PrevSong = () => {
-    const currentSongIndex = Tracks.indexOf(CurrentSong);
-    const lastSongIndex = Tracks.indexOf(Tracks[Tracks.length - 1]);
-    if (currentSongIndex === 0) {
-      SetCurrentSong(Tracks[Tracks.length - 1]);
-    } else {
-      SetCurrentSong(Tracks[currentSongIndex - 1]);
-    }
-  };
-
-  const handlePressPrevious = () => {
-    if (Tracks.indexOf(CurrentSong) === 0) {
-      if (sectionId != null) {
-        navigation.navigate("Section Details", {
-          id: sectionId
-        });
-      } else {
-        navigation.navigate("Unit Details", { id: unitId });
-      }
-    } else {
-      PrevSong();
-    }
-  };
+  useKeepAwake();
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, marginHorizontal: 10 }}>
       <Animated.View
         entering={LightSpeedInRight.duration(1000)}
         style={{ flex: 5, justifyContent: "center" }}
       >
         <PhotoAndTitle
-          photo={CurrentSong.photo.photo}
-          title={CurrentSong.title}
+          photo={lessonItems[index].photo.photo}
+          title={lessonItems[index].title}
         />
-      </Animated.View>
 
+        {durationMillis > 30000 ? (
+          <>
+            <Slider
+              minimumValue={0}
+              maximumValue={1}
+              minimumTrackTintColor={COLORS.primary}
+              maximumTrackTintColor={COLORS.primary}
+              thumbTintColor={COLORS.primary}
+              value={isNaN(parseFloat(sliderValue)) ? 0 : sliderValue}
+              onValueChange={value => setCurrentPosition(value)}
+              onSlidingStart={async () => {
+                if (!sound.current.isLoaded) return;
+                PauseAudio();
+              }}
+              onSlidingComplete={value => HandleSliderMove(value)}
+            />
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginHorizontal: 15
+              }}
+            >
+              <Paragraph style={{ alignSelf: "flex-start" }}>
+                {durationMillis === 0 || positionMillis === 0
+                  ? "00:00"
+                  : msToTime(durationMillis - positionMillis)}
+              </Paragraph>
+              <Paragraph style={{ alignSelf: "flex-end" }}>
+                {durationMillis === 0 ? "00:00" : msToTime(durationMillis)}
+              </Paragraph>
+            </View>
+          </>
+        ) : null}
+      </Animated.View>
       <View
         style={{
           flex: 1,
@@ -151,33 +298,12 @@ function AudioPLayer(props) {
           alignItems: "center"
         }}
       >
-        {/* {Tracks.indexOf(CurrentSong) === 0 ? (
-          <View>
-            <Button
-              mode="contained"
-              onPress={
-                sectionId != null
-                  ? () =>
-                      navigation.navigate("Section Details", {
-                        id: sectionId
-                      })
-                  : () => navigation.navigate("Unit Details", { id: unitId })
-              }
-            >
-              Exit
-            </Button>
-          </View>
-        ) : (
-          <Button mode="contained" onPress={PrevSong}>
-            Exit
-          </Button>
-        )} */}
         <Button
-          mode={Tracks.indexOf(CurrentSong) === 0 ? "contained" : "outlined"}
+          mode={index === 0 ? "contained" : "outlined"}
           onPress={handlePressPrevious}
           style={{ borderWidth: 1, borderColor: COLORS.primary }}
         >
-          {Tracks.indexOf(CurrentSong) === 0 ? "EXIT" : "PREV"}
+          {index === 0 ? "EXIT" : "PREV"}
         </Button>
 
         <MaterialCommunityIcons
@@ -194,34 +320,20 @@ function AudioPLayer(props) {
             marginLeft: 20,
             marginRight: 20
           }}
-          onPress={speakText}
+          onPress={isPlaying ? () => PauseAudio() : () => PlayAudio()}
         />
 
         <Button
           mode={
-            (Tracks.indexOf(CurrentSong) === lastSongIndex) & hasQuiz
+            (index === lessonItems.length - 1) & hasQuiz
               ? "contained"
               : "outlined"
           }
-          onPress={handleNext}
+          onPress={handlePressNext}
           style={{ borderWidth: 1, borderColor: COLORS.primary }}
         >
-          {(Tracks.indexOf(CurrentSong) === lastSongIndex) & hasQuiz
-            ? "QUIZ"
-            : "NEXT"}
+          {(index === lessonItems.length - 1) & hasQuiz ? "QUIZ" : "NEXT"}
         </Button>
-
-        {/* {(Tracks.indexOf(CurrentSong) === lastSongIndex) & hasQuiz ? (
-          <View style={{}}>
-            <Button mode="contained" onPress={resetQuiz}>
-              Quiz
-            </Button>
-          </View>
-        ) : (
-          <Button mode="contained" onPress={NextSong}>
-            Next
-          </Button>
-        )} */}
       </View>
     </View>
   );
@@ -271,7 +383,6 @@ const styles = StyleSheet.create({
   }
 });
 
-// export default AudioPLayer;
 const mapDispatchToProps = dispatch => {
   return {
     handleStart: data => dispatch(handleStart(data))
@@ -281,4 +392,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   null,
   mapDispatchToProps
-)(AudioPLayer);
+)(lessonItem);

@@ -9,11 +9,11 @@ import {
   Text,
   View
 } from "react-native";
-import { View as MotiView, SafeAreaView } from "moti";
+// import { View as MotiView, SafeAreaView } from "moti";
 
 const { width, height } = Dimensions.get("window");
 
-import { Button, Title } from "react-native-paper";
+import { Button, Title, Paragraph } from "react-native-paper";
 
 import { COLORS, SIZES } from "../../../Helpers/constants";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -21,6 +21,7 @@ import Icon from "react-native-vector-icons/AntDesign";
 import { handleNext, handleValidate } from "../../../store/actions/quiz";
 import Animated, { LightSpeedInRight } from "react-native-reanimated";
 import LottieView from "lottie-react-native";
+import * as Haptics from "expo-haptics";
 
 const renderOptions = props => {
   const animation = React.useRef(null);
@@ -47,6 +48,8 @@ const renderOptions = props => {
     // console.log(completedA);
   };
   const handleCompletedB = id => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
     if (id === selectedA) {
       setScore(score + 1);
       setSelectedA(null);
@@ -60,7 +63,7 @@ const renderOptions = props => {
   };
 
   const checkIfInBucketA = id => {
-    // console.log("triggering");
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (completedA.length > 0 && completedA.includes(id)) {
       return true;
     } else {
@@ -126,14 +129,14 @@ const renderOptions = props => {
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <Text style={{ fontSize: 18, color: "black" }}>{title}</Text>
+          <Title style={{ fontSize: 18, color: "black" }}>{title}</Title>
           {showMessage ? (
             <LottieView
               ref={animation}
               source={
                 scored
-                  ? require("../../../../assets/lotties/happy_emoji.json")
-                  : require("../../../../assets/lotties/sad_emoji.json")
+                  ? require("../../../../assets/lotties/correct.json")
+                  : require("../../../../assets/lotties/incorrect.json")
               }
               autoPlay={true}
               loop={false}
@@ -166,6 +169,7 @@ const renderOptions = props => {
                 key={item.key}
                 style={{
                   borderWidth: 1,
+                  backgroundColor: COLORS.primary,
                   borderColor:
                     showAnswer && checkIfInScoredIds(item.key)
                       ? COLORS.success
@@ -186,9 +190,9 @@ const renderOptions = props => {
                       : 1
                 }}
               >
-                <Text style={{ fontSize: 14, color: "black" }}>
+                <Paragraph style={{ fontSize: 14, color: "black" }}>
                   {item.word}
-                </Text>
+                </Paragraph>
               </TouchableOpacity>
             ))}
         </View>
@@ -209,6 +213,7 @@ const renderOptions = props => {
                 key={item.key}
                 style={{
                   borderWidth: 1,
+                  backgroundColor: COLORS.primary,
                   borderColor:
                     showAnswer && checkIfInScoredIds(item.key)
                       ? COLORS.success
@@ -226,9 +231,9 @@ const renderOptions = props => {
                   opacity: checkIfInBucketB(item.key) || bDisabled ? 0.4 : 1
                 }}
               >
-                <Text style={{ fontSize: 14, color: "black" }}>
+                <Paragraph style={{ fontSize: 14, color: "black" }}>
                   {item.word}
-                </Text>
+                </Paragraph>
               </TouchableOpacity>
             ))}
         </View>
@@ -239,38 +244,19 @@ const renderOptions = props => {
           flex: 1
         }}
       >
-        <TouchableOpacity onPress={() => console.log(123)}>
-          <Icon
-            name="sound"
-            style={{
-              color: "black",
-              fontSize: 30,
-              alignSelf: "center"
-            }}
-          />
-        </TouchableOpacity>
-        {/* <TouchableOpacity
-          onPress={
-            showAnswer ? () => handleNextQuiz() : () => handleValidateQuiz()
-          }
-          style={{
-            marginTop: 20,
-            width: "100%",
-            backgroundColor: COLORS.accent,
-            padding: 20,
-            borderRadius: 5
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 20,
-              color: COLORS.white,
-              textAlign: "center"
-            }}
-          >
-            {showAnswer ? "NEXT" : "CHECK"}
-          </Text>
-        </TouchableOpacity> */}
+        {props.sound ? (
+          <TouchableOpacity onPress={() => console.log(123)}>
+            <Icon
+              name="sound"
+              style={{
+                color: "black",
+                fontSize: 30,
+                alignSelf: "center"
+              }}
+            />
+          </TouchableOpacity>
+        ) : null}
+
         <View
           style={{
             position: "absolute",
@@ -283,6 +269,7 @@ const renderOptions = props => {
         >
           <Button
             // mode="contained"
+            disabled={showMessage}
             mode={showAnswer ? "contained" : "outlined"}
             onPress={
               showAnswer ? () => handleNextQuiz() : () => handleValidateQuiz()

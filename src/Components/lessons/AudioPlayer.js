@@ -61,10 +61,9 @@ function SoundPlayer({ audio, unitId, lessonId, showSlider, showQuiz }) {
       const result = await sound.current.getStatusAsync();
       if (result.isLoaded) {
         if (result.isPlaying === false) {
-          sound.current.playAsync();
+          sound.current.replayAsync();
           setDidJustFinish(false);
           return setIsplaying(true);
-          //   return
         }
       } else {
         LoadAudio();

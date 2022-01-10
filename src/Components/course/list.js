@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { Button } from "react-native-paper";
-import { View as MotiView } from "moti";
-// import { StatusBar } from "expo-status-bar";
-import { Card, Title } from "react-native-paper";
+import { Card, Title, List, Button } from "react-native-paper";
 import { COLORS, SIZES } from "../../Helpers/constants";
-
-// import { Skeleton } from "@motify/skeleton";
 
 import {
   StyleSheet,
@@ -14,7 +9,10 @@ import {
   ActivityIndicator,
   View,
   Text,
-  StatusBar
+  StatusBar,
+  Image,
+  ScrollView,
+  SectionList
 } from "react-native";
 import axios from "axios";
 // import { courseListURL } from "../../Helpers/urls";
@@ -32,29 +30,16 @@ const CourseList = props => {
   const navigation = useNavigation();
   const [testData, setTestData] = useState(null);
   const [courses, setCourses] = useState(null);
+  const [generalEnglish, setGeneralEnglish] = useState([]);
+  const [keralaSchoolEnglihs, setKeralaSchoolEnglihs] = useState([]);
+  const [arabiCourses, setArabicCourse] = useState([]);
+
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const animation = React.useRef(null);
-
   useEffect(() => {
     getCourses();
-    // animation.current.play(0, 100);
-
-    // IdentifyActivityType("Translate below");
-    // testApi();
-    // SpeakArabic();
   }, []);
-
-  // };
-  // SpeakArabic = () => {
-  //   console.log("speaking");
-  //   // Speech.speak("ا", { language: "ar" });
-  // };
-  // // const speak = () => {
-  // //   const thingToSay = "Apple";
-  // //   Speech.speak(thingToSay);
-  // // };
 
   const getCourses = async () => {
     try {
@@ -62,6 +47,17 @@ const CourseList = props => {
       setLoading(true);
       const response = await axios.get(`${localhost}/courses`);
       setCourses(response.data);
+      setGeneralEnglish(
+        response.data.filter(course => course.category === "GENERAL_ENGLISH")
+      );
+      setKeralaSchoolEnglihs(
+        response.data.filter(
+          course => course.category === "SCHOOL_ENGLISH_KERALA"
+        )
+      );
+      setArabicCourse(
+        response.data.filter(course => course.language === "ARABIC")
+      );
       // console.log(response.data);
       setLoading(false);
     } catch (err) {
@@ -70,66 +66,110 @@ const CourseList = props => {
     }
   };
 
-  const testApi = async () => {
-    // console.log(123);
-    const QuizId = 5;
-    try {
-      setLoading(true);
-      const response = await axios.get(`${localhost}/quizzes/${QuizId}`);
-      setTest(response.data);
-      setTestData(response.data);
-      setLoading(false);
-      // console.log(response.data);
-    } catch (err) {
-      setError(err);
-      console.log(error);
-    }
-  };
-
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
-
-      {/* <LottieView
-        ref={animation}
-        source={require("../../../assets/lotties/success.json")}
-        autoPlay={true}
-        loop={true}
-      /> */}
       {loading || props.tokenLoading ? (
-        <ActivityIndicator
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        />
+        <Loader />
       ) : (
         <>
-          {/* <Skeleton /> */}
           {!props.token ? (
             <GetStarted />
           ) : (
             <>
-              <View>
-                <Card>
-                  <View
+              <Card>
+                <View
+                  style={{
+                    marginTop: 20,
+                    marginBottom: 20,
+                    justifyContent: "center",
+                    alignSelf: "center"
+                  }}
+                >
+                  <Title>{"Lakaters"}</Title>
+                  {/* <Image
+                    // style={{ width: "100%", height: "100%" }}
+                    source={require("../../../assets/Group 5.png")}
+                  /> */}
+                </View>
+              </Card>
+
+              <ScrollView>
+                {generalEnglish.length > 0 ? (
+                  <List.Section
                     style={{
-                      marginTop: 20,
-                      marginBottom: 20,
-                      justifyContent: "center",
-                      alignSelf: "center"
+                      backgroundColor: "#ccd5ae",
+                      paddingBottom: 10,
+                      paddingHorizontal: 10
                     }}
                   >
-                    <Title>{"Lakaters"}</Title>
-                  </View>
-                </Card>
-                <FlatList
-                  data={courses}
-                  showsHorizontalScrollIndicator={false}
-                  keyExtractor={item => item.id.toString()}
-                  renderItem={({ item }) => {
-                    return <CourseItem item={item} />;
-                  }}
-                />
-                {/* <Text>hi</Text> */}
-              </View>
+                    <List.Subheader>General English Courses</List.Subheader>
+                    <FlatList
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      ItemSeparatorComponent={() => (
+                        <View style={{ margin: 4 }} />
+                      )}
+                      data={generalEnglish}
+                      keyExtractor={item => item.id.toString()}
+                      renderItem={({ item }) => {
+                        return <CourseItem item={item} />;
+                      }}
+                    />
+                  </List.Section>
+                ) : null}
+                {keralaSchoolEnglihs.length > 0 ? (
+                  <List.Section
+                    style={{
+                      backgroundColor: "#d9ed92",
+                      paddingBottom: 10,
+                      paddingHorizontal: 10
+                    }}
+                  >
+                    <List.Subheader>Kerala School - English</List.Subheader>
+                    <FlatList
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      ItemSeparatorComponent={() => (
+                        <View style={{ margin: 4 }} />
+                      )}
+                      data={courses.filter(
+                        course => course.category === "SCHOOL_ENGLISH_KERALA"
+                      )}
+                      keyExtractor={item => item.id.toString()}
+                      renderItem={({ item }) => {
+                        return <CourseItem item={item} />;
+                      }}
+                    />
+                  </List.Section>
+                ) : null}
+
+                {arabiCourses.length > 0 ? (
+                  <List.Section
+                    style={{
+                      backgroundColor: "#d8e2dc",
+                      paddingBottom: 20,
+                      paddingHorizontal: 10
+                    }}
+                  >
+                    <List.Subheader>Arabic Courses</List.Subheader>
+                    <FlatList
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      ItemSeparatorComponent={() => (
+                        <View style={{ margin: 4 }} />
+                      )}
+                      data={courses.filter(
+                        course => course.language === "ARABIC"
+                      )}
+                      keyExtractor={item => item.id.toString()}
+                      renderItem={({ item }) => {
+                        return <CourseItem item={item} />;
+                      }}
+                    />
+                  </List.Section>
+                ) : null}
+              </ScrollView>
             </>
           )}
         </>

@@ -5,11 +5,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  Image,
   Text,
   View
 } from "react-native";
-import { Button } from "react-native-paper";
+import { Button, Title, Paragraph } from "react-native-paper";
 import Animated, { LightSpeedInRight } from "react-native-reanimated";
 const { width, height } = Dimensions.get("window");
 import { COLORS, SIZES } from "../../../Helpers/constants";
@@ -17,8 +16,12 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import Icon from "react-native-vector-icons/AntDesign";
 import { handleNext, handleValidate } from "../../../store/actions/quiz";
 import LottieView from "lottie-react-native";
+import * as Haptics from "expo-haptics";
+
+// import console = require("console");
 
 const renderOptions = props => {
+  // console.log(props);
   const animation = React.useRef(null);
 
   const [showAnswer, setShowAnswer] = useState(false);
@@ -30,6 +33,8 @@ const renderOptions = props => {
   const { Choices, title, question, numberOfQuestions } = props;
 
   const handleNextQuiz = () => {
+    setShowAnswer(false);
+    setOptionsDisabled(false);
     const data = {
       index: props.index !== numberOfQuestions ? props.index + 1 : props.index,
       showAnswer: false,
@@ -40,6 +45,8 @@ const renderOptions = props => {
   };
 
   const handleValidateQuiz = option => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
     setShowAnswer(true);
     setOptionsDisabled(true);
     SetSelectedAnswer(option.id);
@@ -68,13 +75,13 @@ const renderOptions = props => {
     >
       <View
         style={{
-          flex: 2,
+          flex: 1.5,
           justifyContent: "space-around",
           alignItems: "center"
           // backgroundColor: "red"
         }}
       >
-        <Text
+        <Title
           style={{
             color: COLORS.black,
             fontSize: 18,
@@ -82,27 +89,27 @@ const renderOptions = props => {
           }}
         >
           {title ? title : null}
-        </Text>
+        </Title>
         {showMessage ? (
           <LottieView
             ref={animation}
             source={
               scored
-                ? require("../../../../assets/lotties/happy_emoji.json")
-                : require("../../../../assets/lotties/sad_emoji.json")
+                ? require("../../../../assets/lotties/correct.json")
+                : require("../../../../assets/lotties/incorrect.json")
             }
             autoPlay={true}
             loop={false}
           />
         ) : null}
-        <Text
+        <Paragraph
           style={{
             color: COLORS.black,
             fontSize: 16
           }}
         >
           {question ? question : null}
-        </Text>
+        </Paragraph>
       </View>
       <View
         style={{
@@ -123,7 +130,7 @@ const renderOptions = props => {
                   ? COLORS.success
                   : showAnswer && !option.is_correct_choice
                   ? COLORS.error
-                  : COLORS.secondary + "40",
+                  : COLORS.primary,
 
               height: 60,
               borderRadius: 14,
@@ -131,11 +138,13 @@ const renderOptions = props => {
               alignItems: "center",
               justifyContent: "space-between",
               paddingHorizontal: 15,
+              marginHorizontal: 10,
               marginVertical: 5
-              // width: SIZES.width - 10
             }}
           >
-            <Text style={{ fontSize: 14, color: "black" }}>{option.title}</Text>
+            <Paragraph style={{ fontSize: 14, color: "black" }}>
+              {option.title}
+            </Paragraph>
 
             {/* Show Check Or Cross Icon based on correct answer*/}
             {showAnswer && option.is_correct_choice ? (
@@ -180,39 +189,42 @@ const renderOptions = props => {
           </TouchableOpacity>
         ))}
       </View>
-      <View
-        style={{
-          alignItems: "center",
-          flex: 1.5
-          // backgroundColor: "red"
-        }}
-      >
-        <TouchableOpacity onPress={() => console.log(123)}>
-          <Icon
-            name="sound"
-            style={{
-              color: "black",
-              fontSize: 30,
-              paddingBottom: 50
-            }}
-          />
-        </TouchableOpacity>
-      </View>
 
       <View
         style={{
-          position: "absolute",
-          bottom: 0,
-          right: 0,
-          left: 0,
           flex: 1
+          // backgroundColor: "green"
         }}
       >
+        {props.has_audio ? (
+          <TouchableOpacity
+            disabled={props.isPlaying}
+            onPress={props.PlayAudio}
+            style={{ paddingBottom: 40, alignItems: "center" }}
+          >
+            <Icon
+              name="sound"
+              style={{
+                color: "black",
+                fontSize: 30,
+                paddingBottom: 50
+              }}
+            />
+          </TouchableOpacity>
+        ) : null}
         <Button
           mode="contained"
           onPress={handleNextQuiz}
-          disabled={!showAnswer}
-          style={{ paddingBottom: 10, paddingTop: 10 }}
+          disabled={!showAnswer || showMessage}
+          style={{
+            paddingBottom: 10,
+            paddingTop: 10,
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+            left: 0,
+            flex: 1
+          }}
         >
           {showAnswer ? "NEXT" : "SELECT"}
         </Button>

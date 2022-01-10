@@ -5,12 +5,7 @@ import authReducer from "./auth";
 import assignmentReducer from "./assignment";
 import quizReducer from "./quiz";
 import courseReducer from "./course";
-import { persistStore, persistReducer } from "redux-persist";
-
-// const rootReducer = combineReducers({
-//   auth: authReducer,
-//   assignment: assignmentReducer
-// });
+import { persistReducer } from "redux-persist";
 
 const persistConfig = {
   key: "root",

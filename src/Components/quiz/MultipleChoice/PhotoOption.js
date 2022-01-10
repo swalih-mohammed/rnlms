@@ -14,8 +14,13 @@ import Icon from "react-native-vector-icons/AntDesign";
 // import { View as MotiView } from "moti";
 import { COLORS, SIZES } from "../../../Helpers/constants";
 import { MARGIN_TOP } from "../DaragAndDrop/Layout";
-import { Button } from "react-native-paper";
+import { Button, Title, Paragraph } from "react-native-paper";
+
 import LottieView from "lottie-react-native";
+import * as Haptics from "expo-haptics";
+
+import Audio from "../../../Helpers/PlayerWithoutControl";
+
 // import Loader from "../../Utils/Loader";
 
 import Animated, { LightSpeedInRight } from "react-native-reanimated";
@@ -39,8 +44,11 @@ const renderOptions = props => {
   const [progress, setProgress] = useState(new Animated.Value(0));
 
   const handleNextQuiz = () => {
+    props.UnloadSound();
     SetSelectedAnswer(null);
     setScored(false);
+    setShowAnswer(false);
+    setOptionsDisabled(false);
     const data = {
       index:
         props.index !== props.numberOfQuestions ? props.index + 1 : props.index,
@@ -57,6 +65,8 @@ const renderOptions = props => {
   };
 
   const handleValidateQuiz = option => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
     setShowAnswer(true);
     setOptionsDisabled(true);
     SetSelectedAnswer(option.id);
@@ -86,19 +96,25 @@ const renderOptions = props => {
         }}
       >
         {showMessage ? (
-          <LottieView
-            ref={animation}
-            source={
-              scored
-                ? require("../../../../assets/lotties/happy_emoji.json")
-                : require("../../../../assets/lotties/sad_emoji.json")
-            }
-            autoPlay={true}
-            loop={false}
-          />
+          <>
+            <LottieView
+              ref={animation}
+              source={
+                scored
+                  ? require("../../../../assets/lotties/coin.json")
+                  : require("../../../../assets/lotties/incorrect.json")
+              }
+              autoPlay={true}
+              loop={false}
+            />
+            <Audio
+              correct={scored ? true : false}
+              incorrect={scored ? false : true}
+            />
+          </>
         ) : null}
 
-        <Text
+        <Title
           style={{
             color: COLORS.black,
             fontSize: 20,
@@ -106,7 +122,7 @@ const renderOptions = props => {
           }}
         >
           {title}
-        </Text>
+        </Title>
       </View>
       <View
         style={{
@@ -123,6 +139,11 @@ const renderOptions = props => {
             onPress={() => handleValidateQuiz(option)}
             style={{
               borderWidth: 1,
+              shadowColor: "#fff",
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.8,
+              shadowRadius: 2,
+              elevation: 5,
               margin: 5,
               opacity: !showAnswer ? 1 : option.id === selectedAnswer ? 1 : 0.6,
               borderColor:
@@ -156,7 +177,7 @@ const renderOptions = props => {
             flex: 1
           }}
         >
-          <Text
+          <Title
             style={{
               color: COLORS.black,
               fontSize: 20,
@@ -164,17 +185,22 @@ const renderOptions = props => {
             }}
           >
             {question}
-          </Text>
-          <TouchableOpacity onPress={() => console.log(123)}>
-            <Icon
-              name="sound"
-              style={{
-                color: "black",
-                fontSize: 30,
-                paddingBottom: 10
-              }}
-            />
-          </TouchableOpacity>
+          </Title>
+          {props.has_audio ? (
+            <TouchableOpacity
+              disabled={props.isPlaying}
+              onPress={props.PlayAudio}
+            >
+              <Icon
+                name="sound"
+                style={{
+                  color: "black",
+                  fontSize: 30,
+                  paddingBottom: 10
+                }}
+              />
+            </TouchableOpacity>
+          ) : null}
         </View>
 
         <View
@@ -190,7 +216,7 @@ const renderOptions = props => {
           <Button
             mode="contained"
             onPress={handleNextQuiz}
-            disabled={!showAnswer}
+            disabled={!showAnswer || showMessage}
             style={{ paddingBottom: 10, paddingTop: 10 }}
           >
             {showAnswer ? "NEXT" : "SELECT"}

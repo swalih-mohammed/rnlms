@@ -2,10 +2,16 @@
 import React, { ReactElement, useState, useContext } from "react";
 import { connect } from "react-redux";
 import { handleValidate, handleNext } from "../../../store/actions/quiz";
-import { StyleSheet, Dimensions, Text, View } from "react-native";
-import { View as MotiView } from "moti";
-import { RectButton } from "react-native-gesture-handler";
-import { Button } from "react-native-paper";
+import {
+  StyleSheet,
+  Dimensions,
+  Text,
+  View,
+  TouchableOpacity
+} from "react-native";
+// import { View as MotiView } from "moti";
+// import { RectButton } from "react-native-gesture-handler";
+import { Button, Title } from "react-native-paper";
 import Animated, {
   useSharedValue,
   runOnUI,
@@ -16,6 +22,9 @@ import LottieView from "lottie-react-native";
 import SortableWord from "./SortableWord.js";
 import Lines from "./Lines";
 import { MARGIN_LEFT } from "./Layout";
+import Icon from "react-native-vector-icons/AntDesign";
+import { COLORS, SIZES } from "../../../Helpers/constants";
+
 // import { DulingoContext } from "./DulingoContext";
 
 // import { QuizContext } from "../QuizContext";
@@ -212,9 +221,16 @@ const WordList = props => {
     <>
       <Animated.View
         entering={LightSpeedInRight.duration(1000)}
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center"
+          // backgroundColor: "#ffff"
+        }}
       >
-        <Text style={{ fontSize: 18, paddingTop: 25 }}>{props.title}</Text>
+        <Title style={{ fontSize: 16, paddingTop: 25, flexWrap: "wrap" }}>
+          {props.title}
+        </Title>
         {showMessage ? (
           <LottieView
             ref={animation}
@@ -230,7 +246,7 @@ const WordList = props => {
         {/* <Text style={{ fontSize: 20 }}>{correctAnswerList.length}</Text> */}
       </Animated.View>
       <Animated.View
-        style={{ flex: 4 }}
+        style={{ flex: 3 }}
         entering={LightSpeedInRight.duration(1000)}
       >
         <Lines />
@@ -246,7 +262,7 @@ const WordList = props => {
           </SortableWord>
         ))}
       </Animated.View>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 2 }}>
         <View
           style={{
             position: "absolute",
@@ -257,8 +273,27 @@ const WordList = props => {
             flex: 1
           }}
         >
+          {props.has_audio ? (
+            <TouchableOpacity
+              style={{
+                alignItems: "center"
+              }}
+              disabled={props.isPlaying}
+              onPress={props.PlayAudio}
+            >
+              <Icon
+                name="sound"
+                style={{
+                  color: "black",
+                  fontSize: 30,
+                  paddingBottom: 50
+                }}
+              />
+            </TouchableOpacity>
+          ) : null}
           <Button
             // mode="contained"
+            disabled={showMessage}
             mode={props.showAnswer ? "contained" : "outlined"}
             onPress={
               props.showAnswer ? () => handleNextQuiz() : () => checkAnswer()

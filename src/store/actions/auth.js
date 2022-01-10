@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as actionTypes from "./actionTypes";
 import { localhost } from "../../Helpers/urls";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const authStart = () => {
   return {
@@ -58,8 +58,8 @@ export const authLogin = (username, password) => {
           userId: res.data.user,
           username: res.data.user_type.username,
           is_student: res.data.user_type.is_student,
-          is_teacher: res.data.user_type.is_teacher,
-          expirationDate: new Date(new Date().getTime() + 3600 * 1000)
+          is_teacher: res.data.user_type.is_teacher
+          // expirationDate: new Date(new Date().getTime() + 3600 * 1000)
         };
         // localStorage.setItem("user", JSON.stringify(user));
         // AsyncStorage.setItem("user", JSON.stringify(user));
@@ -98,10 +98,10 @@ export const authSignup = (
           username,
           userId: res.data.user,
           is_student,
-          is_teacher: !is_student,
-          expirationDate: new Date(new Date().getTime() + 3600 * 1000)
+          is_teacher: !is_student
+          // expirationDate: new Date(new Date().getTime() + 3600 * 1000)
         };
-        localStorage.setItem("user", JSON.stringify(user));
+        // localStorage.setItem("user", JSON.stringify(user));
         dispatch(authSuccess(user));
         // dispatch(checkAuthTimeout(3600));
       })
@@ -111,23 +111,23 @@ export const authSignup = (
   };
 };
 
-export const authCheckState = () => {
-  return dispatch => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user === undefined || user === null) {
-      dispatch(logout());
-    } else {
-      const expirationDate = new Date(user.expirationDate);
-      if (expirationDate <= new Date()) {
-        dispatch(logout());
-      } else {
-        dispatch(authSuccess(user));
-        dispatch(
-          checkAuthTimeout(
-            (expirationDate.getTime() - new Date().getTime()) / 1000
-          )
-        );
-      }
-    }
-  };
-};
+// export const authCheckState = () => {
+//   return dispatch => {
+//     const user = JSON.parse(localStorage.getItem("user"));
+//     if (user === undefined || user === null) {
+//       dispatch(logout());
+//     } else {
+//       const expirationDate = new Date(user.expirationDate);
+//       if (expirationDate <= new Date()) {
+//         dispatch(logout());
+//       } else {
+//         dispatch(authSuccess(user));
+//         dispatch(
+//           checkAuthTimeout(
+//             (expirationDate.getTime() - new Date().getTime()) / 1000
+//           )
+//         );
+//       }
+//     }
+//   };
+// };

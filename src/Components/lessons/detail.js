@@ -63,7 +63,7 @@ function LessonDetail({ route }) {
           sectionId={lesson.section}
           language={lesson.language1 ? lesson.language1 : lesson.language2}
           hasQuiz={lesson.has_quiz}
-          Tracks={lesson.Lesson_items}
+          lessonItems={lesson.Lesson_items}
           QuizId={lesson.has_quiz ? lesson.quiz[0].id : 0}
         />
       ) : // <View style={{ justifyContent: "center", alignItems: "center" }}>

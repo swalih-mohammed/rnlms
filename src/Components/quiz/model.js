@@ -51,6 +51,49 @@ const ScoreModal = props => {
           <Text style={{ fontSize: 20, fontWeight: "bold" }}>
             {(props.score / qlength) * 100 > 79 ? "Congratulations!" : "Oops!"}
           </Text>
+          {/* <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+            {props.score}
+          </Text> */}
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              marginVertical: 20
+            }}
+          >
+            {(props.score / qlength) * 100 < 79 ? (
+              <>
+                <Text
+                  style={{
+                    fontSize: 30,
+                    color: COLORS.error
+                  }}
+                >
+                  {props.score}
+                </Text>
+                <Text
+                  style={{
+                    marginLeft: 2,
+                    fontSize: 20,
+                    color: COLORS.error
+                  }}
+                >
+                  %
+                </Text>
+              </>
+            ) : (
+              <Text
+                style={{
+                  fontSize: 50,
+                  color: "#DB9D00"
+                }}
+              >
+                {props.score}
+              </Text>
+            )}
+          </View>
           <View
             style={{
               width: width * 0.6,
@@ -63,7 +106,7 @@ const ScoreModal = props => {
             {(props.score / qlength) * 100 > 79 ? (
               <LottieView
                 ref={animation}
-                source={require("../../../assets/lotties/success.json")}
+                source={require("../../../assets/lotties/coin_box.json")}
                 autoPlay={true}
                 loop={false}
                 autoPlay
@@ -78,42 +121,10 @@ const ScoreModal = props => {
             )}
           </View>
           <AudioPlayerWithoutControl
-            is_system={true}
             success={(props.score / qlength) * 100 > 79 ? true : false}
+            failure={(props.score / qlength) * 100 > 79 ? false : true}
           />
 
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "flex-start",
-              alignItems: "center",
-              marginVertical: 20
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 30,
-                color:
-                  (props.score / qlength) * 100 > 79
-                    ? COLORS.success
-                    : COLORS.error
-              }}
-            >
-              {Math.floor((props.score / qlength) * 100)}
-            </Text>
-            <Text
-              style={{
-                marginLeft: 2,
-                fontSize: 20,
-                color:
-                  (props.score / qlength) * 100 > 79
-                    ? COLORS.success
-                    : COLORS.error
-              }}
-            >
-              %
-            </Text>
-          </View>
           {/* Retry Quiz button */}
 
           <TouchableOpacity

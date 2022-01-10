@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
+import { COLORS, SIZES } from "../../Helpers/constants";
 
 import axios from "axios";
 import { View, TouchableOpacity, Text, StyleSheet, Image } from "react-native";
-import { List, Card, Avatar, Paragraph, Title } from "react-native-paper";
+import {
+  List,
+  Card,
+  Avatar,
+  Paragraph,
+  Title,
+  Caption
+} from "react-native-paper";
 import * as Animatable from "react-native-animatable";
 import { setCourseDetails } from "../../store/actions/course";
 import Animated, { LightSpeedInRight } from "react-native-reanimated";
@@ -42,14 +50,15 @@ const SectionItem = props => {
       <Animated.View
         entering={LightSpeedInRight}
         style={[styles.mainContainer]}
-        // style={{ margin: 8, backgroundColor: "#8adebb", borderRadius: 15 }}
-        // from={{ opacity: 0, translateX: 500 }}
-        // animate={{ opacity: 1, translateX: 0, duration: 1000 }}
-        // transition={{
-        //   type: "timing"
-        // }}
       >
-        <Card>
+        <Card
+          mode="elevated"
+          style={{
+            borderRadius: 15,
+            marginHorizontal: 20,
+            elevation: 5
+          }}
+        >
           <TouchableOpacity onPress={handlePress}>
             <View style={styles.container}>
               <View style={styles.LeftContainer}>
@@ -61,9 +70,9 @@ const SectionItem = props => {
                 />
               </View>
               <View style={styles.RightContainer}>
-                <Paragraph>{"SECTION " + sectionItem.order}</Paragraph>
+                <Caption>{"SECTION " + sectionItem.order}</Caption>
                 <Title style={{ fontSize: 18 }}>{sectionItem.title} </Title>
-                <Paragraph>{sectionItem.subtitle}</Paragraph>
+                {/* <Paragraph>{sectionItem.subtitle}</Paragraph> */}
               </View>
             </View>
           </TouchableOpacity>
@@ -76,7 +85,7 @@ const SectionItem = props => {
 const styles = StyleSheet.create({
   mainContainer: {
     margin: 8,
-    backgroundColor: "#8adebb",
+    // backgroundColor: "#8adebb",
     borderRadius: 15
   },
   SectionIdContainer: {
@@ -95,9 +104,9 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   RightContainer: {
-    flex: 1,
-    justifyContent: "center"
-    // marginLeft: 15,
+    flex: 2,
+    justifyContent: "center",
+    marginLeft: 20
     // marginRight: 5
   },
   LeftContainer: {
@@ -106,8 +115,8 @@ const styles = StyleSheet.create({
   },
   photo: {
     margin: 10,
-    borderRadius: 10,
-    width: 150,
+    borderRadius: 15,
+    width: 100,
     height: 100
   }
 });

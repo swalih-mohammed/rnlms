@@ -7,6 +7,8 @@ import {
   Provider as PaperProvider
 } from "react-native-paper";
 import { Provider as StoreProvider } from "react-redux";
+import { COLORS, SIZES } from "./src/Helpers/constants";
+
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
@@ -71,12 +73,13 @@ const MyTheme = {
     red: "red",
     yellow: "#3498db",
     green: "#f1c40f",
-    primary: "#aacc00",
+    primary: "#14a800",
     secondary: "#414757",
     error: "#f13a59",
     // text: "#ffffff",
     // background: "#333333",
     white: "#FFFFFF",
+    black: "#171717",
     offWhite: "#F8F0E3",
     gray: "#343a40"
   }
@@ -85,9 +88,9 @@ const MyTheme = {
 export const TabScreens = () => (
   <Tabs.Navigator
     initialRouteName="Home"
-    activeColor="#184e77"
-    inactiveColor="#168aad"
-    barStyle={{ backgroundColor: "#aacc00" }}
+    activeColor="#ffffff"
+    inactiveColor="#000000"
+    barStyle={{ backgroundColor: COLORS.primary }}
   >
     <Tabs.Screen
       name="Home"

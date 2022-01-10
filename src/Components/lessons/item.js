@@ -19,18 +19,13 @@ import UnitItem from "../unit/item";
 import UnitList from "../unit/list";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "react-native-paper";
-import { View as MotiView } from "moti";
+// import { View as MotiView } from "moti";
 import Animated, { LightSpeedInRight } from "react-native-reanimated";
 
 const LessonItem = props => {
   const { LessonItem } = props;
   const { colors } = useTheme();
-
-  // console.log(LessonItem);
   const navigation = useNavigation();
-  const [showUnit, setShowUnit] = useState(false);
-  //   const handleShowUnits = () => setShowUnit(!showUnit);
-  const LeftContent = props => <Avatar.Icon {...props} icon="lead-pencil" />;
 
   const handlePress = () => {
     const data = {
@@ -39,13 +34,15 @@ const LessonItem = props => {
     props.setCourseDetails(data);
     navigation.navigate("Lesson Details", { id: LessonItem.id });
   };
-  const Completed = props => (
+  const Completed = () => (
     <View
       style={{
-        width: 30,
-        height: 30,
-        borderRadius: 30 / 2,
-        backgroundColor: colors.primary,
+        width: 20,
+        height: 20,
+        borderRadius: 20 / 2,
+        backgroundColor: LessonItem.lessonCompleted
+          ? colors.primary
+          : COLORS.enactive,
         justifyContent: "center",
         alignItems: "center",
         marginRight: 10
@@ -55,29 +52,7 @@ const LessonItem = props => {
         name="check"
         style={{
           color: COLORS.white,
-          fontSize: 20
-        }}
-      />
-    </View>
-  );
-
-  const NotCompleted = props => (
-    <View
-      style={{
-        width: 30,
-        height: 30,
-        borderRadius: 30 / 2,
-        backgroundColor: COLORS.enactive,
-        justifyContent: "center",
-        alignItems: "center",
-        marginRight: 10
-      }}
-    >
-      <MaterialCommunityIcons
-        name="check"
-        style={{
-          color: COLORS.white,
-          fontSize: 20
+          fontSize: 10
         }}
       />
     </View>
@@ -87,68 +62,44 @@ const LessonItem = props => {
     <Animated.View
       style={{ margin: 5 }}
       entering={LightSpeedInRight.duration(1000)}
-      style={{ margin: 8, backgroundColor: "#8adebb", borderRadius: 15 }}
+      style={{ margin: 8, borderRadius: 15 }}
     >
-      <Card>
-        <TouchableOpacity
-          onPress={
-            handlePress
-            // console.log("lesson detals")
-          }
+      <TouchableOpacity onPress={handlePress}>
+        <Card
+          mode="outlined"
+          style={{
+            borderRadius: 15,
+            // borderColor: COLORS.primary,
+            marginHorizontal: 20
+          }}
         >
-          <View>
-            {LessonItem.lessonCompleted ? (
-              <Card.Title
-                // title={LessonItem.title}
-                title={"Testing"}
-                subtitle={"LESSON " + LessonItem.order}
-                right={Completed}
-                // left={LeftContent}
-                left={
-                  <Avatar.Image
-                    size={24}
-                    source={{
-                      uri: LessonItem.photo
-                    }}
-                  />
-                }
-                titleStyle={{ fontSize: 15 }}
-              />
-            ) : (
-              <Card>
-                <TouchableOpacity
-                  onPress={
-                    () =>
-                      navigation.navigate("Lesson Details", {
-                        id: LessonItem.id
-                      })
-                    // console.log("lesson detals")
-                  }
-                >
-                  <View style={styles.container}>
-                    <View style={styles.LeftContainer}>
-                      <Avatar.Image
-                        size={60}
-                        source={{
-                          uri: LessonItem.photo
-                        }}
-                      />
-                    </View>
-                    <View style={styles.MiddleContainer}>
-                      {/* <Title>{LessonItem.title} </Title> */}
-                      <Title>{"Test"} </Title>
-                      <Paragraph>{LessonItem.subtitle}</Paragraph>
-                    </View>
-                    <View style={styles.RightContainer}>
-                      <Completed />
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              </Card>
-            )}
-          </View>
-        </TouchableOpacity>
-      </Card>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Lesson Details", {
+                id: LessonItem.id
+              })
+            }
+          >
+            <View style={styles.container}>
+              <View style={styles.LeftContainer}>
+                <Avatar.Image
+                  size={60}
+                  source={{
+                    uri: LessonItem.photo
+                  }}
+                />
+              </View>
+              <View style={styles.MiddleContainer}>
+                <Title>{LessonItem.title} </Title>
+                <Paragraph>{LessonItem.subtitle}</Paragraph>
+              </View>
+              <View style={styles.RightContainer}>
+                <Completed />
+              </View>
+            </View>
+          </TouchableOpacity>
+        </Card>
+      </TouchableOpacity>
     </Animated.View>
   );
 };
@@ -164,7 +115,8 @@ const styles = StyleSheet.create({
 
   LeftContainer: {
     flex: 2,
-    justifyContent: "center"
+    justifyContent: "center",
+    marginLeft: 10
   },
   MiddleContainer: {
     flex: 6,
@@ -173,9 +125,8 @@ const styles = StyleSheet.create({
   },
   RightContainer: {
     flex: 1,
-    justifyContent: "center"
-    // marginLeft: 5,
-    // marginRight: 5
+    justifyContent: "center",
+    marginRight: 10
   },
   photo: {
     width: 180,

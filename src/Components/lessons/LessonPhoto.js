@@ -10,7 +10,7 @@ import {
   Image,
   Text
 } from "react-native";
-// import { Button } from "react-native-paper";
+import { Title } from "react-native-paper";
 // import Slider from "@react-native-community/slider";
 import Loader from "../Utils/Loader";
 import Player from "./SoundPlayer";
@@ -18,7 +18,7 @@ const { width, height } = Dimensions.get("window");
 // import { localhost } from "../../Helpers/urls";
 // import { useNavigation } from "@react-navigation/native";
 // import LessonItem from "./lesssonItem2";
-import { View as MotiView } from "moti";
+// import { View as MotiView } from "moti";
 
 function LessonDetail({ photo, title }) {
   return (
@@ -27,13 +27,16 @@ function LessonDetail({ photo, title }) {
         flex: 1,
         justifyContent: "center"
       }}
-      // from={{ opacity: 0, translateX: 500 }}
-      // animate={{ opacity: 1, translateX: 0 }}
-      // transition={{
-      //   type: "spring"
-      // }}
     >
-      <View>
+      <View
+        style={{
+          shadowColor: "#fff",
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.8,
+          shadowRadius: 2,
+          elevation: 10
+        }}
+      >
         <Image
           style={styles.photo}
           source={{
@@ -42,7 +45,7 @@ function LessonDetail({ photo, title }) {
         />
       </View>
       <View>
-        <Text style={styles.title}>{title} </Text>
+        <Title style={styles.title}>{title} </Title>
       </View>
     </View>
   );
@@ -79,7 +82,7 @@ const styles = StyleSheet.create({
   photo: {
     width: "100%",
     height: "100%",
-    borderRadius: 16
+    borderRadius: 25
   },
 
   text: {

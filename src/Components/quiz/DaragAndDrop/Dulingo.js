@@ -19,25 +19,24 @@ const Duolingo = ({
   answer,
   type,
   validateAnswer,
-  numberOfQuestions
+  numberOfQuestions,
+  has_audio,
+  PlayAudio,
+  IsPlaying
 }) => {
   // console.log(type);
   return (
     <>
       {qustion ? (
-        <View
-          style={{ flex: 1 }}
-          // from={{ opacity: 0, translateX: 500 }}
-          // animate={{ opacity: 1, translateX: 0 }}
-          // transition={{
-          //   type: "spring"
-          // }}
-        >
+        <View style={{ flex: 1 }}>
           <WordList
             numberOfQuestions={numberOfQuestions}
             type={type}
             answer={answer}
             title={title}
+            has_audio={has_audio}
+            PlayAudio={PlayAudio}
+            IsPlaying={IsPlaying}
           >
             {qustion.map(word => (
               <Word test={123} key={word.id} {...word} />
