@@ -30,8 +30,10 @@ import {
   handleValidate,
   handleNext
 } from "../../../store/actions/quiz";
+// import console = require("console");
 
 const renderOptions = props => {
+  // console.log(props.photo_1);
   const animation = React.useRef(null);
 
   const { title, question, Photos } = props;
@@ -42,45 +44,45 @@ const renderOptions = props => {
   const [showMessage, setShowMessage] = useState(false);
   const [optionsDisabled, setOptionsDisabled] = useState(false);
   const [progress, setProgress] = useState(new Animated.Value(0));
+  const [selectedOption, setSelectedOption] = useState("");
+  const [showNextButton, setShowNextButton] = useState(false);
+
+  const validate = option => {
+    setShowMessage(true);
+    setShowNextButton(true);
+    if (option) {
+      setSelectedOption(option);
+      let str_option = option.toString();
+      let str_correct_option = props.correct_option.toString();
+      if (str_option === str_correct_option) {
+        // console.log("option correct");
+        setScored(true);
+        if (showMessage) {
+          animation.current.play(0, 100);
+        }
+        const data = {
+          score: props.score + 1
+        };
+        props.handleValidate(data);
+      } else {
+        setScored(false);
+      }
+    }
+    setTimeout(() => setShowMessage(false), 1000);
+  };
 
   const handleNextQuiz = () => {
-    props.UnloadSound();
-    SetSelectedAnswer(null);
+    // props.UnloadSound();
     setScored(false);
-    setShowAnswer(false);
-    setOptionsDisabled(false);
+    // setText("");
+    setShowNextButton(false);
     const data = {
       index:
         props.index !== props.numberOfQuestions ? props.index + 1 : props.index,
-      showAnswer: false,
-      answerList: null,
       showScoreModal: props.index === props.numberOfQuestions ? true : false
     };
+    // console.log(data);
     props.handleNext(data);
-    Animated.timing(progress, {
-      toValue: props.index + 1,
-      duration: 5000,
-      useNativeDriver: false
-    }).start();
-  };
-
-  const handleValidateQuiz = option => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
-    setShowAnswer(true);
-    setOptionsDisabled(true);
-    SetSelectedAnswer(option.id);
-    setScored(option.is_correct_choice ? true : false);
-    const score = option.is_correct_choice ? 1 : 0;
-    const data = {
-      score: props.score + score
-    };
-    setShowMessage(true);
-    if (showMessage) {
-      animation.current.play(0, 100);
-    }
-    props.handleValidate(data);
-    setTimeout(() => setShowMessage(false), 1000);
   };
 
   return (
@@ -90,11 +92,22 @@ const renderOptions = props => {
     >
       <View
         style={{
-          justifyContent: "center",
+          justifyContent: "space-around",
           alignItems: "center",
-          flex: 1
+          flex: 1.5
+          // backgroundColor: "red"
         }}
       >
+        <Paragraph>{props.title}</Paragraph>
+        <Title
+          style={{
+            // color: COLORS.black,
+            fontSize: 20,
+            paddingBottom: 25
+          }}
+        >
+          {props.question}
+        </Title>
         {showMessage ? (
           <>
             <LottieView
@@ -113,96 +126,130 @@ const renderOptions = props => {
             />
           </>
         ) : null}
-
-        <Title
-          style={{
-            color: COLORS.black,
-            fontSize: 20,
-            paddingTop: 25
-          }}
-        >
-          {title}
-        </Title>
       </View>
       <View
         style={{
           flexDirection: "row",
           flexWrap: "wrap",
-          flex: 3.5,
+          flex: 3,
           justifyContent: "center"
+          // backgroundColor: "red"
         }}
       >
-        {Photos.map(option => (
-          <TouchableOpacity
-            key={option.id}
-            disabled={optionsDisabled}
-            onPress={() => handleValidateQuiz(option)}
-            style={{
-              borderWidth: 1,
-              shadowColor: "#fff",
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.8,
-              shadowRadius: 2,
-              elevation: 5,
-              margin: 5,
-              opacity: !showAnswer ? 1 : option.id === selectedAnswer ? 1 : 0.6,
-              borderColor:
-                showAnswer && option.is_correct_choice
-                  ? COLORS.success
-                  : showAnswer && !option.is_correct_choice
-                  ? COLORS.error
-                  : COLORS.primary
-            }}
-          >
-            <Image
-              style={styles.option_photo}
-              source={{ uri: option.photo.photo }}
-            />
-          </TouchableOpacity>
-        ))}
+        <TouchableOpacity
+          onPress={() => validate(1)}
+          disabled={showNextButton}
+          style={{
+            borderWidth: 1,
+            shadowColor: "#fff",
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.8,
+            shadowRadius: 2,
+            elevation: 5,
+            margin: 5,
+            opacity: showNextButton ? 0.8 : 1,
+            borderColor:
+              showNextButton && selectedOption === "1"
+                ? COLORS.success
+                : showNextButton && selectedOption != "1"
+                ? COLORS.error
+                : COLORS.primary
+          }}
+        >
+          <Image style={styles.option_photo} source={{ uri: props.photo_1 }} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => validate(2)}
+          disabled={showNextButton}
+          style={{
+            borderWidth: 1,
+            shadowColor: "#fff",
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.8,
+            shadowRadius: 2,
+            elevation: 5,
+            margin: 5,
+            opacity: showNextButton ? 0.5 : 1,
+            borderColor:
+              showNextButton && selectedOption === "2"
+                ? COLORS.success
+                : showNextButton && selectedOption != "2"
+                ? COLORS.error
+                : COLORS.primary
+          }}
+        >
+          <Image style={styles.option_photo} source={{ uri: props.photo_2 }} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => validate(3)}
+          disabled={showNextButton}
+          style={{
+            borderWidth: 1,
+            shadowColor: "#fff",
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.8,
+            shadowRadius: 2,
+            elevation: 5,
+            margin: 5,
+
+            opacity: showNextButton ? 0.5 : 1,
+            borderColor:
+              showNextButton && selectedOption === "3"
+                ? COLORS.success
+                : showNextButton && selectedOption != "3"
+                ? COLORS.error
+                : COLORS.primary
+          }}
+        >
+          <Image style={styles.option_photo} source={{ uri: props.photo_3 }} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => validate(4)}
+          disabled={showNextButton}
+          style={{
+            borderWidth: 1,
+            shadowColor: "#fff",
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.8,
+            shadowRadius: 2,
+            elevation: 5,
+            margin: 5,
+
+            opacity: showNextButton ? 0.5 : 1,
+            borderColor:
+              showNextButton && selectedOption === "4"
+                ? COLORS.success
+                : showNextButton && selectedOption != "4"
+                ? COLORS.error
+                : COLORS.primary
+          }}
+        >
+          <Image style={styles.option_photo} source={{ uri: props.photo_4 }} />
+        </TouchableOpacity>
       </View>
       <View
         style={{
           flex: 1.5,
-          alignItems: "center",
-          justifyContent: "center"
-          // backgroundColor: "black"
+          // backgroundColor: "red",
+          justifyContent: "center",
+          alignItems: "center"
         }}
       >
-        <View
-          style={{
-            // justifyContent: "flex-",
-            alignItems: "center",
-            // backgroundColor: "red",
-            flex: 1
-          }}
-        >
-          <Title
-            style={{
-              color: COLORS.black,
-              fontSize: 20,
-              paddingBottom: 25
-            }}
+        {props.audio ? (
+          <TouchableOpacity
+            style={{ flex: 1, alignSelf: "center", paddingTop: 35 }}
+            disabled={props.isPlaying}
+            onPress={props.PlayAudio}
           >
-            {question}
-          </Title>
-          {props.has_audio ? (
-            <TouchableOpacity
-              disabled={props.isPlaying}
-              onPress={props.PlayAudio}
-            >
-              <Icon
-                name="sound"
-                style={{
-                  color: "black",
-                  fontSize: 30,
-                  paddingBottom: 10
-                }}
-              />
-            </TouchableOpacity>
-          ) : null}
-        </View>
-
+            <Icon
+              name="sound"
+              style={{
+                // color: "black",
+                fontSize: 30
+              }}
+            />
+          </TouchableOpacity>
+        ) : null}
         <View
           style={{
             position: "absolute",
@@ -216,10 +263,10 @@ const renderOptions = props => {
           <Button
             mode="contained"
             onPress={handleNextQuiz}
-            disabled={!showAnswer || showMessage}
+            disabled={!showNextButton}
             style={{ paddingBottom: 10, paddingTop: 10 }}
           >
-            {showAnswer ? "NEXT" : "SELECT"}
+            {showNextButton ? "NEXT" : "SELECT"}
           </Button>
         </View>
       </View>

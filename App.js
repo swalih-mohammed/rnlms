@@ -165,7 +165,7 @@ export default function App() {
                   options={{
                     headerShown: false
                   }}
-                  name="Lesson Test"
+                  name="Quiz Detail"
                   component={TestDetail}
                 />
                 <Stack.Screen

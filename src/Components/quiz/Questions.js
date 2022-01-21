@@ -1,35 +1,33 @@
 import React, { useState, useEffect, useContext } from "react";
 import { connect } from "react-redux";
 import { useKeepAwake } from "expo-keep-awake";
-
-// import axios from "axios";
+import axios from "axios";
 import { createASNT } from "../../store/actions/assignments";
 import { handleNext, handleStart } from "../../store/actions/quiz";
 import { useNavigation } from "@react-navigation/native";
 import { Audio } from "expo-av";
-import { useTheme, Button } from "react-native-paper";
+import { localhost } from "../../Helpers/urls";
 import nlp from "compromise";
-// import Title from "./Title";
 import ProgressBar from "./Progress";
-// import Progress from "./DaragAndDrop/Header";
-import PhotOptions from "./MultipleChoice/PhotoOption";
+import PhotoOption from "./MultipleChoice/PhotoOption";
 import TextChoices from "./MultipleChoice/TextOptions";
 import Match from "./Match/index";
 import DragAndDrop from "./DaragAndDrop/Dulingo";
-import { View, StatusBar, Dimensions } from "react-native";
+import Speaking from "./Speak/speak";
+import Writing from "./Write/write";
+import FillInBlank from "./MultipleChoice/FillInBlank";
+import { View, StatusBar, Dimensions, Text } from "react-native";
 import { COLORS, SIZES } from "../../Helpers/constants";
-const { width, height } = Dimensions.get("window");
 import ScoreModal from "./model";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Questions = props => {
   const navigation = useNavigation();
-  const { colors } = useTheme();
+  // const { colors } = useTheme();
   const sound = React.useRef(new Audio.Sound());
-
   const [isPlaying, setIsplaying] = React.useState(false);
   const [didJustFinish, setDidJustFinish] = React.useState(false);
-
+  const [error, setError] = useState(null);
   const {
     questions,
     testID,
@@ -43,15 +41,19 @@ const Questions = props => {
   const allQuestions = questions;
 
   React.useEffect(() => {
-    // console.log("use effect questions");
+    // console.log("question", allQuestions[props.index]);
+    // console.log("question index", props.index);
     LoadAudio();
     return () => {
       UnloadSound();
     };
   }, [props.index]);
 
-  const UnloadSound = () => {
-    sound.current.unloadAsync();
+  const UnloadSound = async () => {
+    const status = await sound.current.getStatusAsync();
+    if (status.isLoaded) {
+      sound.current.unloadAsync();
+    }
   };
 
   const LoadAudio = async () => {
@@ -109,17 +111,48 @@ const Questions = props => {
   };
 
   const handleSubmitTest = () => {
-    try {
-      // props.handleStart();
-      // props.createASNT(token, data);
-      // console.log("submitting");
-      sectionId != null
-        ? navigation.navigate("Section Details", { id: sectionId })
-        : navigation.navigate("Unit Details", { id: unitId });
-    } catch (err) {
-      setError(err);
-      console.log(err);
+    UnloadSound();
+    // props.handleStart();
+    if (props.lesson !== null) {
+      console.log("lesson exist");
+      const data = {
+        username: props.username,
+        lessonId: props.lesson
+      };
+      axios.defaults.headers = {
+        "Content-Type": "application/json",
+        Authorization: `Token ${props.token}`
+      };
+      axios
+        .post(`${localhost}/lessons/lesson-completed-create/`, data)
+        .then(res => {
+          console.log("lesson completed");
+        })
+        .catch(err => {
+          setError(err);
+        });
+    } else if (props.unit !== null) {
+      console.log("unit exist");
+      const data = {
+        username: props.username,
+        quizId: props.quiz
+      };
+      axios.defaults.headers = {
+        "Content-Type": "application/json",
+        Authorization: `Token ${props.token}`
+      };
+      axios
+        .post(`${localhost}/quizzes/quiz-completed-create/`, data)
+        .then(res => {
+          console.log("lesson completed");
+        })
+        .catch(err => {
+          setError(err);
+        });
+    } else {
+      console.log("lesson and unit not null ");
     }
+    navigation.navigate("Unit Details", { id: props.unit });
   };
 
   const Tokenize = text => {
@@ -201,49 +234,52 @@ const Questions = props => {
       />
       <View style={{ flex: 1 }}>
         {/* ///render options start  */}
-        {allQuestions[props.index].questionType.type === "CHOICE" ? (
-          <>
-            {allQuestions[props.index].questionType.assetType === "TEXT" ? (
-              <>
-                <TextChoices
-                  numberOfQuestions={allQuestions.length - 1}
-                  title={allQuestions[props.index].title}
-                  question={allQuestions[props.index].question}
-                  Choices={allQuestions[props.index].text_choices}
-                  has_audio={allQuestions[props.index].questionType.has_audio}
-                  PlayAudio={PlayAudio}
-                  isPlaying={isPlaying}
-                />
-              </>
-            ) : allQuestions[props.index].questionType.assetType === "PHOTO" ? (
-              <>
-                <PhotOptions
-                  numberOfQuestions={allQuestions.length - 1}
-                  title={allQuestions[props.index].title}
-                  question={allQuestions[props.index].question}
-                  Photos={allQuestions[props.index].photo_choices}
-                  has_audio={allQuestions[props.index].questionType.has_audio}
-                  PlayAudio={PlayAudio}
-                  isPlaying={isPlaying}
-                  UnloadSound={UnloadSound}
-                />
-              </>
-            ) : null}
-          </>
-        ) : allQuestions[props.index].questionType.type === "DRAG" ? (
-          <>
-            <DragAndDrop
-              numberOfQuestions={allQuestions.length - 1}
-              title={allQuestions[props.index].title}
-              type={allQuestions[props.index].questionType.pos}
-              qustion={Tokenize(allQuestions[props.index].question)}
-              answer={allQuestions[props.index].answer}
-              has_audio={allQuestions[props.index].questionType.has_audio}
-              PlayAudio={PlayAudio}
-              isPlaying={isPlaying}
-            />
-          </>
-        ) : allQuestions[props.index].questionType.type === "MATCH" ? (
+        {allQuestions[props.index].category === "TEXT_OPTIONS" && (
+          <TextChoices
+            numberOfQuestions={allQuestions.length - 1}
+            question={allQuestions[props.index].question}
+            audio={allQuestions[props.index].audio}
+            correct_option={allQuestions[props.index].correct_option}
+            correct_option={allQuestions[props.index].correct_option}
+            text_option_1={allQuestions[props.index].text_option_1}
+            text_option_2={allQuestions[props.index].text_option_2}
+            text_option_3={allQuestions[props.index].text_option_3}
+            PlayAudio={PlayAudio}
+            UnloadSound={UnloadSound}
+            isPlaying={isPlaying}
+          />
+        )}
+
+        {allQuestions[props.index].category === "PHOTO_OPTIONS" && (
+          <PhotoOption
+            numberOfQuestions={allQuestions.length - 1}
+            title={allQuestions[props.index].title}
+            question={allQuestions[props.index].question}
+            audio={allQuestions[props.index].audio}
+            correct_option={allQuestions[props.index].correct_option}
+            photo_1={allQuestions[props.index].photo_option_1.photo}
+            photo_2={allQuestions[props.index].photo_option_2.photo}
+            photo_3={allQuestions[props.index].photo_option_3.photo}
+            photo_4={allQuestions[props.index].photo_option_4.photo}
+            PlayAudio={PlayAudio}
+            isPlaying={isPlaying}
+            UnloadSound={UnloadSound}
+          />
+        )}
+
+        {allQuestions[props.index].category === "DRAG" && (
+          <DragAndDrop
+            numberOfQuestions={allQuestions.length - 1}
+            title={allQuestions[props.index].title}
+            // type={allQuestions[props.index].questionType.pos}
+            qustion={Tokenize(allQuestions[props.index].question)}
+            answer={allQuestions[props.index].answer}
+            // has_audio={allQuestions[props.index].questionType.has_audio}
+            PlayAudio={PlayAudio}
+            isPlaying={isPlaying}
+          />
+        )}
+        {allQuestions[props.index].category === "MATCH" && (
           <Match
             numberOfQuestions={allQuestions.length - 1}
             title={allQuestions[props.index].title}
@@ -252,15 +288,41 @@ const Questions = props => {
             BucketB={processMatch(allQuestions[props.index].answer, true)}
             answer={processMatch(allQuestions[props.index].answer, false)}
           />
-        ) : // <Text style={{ justifyContent: "center" }}>Test</Text>
-        null}
-
-        {/* {allQuestions[currentQuestionIndex].has_audio ? (
-          <AudioPlayerWiouthControl
-            mp3={allQuestions[currentQuestionIndex].audio}
+        )}
+        {allQuestions[props.index].category === "SPEAK" && (
+          <Speaking
+            numberOfQuestions={allQuestions.length - 1}
+            title={allQuestions[props.index].title}
+            question={allQuestions[props.index].question}
+            answer={allQuestions[props.index].answer}
+            PlayAudio={PlayAudio}
+            UnloadSound={UnloadSound}
           />
-        ) : null} */}
-        {/* Score Modal */}
+        )}
+        {allQuestions[props.index].category === "WRITE" && (
+          <Writing
+            numberOfQuestions={allQuestions.length - 1}
+            title={allQuestions[props.index].title}
+            qustion={allQuestions[props.index].question}
+            answer={allQuestions[props.index].answer}
+            PlayAudio={PlayAudio}
+            UnloadSound={UnloadSound}
+          />
+        )}
+        {allQuestions[props.index].category === "FILL_IN_BLANK" && (
+          <FillInBlank
+            numberOfQuestions={allQuestions.length - 1}
+            title={allQuestions[props.index].title}
+            qustion={allQuestions[props.index].question}
+            answer={allQuestions[props.index].answer}
+            correct_option={allQuestions[props.index].correct_option}
+            text_option_1={allQuestions[props.index].text_option_1}
+            text_option_2={allQuestions[props.index].text_option_2}
+            text_option_3={allQuestions[props.index].text_option_3}
+            PlayAudio={PlayAudio}
+            UnloadSound={UnloadSound}
+          />
+        )}
       </View>
       {props.showScoreModal ? (
         <ScoreModal

@@ -18,6 +18,7 @@ const ScoreModal = props => {
     if (animation.current) {
       animation.current.play(0, 100);
     }
+    // console.log(props.unit);
   }, []);
 
   const restartQuiz = () => {
@@ -159,7 +160,8 @@ const mapStateToProps = state => {
   return {
     index: state.quiz.index,
     score: state.quiz.score,
-    showScoreModal: state.quiz.showScoreModal
+    showScoreModal: state.quiz.showScoreModal,
+    unit: state.course.unit
   };
 };
 const mapDispatchToProps = dispatch => {

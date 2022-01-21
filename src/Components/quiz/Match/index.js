@@ -120,33 +120,30 @@ const renderOptions = props => {
     >
       <View
         style={{
-          flex: 1,
-          // justifyContent: "center",
+          flex: 1.5,
+          justifyContent: "center",
           alignItems: "center"
-          // backgroundColor: "green"
+          // backgroundColor: "red"
         }}
       >
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Title style={{ fontSize: 18, color: "black" }}>{title}</Title>
-          {showMessage ? (
-            <LottieView
-              ref={animation}
-              source={
-                scored
-                  ? require("../../../../assets/lotties/correct.json")
-                  : require("../../../../assets/lotties/incorrect.json")
-              }
-              autoPlay={true}
-              loop={false}
-            />
-          ) : null}
-        </View>
+        <Title style={{ fontSize: 18, color: "black" }}>{title}</Title>
+        {showMessage ? (
+          <LottieView
+            ref={animation}
+            source={
+              scored
+                ? require("../../../../assets/lotties/correct.json")
+                : require("../../../../assets/lotties/incorrect.json")
+            }
+            autoPlay={true}
+            loop={false}
+          />
+        ) : null}
       </View>
+
       <View
         style={{
-          flex: 4,
+          flex: 3,
           flexDirection: "row",
           // backgroundColor: "green",
           justifyContent: "center",
@@ -241,45 +238,26 @@ const renderOptions = props => {
 
       <View
         style={{
+          position: "absolute",
+          bottom: 0,
+          right: 0,
+          left: 0,
+          // backgroundColor: "red",
           flex: 1
         }}
       >
-        {props.sound ? (
-          <TouchableOpacity onPress={() => console.log(123)}>
-            <Icon
-              name="sound"
-              style={{
-                color: "black",
-                fontSize: 30,
-                alignSelf: "center"
-              }}
-            />
-          </TouchableOpacity>
-        ) : null}
-
-        <View
-          style={{
-            position: "absolute",
-            bottom: 0,
-            right: 0,
-            left: 0,
-            // backgroundColor: "red",
-            flex: 1
-          }}
+        <Button
+          // mode="contained"
+          // disabled={showMessage}
+          mode={showAnswer ? "contained" : "outlined"}
+          onPress={
+            showAnswer ? () => handleNextQuiz() : () => handleValidateQuiz()
+          }
+          // disabled={!showAnswer}
+          style={{ paddingBottom: 10, paddingTop: 10 }}
         >
-          <Button
-            // mode="contained"
-            disabled={showMessage}
-            mode={showAnswer ? "contained" : "outlined"}
-            onPress={
-              showAnswer ? () => handleNextQuiz() : () => handleValidateQuiz()
-            }
-            // disabled={!props.showAnswer}
-            style={{ paddingBottom: 10, paddingTop: 10 }}
-          >
-            {showAnswer ? "NEXT" : "CHECK"}
-          </Button>
-        </View>
+          {showAnswer ? "NEXT" : "CHECK"}
+        </Button>
       </View>
     </Animated.View>
   );

@@ -13,13 +13,13 @@ import { handleStart } from "../../store/actions/quiz";
 // import Questions from "../../Components/pacticeTest/Qustions";
 
 const QuizList = props => {
-  const [test, setTest] = useState(null);
-  const [questions, setQuestions] = useState(null);
+  const [quiz, setQuiz] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(null);
 
   useEffect(() => {
     getTest();
+    // console.log("quiz detail page");
   }, []);
 
   const { lessonId, QuizId, unitId, sectionId } = props.route.params;
@@ -28,7 +28,8 @@ const QuizList = props => {
     try {
       setLoading(true);
       const response = await axios.get(`${localhost}/quizzes/${QuizId}`);
-      setQuestions(response.data);
+      setQuiz(response.data);
+      // console.log(response.data);
       setLoading(false);
     } catch (err) {
       setError(err);
@@ -39,19 +40,18 @@ const QuizList = props => {
   return (
     <>
       {loading ? (
-        // <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
         <Loader />
       ) : (
         <>
-          {questions ? (
-            // <QuizProvider>
+          {quiz ? (
             <Questions
-              questions={questions.questions}
-              lessonId={lessonId}
-              unitId={unitId}
-              sectionId={sectionId}
+              questions={quiz.questions}
+              quiz={quiz.id}
+              lesson={quiz.lesson}
+              unit={quiz.unit}
+              course={quiz.course}
             />
-          ) : // </QuizProvider>
+          ) : // <Text>testing</Text>
           null}
         </>
       )}

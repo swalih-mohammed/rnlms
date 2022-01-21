@@ -15,7 +15,6 @@ const resetCourseDetails = (state, action) => {
   return updateObject(state, {
     course: null,
     courseLanguage: null,
-    section: null,
     unit: null,
     lesson: null,
     lesson_item: null,
@@ -27,7 +26,6 @@ const setCourseDetails = (state, action) => {
   return updateObject(state, {
     course: action.data.course,
     courseLanguage: action.data.courseLanguage,
-    section: action.data.section,
     unit: action.data.unit,
     lesson: action.data.lesson,
     lesson_item: action.lesson_item,

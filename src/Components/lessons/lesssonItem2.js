@@ -27,9 +27,6 @@ import Slider from "@react-native-community/slider";
 import { COLORS, SIZES } from "../../Helpers/constants";
 import Animated, { LightSpeedInRight } from "react-native-reanimated";
 
-// const soundObject = new Audio.Sound();
-// const sound = new Audio.Sound();
-
 function lessonItem(props) {
   const {
     lessonItems,
@@ -200,7 +197,7 @@ function lessonItem(props) {
 
   const navigateToQuiz = () => {
     UnloadSound();
-    navigation.navigate("Lesson Test", {
+    navigation.navigate("Quiz Detail", {
       QuizId: QuizId,
       lessonId: lessonId,
       unitId: unitId,
@@ -309,7 +306,7 @@ function lessonItem(props) {
         <MaterialCommunityIcons
           name={!isPlaying || didJustFinish ? "play" : "pause"}
           style={{
-            color: COLORS.black,
+            // color: COLORS.black,
             fontSize: 30,
             alignSelf: "center",
             // backgroundColor: "gray",

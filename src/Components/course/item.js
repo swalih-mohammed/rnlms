@@ -16,7 +16,7 @@ import { TouchableOpacity } from "react-native";
 import { setCourseDetails } from "../../store/actions/course";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 const { width, height } = Dimensions.get("window");
-import { View as MotiView } from "moti";
+// import { View as MotiView } from "moti";
 import { COLORS } from "../../Helpers/constants";
 
 const CourseItem = props => {

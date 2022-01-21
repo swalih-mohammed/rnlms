@@ -24,7 +24,8 @@ const Loader = () => {
       >
         <LottieView
           ref={animation}
-          source={require("../../../assets/lotties/loading4.json")}
+          source={require("../../../assets/lotties/loadingWater.json")}
+          // source={require("../../../assets/lotties/loading4.json")}
           // source={require("../../../../assets/lotties/loading.json")}
           autoPlay={true}
           loop={true}

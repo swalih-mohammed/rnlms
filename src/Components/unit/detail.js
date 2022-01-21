@@ -3,37 +3,33 @@ import axios from "axios";
 import { connect } from "react-redux";
 
 // import { View, TouchableOpacity, Text } from "react-native";
-import {
-  TouchableOpacity,
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  StatusBar,
-  View,
-  Text
-} from "react-native";
-import { List, Card, Avatar } from "react-native-paper";
+import { StatusBar, View, Text, ScrollView } from "react-native";
+import { COLORS, SIZES } from "../../Helpers/constants";
+import { handleStart } from "../../store/actions/quiz";
+import { reSetCourseDetails } from "../../store/actions/course";
+import { List, Card, Avatar, ProgressBar } from "react-native-paper";
 import { localhost } from "../../Helpers/urls";
-import UnitTestList from "../unitTest/list";
+// import UnitTestList from "../unitTest/list";
 import { useNavigation } from "@react-navigation/native";
-import * as Animatable from "react-native-animatable";
-import { View as MotiView } from "moti";
+// import * as Animatable from "react-native-animatable";
+// import { View as MotiView } from "moti";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Loader from "../Utils/Loader";
 import LessonItem from "../lessons/item";
+import QuizItem from "../quiz/item";
 
 const LeftContent = props => <Avatar.Icon {...props} icon="school" />;
 
 const UnitDetail = props => {
   const navigation = useNavigation();
-  const [unitTest, setUnitTest] = useState(null);
+  const [quizzes, setQuizzes] = useState(null);
   const [unit, setUnit] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getUnitDetail();
-    // console.log(id);
+    // console.log("unit details");
   }, []);
   const { id } = props.route.params;
 
@@ -47,6 +43,15 @@ const UnitDetail = props => {
           `${localhost}/courses/units/${unitId}/${username}`
         );
         setUnit(response.data[0]);
+        setQuizzes(response.data[0].quizzes);
+        console.log(response.data[0]);
+        // resetQuiz();
+        // resetUnit();
+        // PushToLessonWhenOneLesson(
+        //   response.data[0].lessons[0].id,
+        //   response.data[0].lessons.length
+        // );
+        progressBar();
         setLoading(false);
       } catch (err) {
         setError(err);
@@ -54,59 +59,101 @@ const UnitDetail = props => {
       }
     }
   };
+  const resetUnit = () => {
+    const data = {
+      unit: id
+    };
+    props.reSetCourseDetails(data);
+  };
+  const resetQuiz = () => {
+    const data = {
+      index: 0,
+      score: 0,
+      showAnswer: false,
+      answerList: [],
+      showScoreModal: false
+    };
+    props.handleStart(data);
+  };
+
+  const PushToLessonWhenOneLesson = (lesson, lenght) => {
+    if (lenght === 1) {
+      console.log("only one lesson hence pusing to lesson details");
+      navigation.navigate("Lesson Details", { id: lesson });
+    }
+  };
+  const progressBar = () => {
+    if (unit) {
+      const lesson_len = unit.lessons.length;
+      const quiz_len = unit.quizzes.length;
+
+      const lesson_comp = unit.lessons.filter(
+        lesson => lesson.lessonCompleted === true
+      );
+      const quiz_comp = unit.quizzes.filter(
+        quiz => quiz.quizCompleted === true
+      );
+
+      const total_len = lesson_len + quiz_len;
+      const comp_len = lesson_comp.length + quiz_comp.length;
+
+      if (total_len === 0 || comp_len === 0) {
+        return 0;
+      }
+      // console.log(comp_len, total_len);
+      return comp_len / total_len;
+    } else {
+      return 0;
+    }
+  };
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
       {loading ? (
-        // <ActivityIndicator
-        //   style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        // />
-        <Loader
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        />
+        <Loader />
       ) : (
-        <SafeAreaView style={{ flex: 1 }}>
-          <StatusBar style="dark" />
+        <>
           {unit && (
             <Card>
-              <TouchableOpacity>
-                <Card.Title
-                  title={unit.title}
-                  subtitle={"UNIT " + unit.order}
-                  titleStyle={{ fontSize: 18, fontWeight: "bold" }}
-                />
-              </TouchableOpacity>
+              <Card.Title
+                title={unit.title}
+                subtitle={"UNIT " + unit.order}
+                titleStyle={{ fontSize: 18, fontWeight: "bold" }}
+                left={LeftContent}
+              />
+              <View>
+                <ProgressBar progress={progressBar()} color={COLORS.primary} />
+              </View>
             </Card>
           )}
-
-          {unit && unit.lessons ? (
-            <View style={styles.container}>
-              <FlatList
-                data={unit.lessons}
-                keyExtractor={item => item.id.toString()}
-                renderItem={({ item }) => {
-                  return <LessonItem LessonItem={item} unitId={unit.id} />;
-                }}
-              />
+          <ScrollView>
+            <View>
+              {unit &&
+                unit.lessons &&
+                unit.lessons.map((item, index) => {
+                  return (
+                    <LessonItem
+                      key={index}
+                      LessonItem={item}
+                      unitId={unit.id}
+                    />
+                  );
+                })}
             </View>
-          ) : null}
-        </SafeAreaView>
+            <View>
+              {unit &&
+                unit.quizzes &&
+                unit.quizzes.map((item, index) => {
+                  return <QuizItem key={index} item={item} unitId={unit.id} />;
+                })}
+            </View>
+          </ScrollView>
+        </>
       )}
-    </>
+    </SafeAreaView>
   );
 };
-const styles = StyleSheet.create({
-  container: {
-    flex: 1
-  },
-  item: {
-    backgroundColor: "#f9c2ff",
-    marginVertical: 8
-  },
-  title: {
-    fontSize: 32
-  }
-});
 
 const mapStateToProps = state => {
   return {
@@ -115,7 +162,14 @@ const mapStateToProps = state => {
   };
 };
 
+const mapDispatchToProps = dispatch => {
+  return {
+    handleStart: data => dispatch(handleStart(data)),
+    reSetCourseDetails: data => dispatch(reSetCourseDetails(data))
+  };
+};
+
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(UnitDetail);
