@@ -71,7 +71,7 @@ const Account = props => {
 
   const CalculateReminingUnits = (total, completed) => {
     if (total && completed) {
-      return completed - total + " more units to go";
+      return total - completed + " more units to go";
     } else {
       return "";
     }
@@ -160,7 +160,7 @@ const Account = props => {
                               flex: 1,
                               flexDirection: "row",
                               marginHorizontal: 10,
-                              marginVertical: 10
+                              marginVertical: 15
                             }}
                           >
                             <View style={{ flex: 1 }}>

@@ -31,7 +31,7 @@ const UnitItem = props => {
     resetCourse();
     resetQuiz();
     navigation.navigate("Unit Details", { id: item.id });
-    console.log("unit details");
+    // console.log("unit details");
   };
 
   const resetCourse = () => {

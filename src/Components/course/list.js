@@ -6,13 +6,13 @@ import { COLORS, SIZES } from "../../Helpers/constants";
 import {
   StyleSheet,
   FlatList,
-  ActivityIndicator,
+  // ActivityIndicator,
   View,
   Text,
   StatusBar,
   Image,
-  ScrollView,
-  SectionList
+  ScrollView
+  // SectionList
 } from "react-native";
 import axios from "axios";
 // import { courseListURL } from "../../Helpers/urls";
@@ -69,107 +69,110 @@ const CourseList = props => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
-      {loading || props.tokenLoading ? (
-        <Loader />
-      ) : (
-        <>
-          {!props.token ? (
-            <GetStarted />
-          ) : (
-            <>
-              <Card>
-                <View
-                  style={{
-                    marginTop: 20,
-                    marginBottom: 20,
-                    justifyContent: "center",
-                    alignSelf: "center"
-                  }}
-                >
-                  <Title>{"Lakaters"}</Title>
-                  {/* <Image
+      <Card>
+        <View
+          style={{
+            marginTop: 20,
+            marginBottom: 20,
+            justifyContent: "center",
+            alignSelf: "center"
+          }}
+        >
+          <Title>{"Lakaters"}</Title>
+          {/* <Image
                     // style={{ width: "100%", height: "100%" }}
                     source={require("../../../assets/Group 5.png")}
                   /> */}
-                </View>
-              </Card>
+        </View>
+      </Card>
+      {!props.token ? (
+        // <Loader />
+        <GetStarted />
+      ) : (
+        <>
+          {loading ? (
+            // <GetStarted />
+            <Loader />
+          ) : (
+            <>
+              {courses && (
+                <ScrollView>
+                  {generalEnglish.length > 0 ? (
+                    <List.Section
+                      style={{
+                        backgroundColor: "#ccd5ae",
+                        paddingBottom: 10,
+                        paddingHorizontal: 10
+                      }}
+                    >
+                      <List.Subheader>General English Courses</List.Subheader>
+                      <FlatList
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        ItemSeparatorComponent={() => (
+                          <View style={{ margin: 5 }} />
+                        )}
+                        data={generalEnglish}
+                        keyExtractor={item => item.id.toString()}
+                        renderItem={({ item }) => {
+                          return <CourseItem item={item} />;
+                        }}
+                      />
+                    </List.Section>
+                  ) : null}
+                  {keralaSchoolEnglihs.length > 0 ? (
+                    <List.Section
+                      style={{
+                        backgroundColor: "#d9ed92",
+                        paddingBottom: 10,
+                        paddingHorizontal: 10
+                      }}
+                    >
+                      <List.Subheader>Kerala School - English</List.Subheader>
+                      <FlatList
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        ItemSeparatorComponent={() => (
+                          <View style={{ margin: 4 }} />
+                        )}
+                        data={courses.filter(
+                          course => course.category === "SCHOOL_ENGLISH_KERALA"
+                        )}
+                        keyExtractor={item => item.id.toString()}
+                        renderItem={({ item }) => {
+                          return <CourseItem item={item} />;
+                        }}
+                      />
+                    </List.Section>
+                  ) : null}
 
-              <ScrollView>
-                {generalEnglish.length > 0 ? (
-                  <List.Section
-                    style={{
-                      backgroundColor: "#ccd5ae",
-                      paddingBottom: 10,
-                      paddingHorizontal: 10
-                    }}
-                  >
-                    <List.Subheader>General English Courses</List.Subheader>
-                    <FlatList
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      ItemSeparatorComponent={() => (
-                        <View style={{ margin: 4 }} />
-                      )}
-                      data={generalEnglish}
-                      keyExtractor={item => item.id.toString()}
-                      renderItem={({ item }) => {
-                        return <CourseItem item={item} />;
+                  {arabiCourses.length > 0 ? (
+                    <List.Section
+                      style={{
+                        backgroundColor: "#d8e2dc",
+                        paddingBottom: 20,
+                        paddingHorizontal: 10
                       }}
-                    />
-                  </List.Section>
-                ) : null}
-                {keralaSchoolEnglihs.length > 0 ? (
-                  <List.Section
-                    style={{
-                      backgroundColor: "#d9ed92",
-                      paddingBottom: 10,
-                      paddingHorizontal: 10
-                    }}
-                  >
-                    <List.Subheader>Kerala School - English</List.Subheader>
-                    <FlatList
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      ItemSeparatorComponent={() => (
-                        <View style={{ margin: 4 }} />
-                      )}
-                      data={courses.filter(
-                        course => course.category === "SCHOOL_ENGLISH_KERALA"
-                      )}
-                      keyExtractor={item => item.id.toString()}
-                      renderItem={({ item }) => {
-                        return <CourseItem item={item} />;
-                      }}
-                    />
-                  </List.Section>
-                ) : null}
-
-                {arabiCourses.length > 0 ? (
-                  <List.Section
-                    style={{
-                      backgroundColor: "#d8e2dc",
-                      paddingBottom: 20,
-                      paddingHorizontal: 10
-                    }}
-                  >
-                    <List.Subheader>Arabic Courses</List.Subheader>
-                    <FlatList
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      ItemSeparatorComponent={() => (
-                        <View style={{ margin: 4 }} />
-                      )}
-                      data={courses.filter(
-                        course => course.language === "ARABIC"
-                      )}
-                      keyExtractor={item => item.id.toString()}
-                      renderItem={({ item }) => {
-                        return <CourseItem item={item} />;
-                      }}
-                    />
-                  </List.Section>
-                ) : null}
-              </ScrollView>
+                    >
+                      <List.Subheader>Arabic Courses</List.Subheader>
+                      <FlatList
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        ItemSeparatorComponent={() => (
+                          <View style={{ margin: 4 }} />
+                        )}
+                        data={courses.filter(
+                          course => course.language === "ARABIC"
+                        )}
+                        keyExtractor={item => item.id.toString()}
+                        renderItem={({ item }) => {
+                          return <CourseItem item={item} />;
+                        }}
+                      />
+                    </List.Section>
+                  ) : null}
+                </ScrollView>
+              )}
             </>
           )}
         </>

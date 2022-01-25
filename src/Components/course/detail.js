@@ -6,7 +6,8 @@ import {
   StyleSheet,
   // SafeAreaView,
   StatusBar,
-  FlatList
+  FlatList,
+  Text
 } from "react-native";
 import {
   Card,
@@ -104,60 +105,57 @@ const CourseDetail = props => {
       {loading ? (
         <Loader />
       ) : (
+        // <Text>course detail loading</Text>
         <>
-          <View>
-            {course ? (
-              <>
-                <Card>
-                  {/* <Title>{course.title}</Title> */}
-                  <Card.Title
-                    title={course.title}
-                    subtitle={course.subtitle}
-                    left={LeftContent}
-                  />
-                  <View
-                    style={{
-                      marginHorizontal: 25,
-                      marginBottom: 20,
-                      marginTop: 10
-                    }}
-                  >
-                    {course.is_enrolled ? (
-                      <>
-                        <View style={{ flexDirection: "row" }}>
-                          <View style={{ flex: 1 }}>
-                            <Paragraph>{CalculateReminingUnits()}</Paragraph>
-                          </View>
-                          <View style={{ justifyContent: "flex-end" }}>
-                            <Paragraph>{progress()}</Paragraph>
-                          </View>
+          {course && (
+            <>
+              <Card>
+                <Card.Title
+                  title={course.title}
+                  subtitle={course.subtitle}
+                  left={LeftContent}
+                />
+                <View
+                  style={{
+                    marginHorizontal: 25,
+                    marginBottom: 20,
+                    marginTop: 10
+                  }}
+                >
+                  {course.is_enrolled ? (
+                    <>
+                      <View style={{ flexDirection: "row" }}>
+                        <View style={{ flex: 1 }}>
+                          <Paragraph>{CalculateReminingUnits()}</Paragraph>
                         </View>
-                        <View>
-                          <ProgressBar
-                            progress={progressBar()}
-                            color={COLORS.primary}
-                          />
+                        <View style={{ justifyContent: "flex-end" }}>
+                          <Paragraph>{progress()}</Paragraph>
                         </View>
-                      </>
-                    ) : (
-                      <Button onPress={handlePressEnroll}>Enroll</Button>
-                    )}
-                  </View>
-                </Card>
-              </>
-            ) : null}
-          </View>
-
-          {units ? (
-            <FlatList
-              data={units}
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={item => item.id.toString()}
-              renderItem={({ item }) => {
-                return <UnitItem item={item} />;
-              }}
-            />
-          ) : null}
+                      </View>
+                      <View>
+                        <ProgressBar
+                          progress={progressBar()}
+                          color={COLORS.primary}
+                        />
+                      </View>
+                    </>
+                  ) : (
+                    <Button onPress={handlePressEnroll}>Enroll</Button>
+                  )}
+                </View>
+              </Card>
+              {units && (
+                <FlatList
+                  data={units}
+                  showsHorizontalScrollIndicator={false}
+                  keyExtractor={item => item.id.toString()}
+                  renderItem={({ item }) => {
+                    return <UnitItem item={item} />;
+                  }}
+                />
+              )}
+            </>
+          )}
         </>
       )}
     </SafeAreaView>

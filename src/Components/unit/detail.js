@@ -7,7 +7,15 @@ import { StatusBar, View, Text, ScrollView } from "react-native";
 import { COLORS, SIZES } from "../../Helpers/constants";
 import { handleStart } from "../../store/actions/quiz";
 import { reSetCourseDetails } from "../../store/actions/course";
-import { List, Card, Avatar, ProgressBar } from "react-native-paper";
+import {
+  List,
+  Card,
+  Avatar,
+  ProgressBar,
+  Title,
+  Paragraph,
+  Caption
+} from "react-native-paper";
 import { localhost } from "../../Helpers/urls";
 // import UnitTestList from "../unitTest/list";
 import { useNavigation } from "@react-navigation/native";
@@ -44,7 +52,7 @@ const UnitDetail = props => {
         );
         setUnit(response.data[0]);
         setQuizzes(response.data[0].quizzes);
-        console.log(response.data[0]);
+        // console.log(response.data[0]);
         // resetQuiz();
         // resetUnit();
         // PushToLessonWhenOneLesson(
@@ -111,23 +119,118 @@ const UnitDetail = props => {
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
       {loading ? (
-        <Loader />
+        // <Loader />
+        <Text>unit detail loading</Text>
       ) : (
         <>
-          {unit && (
-            <Card>
-              <Card.Title
-                title={unit.title}
-                subtitle={"UNIT " + unit.order}
-                titleStyle={{ fontSize: 18, fontWeight: "bold" }}
-                left={LeftContent}
-              />
-              <View>
-                <ProgressBar progress={progressBar()} color={COLORS.primary} />
-              </View>
-            </Card>
-          )}
           <ScrollView>
+            {unit && (
+              // <Card>
+              //   <Card.Title
+              //     title={unit.title}
+              //     subtitle={"UNIT " + unit.order}
+              //     titleStyle={{ fontSize: 18, fontWeight: "bold" }}
+              //     left={LeftContent}
+              //   />
+              //   <View>
+              //     <ProgressBar progress={progressBar()} color={COLORS.primary} />
+              //   </View>
+              // </Card>
+              <Card style={{ marginHorizontal: 15, marginTop: 10 }}>
+                {/* <Card.Title
+                title="Card Title"
+                subtitle="Card Subtitle"
+                left={LeftContent}
+              /> */}
+
+                <Card.Cover source={{ uri: unit.photo }} />
+                {/* <View>
+                  <ProgressBar
+                    progress={progressBar()}
+                    color={COLORS.primary}
+                  />
+                </View> */}
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingVertical: 8,
+                    paddingHorizontal: 15
+                  }}
+                >
+                  {/* <Card.Content> */}
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      opacity: 0.9,
+                      paddingBottom: 2,
+                      fontWeight: "700",
+                      color: COLORS.enactive
+                    }}
+                  >
+                    UNIT {unit.order}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontWeight: "700",
+                      paddingBottom: 5
+                    }}
+                  >
+                    {unit.title}
+                  </Text>
+
+                  <Paragraph>{unit.description}</Paragraph>
+                </View>
+                <View
+                  style={{
+                    justifyContent: "flex-start",
+                    flexDirection: "row",
+                    marginLeft: 25
+                  }}
+                >
+                  <Text style={{ paddingRight: 10 }}>Grammar :</Text>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      opacity: 0.9,
+                      color: COLORS.primary,
+                      paddingBottom: 2
+                      // color: COLORS.enactive
+                    }}
+                  >
+                    {unit.subtitle}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    justifyContent: "flex-start",
+                    flexDirection: "row",
+                    marginLeft: 25,
+                    paddingBottom: 10
+                  }}
+                >
+                  <Text style={{ paddingRight: 10 }}>Vocabulary :</Text>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      opacity: 0.9,
+                      color: COLORS.primary,
+                      paddingBottom: 2
+                    }}
+                  >
+                    {unit.vocab_count} new words
+                  </Text>
+                </View>
+                <View>
+                  <ProgressBar
+                    progress={progressBar()}
+                    color={COLORS.primary}
+                  />
+                </View>
+              </Card>
+            )}
+
             <View>
               {unit &&
                 unit.lessons &&

@@ -44,11 +44,7 @@ const CourseItem = props => {
 
   return (
     // <Animated.View entering={LightSpeedInRight} style={[styles.mainContainer]}>
-    <Card
-      ViewStyle={{ maring: 20 }}
-      mode="outlined"
-      style={{ borderRadius: 16, borderColor: COLORS.primary }}
-    >
+    <Card ViewStyle={{ maring: 20 }} mode="contianed" style={{}}>
       {/* <TouchableOpacity onPress={handlePress}> */}
       <View style={styles.container}>
         <View style={styles.LeftContainer}>
@@ -67,7 +63,6 @@ const CourseItem = props => {
           <Paragraph style={{ flexWrap: "wrap" }}>{item.description}</Paragraph>
         </View>
       </View>
-      {/* </TouchableOpacity> */}
       <Card.Actions
         style={{
           justifyContent: "flex-end",
@@ -77,14 +72,13 @@ const CourseItem = props => {
       >
         <Button
           onPress={handlePress}
-          style={{ borderRadius: 16, paddingHorizontal: 10 }}
+          style={{ paddingHorizontal: 20, borderRadius: 20 }}
           mode="contained"
         >
           Explore
         </Button>
       </Card.Actions>
     </Card>
-    // </Animated.View>
   );
 };
 
