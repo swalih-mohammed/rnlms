@@ -7,7 +7,8 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  Image
+  Image,
+  Text
 } from "react-native";
 import {
   List,
@@ -176,12 +177,23 @@ const QuizItem = props => {
               </View>
             </View>
             <View style={styles.MiddleContainer}>
-              <Paragraph style={{ fontSize: 14, color: COLORS.primary }}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "500",
+                  color: COLORS.primary,
+                  opacity: 0.9
+                  // paddingBottom:
+                }}
+              >
                 {item.subtitle}
-              </Paragraph>
-              <Title style={{ fontSize: 18, flexWrap: "wrap" }}>
+              </Text>
+
+              <Text
+                style={{ fontSize: 15, fontWeight: "900", flexWrap: "wrap" }}
+              >
                 {item.title}
-              </Title>
+              </Text>
             </View>
             <View style={styles.RightContainer}>
               <Completed />

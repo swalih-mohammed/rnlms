@@ -51,7 +51,7 @@ export const authLogin = (username, password) => {
         password: password
       })
       .then(res => {
-        // console.log(res);
+        // console.log(res.data);
         const user = {
           token: res.data.key,
           // username,

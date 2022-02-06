@@ -18,24 +18,33 @@ const QuizList = props => {
   const [loading, setLoading] = useState(null);
 
   useEffect(() => {
+    const source = axios.CancelToken.source();
+    const getTest = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${localhost}/quizzes/${QuizId}`, {
+          cancelToken: source.token
+        });
+        setQuiz(response.data);
+        // console.log(response.data);
+        setLoading(false);
+      } catch (err) {
+        if (axios.isCancel(error)) {
+          console.log("axios cancel error");
+        } else {
+          console.log("error occured in catch");
+          console.log(err);
+        }
+      }
+    };
     getTest();
-    // console.log("quiz detail page");
+    return () => {
+      console.log("course list unmounting");
+      source.cancel();
+    };
   }, []);
 
   const { lessonId, QuizId, unitId, sectionId } = props.route.params;
-
-  const getTest = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${localhost}/quizzes/${QuizId}`);
-      setQuiz(response.data);
-      // console.log(response.data);
-      setLoading(false);
-    } catch (err) {
-      setError(err);
-      console.log(error);
-    }
-  };
 
   return (
     <>

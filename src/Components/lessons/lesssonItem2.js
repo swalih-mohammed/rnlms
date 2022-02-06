@@ -56,7 +56,6 @@ function lessonItem(props) {
 
   React.useEffect(() => {
     LoadAudio();
-    // console.log("lessonitem 2 ");
     return () => {
       UnloadSound();
     };
@@ -117,7 +116,6 @@ function lessonItem(props) {
     if (isNaN(minutes) || isNaN(seconds)) return null;
     return minutes + ":" + seconds;
   }
-  // console.log(msToTime(durationMillis));
 
   const onPlaybackStatusUpdate = audio => {
     if (audio.isLoaded) {
@@ -138,11 +136,11 @@ function lessonItem(props) {
       if (result.isLoaded) {
         if (result.isPlaying === false && !didJustFinish) {
           setIsplaying(true);
-          return sound.current.playAsync();
+          return await sound.current.playAsync();
         }
         if (result.isPlaying === false && didJustFinish) {
           setIsplaying(true);
-          return sound.current.replayAsync();
+          return await sound.current.replayAsync();
         }
       }
       LoadAudio();
@@ -156,7 +154,7 @@ function lessonItem(props) {
       if (result.isLoaded) {
         if (result.isPlaying === true) {
           setIsplaying(false);
-          return sound.current.pauseAsync();
+          return await sound.current.pauseAsync();
         }
       }
     } catch (error) {
@@ -165,7 +163,6 @@ function lessonItem(props) {
   };
 
   // below is wokring code
-
   const handlePressNext = () => {
     UnloadSound();
     playKeySound();
@@ -221,7 +218,6 @@ function lessonItem(props) {
     positionMillis !== 0 ? positionMillis / durationMillis : 0;
 
   // key press sound
-
   const playKeySound = async () => {
     const checkLoading = await keySound.current.getStatusAsync();
     if (checkLoading.isLoaded === false) {

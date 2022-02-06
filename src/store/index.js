@@ -62,8 +62,27 @@ import rootReducer from "./reducers/rootReducer";
 
 // export default store;
 
+const persistConfig = {
+  key: "root",
+  storage: AsyncStorage
+  // whitelist: ["auth"]
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+// export const store = createStore(
+//   rootReducer,
+//   composeWithDevTools(applyMiddleware(thunkMiddleware))
+// );
+// export const persistor = persistStore(store);
+
+// export default () => {
+//   let store = createStore(persistedReducer);
+//   let persistor = persistStore(store);
+//   return { store, persistor };
+// };
 export const store = createStore(
-  rootReducer,
-  composeWithDevTools(applyMiddleware(thunkMiddleware))
+  persistedReducer,
+  applyMiddleware(thunkMiddleware)
 );
 export const persistor = persistStore(store);

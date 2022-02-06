@@ -101,13 +101,31 @@ const UnitItem = props => {
                     />
                   </View>
                   <View style={styles.RightContainer}>
-                    <Caption style={{ color: COLORS.primary }}>
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: "700",
+                        color: COLORS.enactive
+                      }}
+                    >
                       {"UNIT " + item.order}
-                    </Caption>
-                    <Title style={{ fontSize: 18 }}>{item.title} </Title>
-                    {item.progress === 1 || item.progress === 0 ? (
-                      <Paragraph>{item.subtitle}</Paragraph>
-                    ) : null}
+                    </Text>
+                    <Title style={{ fontSize: 14, fontWeight: "800" }}>
+                      {item.title}
+                    </Title>
+                    {/* {item.progress === 1 || item.progress === 0 ? ( */}
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: "500",
+                        color: COLORS.primary,
+                        opacity: 0.9,
+                        paddingBottom: 10
+                      }}
+                    >
+                      {item.subtitle}
+                    </Text>
+                    {/* ) : null} */}
                     {item.progress === 1 || item.progress === 0 ? null : (
                       <View style={{ marginLeft: 5, marginRight: 25 }}>
                         <ProgressBar
@@ -142,8 +160,10 @@ const styles = StyleSheet.create({
   RightContainer: {
     flex: 2,
     justifyContent: "center",
-    marginLeft: 25
-    // marginRight: 5
+    // marginLeft: 25
+    // backgroundColor: "red",
+    marginRight: 10,
+    marginLeft: 35
   },
   LeftContainer: {
     flex: 1,

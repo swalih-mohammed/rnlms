@@ -49,12 +49,16 @@ const Questions = props => {
     };
   }, [props.index]);
 
-  const UnloadSound = async () => {
-    const status = await sound.current.getStatusAsync();
-    if (status.isLoaded) {
-      sound.current.unloadAsync();
-    }
+  const UnloadSound = () => {
+    sound ? sound.current.unloadAsync() : undefined;
   };
+
+  // const UnloadSound = async () => {
+  //   const status = await sound.current.getStatusAsync();
+  //   if (status.isLoaded) {
+  //     sound.current.unloadAsync();
+  //   }
+  // };
 
   const LoadAudio = async () => {
     if (allQuestions[props.index].audio) {
@@ -80,7 +84,6 @@ const Questions = props => {
   };
 
   const PlayAudio = async () => {
-    // console.log("playing sound");
     try {
       const result = await sound.current.getStatusAsync();
       if (result.isLoaded) {

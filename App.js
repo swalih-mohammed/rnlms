@@ -16,6 +16,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 // import { HomeStackScreen } from "./src/Navigation/homeNavigator";
 // import { AuthStackScreen } from "./src/Navigation/homeNavigator";
 import { store, persistor } from "./src/store/index";
+// import store from "./src/store/index";
+// import persistor from "./src/store/index";
 import { PersistGate } from "redux-persist/integration/react";
 import { createStackNavigator } from "@react-navigation/stack";
 import HomeScreen from "./src/Components/course/list";
@@ -27,7 +29,10 @@ import PhotoLessonList from "./src/Components/lessons/photoLessonList";
 import Account from "./src/Screens/AccountScreen";
 import LoginScreen from "./src/Screens/LoginScreen";
 import SignUp from "./src/Screens/SignUpScreen";
+import GetStartedScreen from "./src/Screens/getStarted";
 import TestDetail from "./src/Components/quiz/list";
+import ConversationDetails from "./src/Components/conversations/detail";
+import CertificateScreen from "./src/Screens/CertificateScreen";
 // import TestScreen from "./src/Screens/TestScreen";
 // import DraggingQuiz from "./src/Components/quiz/dragAndDrop/index";
 // import Getstarted from "./src/Screens/getStarted";
@@ -172,6 +177,14 @@ export default function App() {
                   options={{
                     headerShown: false
                   }}
+                  name="Conversation Details"
+                  component={ConversationDetails}
+                />
+
+                <Stack.Screen
+                  options={{
+                    headerShown: false
+                  }}
                   name="SignUp"
                   component={SignUp}
                 />
@@ -181,6 +194,21 @@ export default function App() {
                   }}
                   name="Login"
                   component={LoginScreen}
+                />
+                <Stack.Screen
+                  options={{
+                    headerShown: false
+                  }}
+                  name="Get Started"
+                  component={GetStartedScreen}
+                />
+
+                <Stack.Screen
+                  options={{
+                    headerShown: false
+                  }}
+                  name="Certificate"
+                  component={CertificateScreen}
                 />
               </Stack.Navigator>
             </NavigationContainer>

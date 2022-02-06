@@ -25,6 +25,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Loader from "../Utils/Loader";
 import LessonItem from "../lessons/item";
 import QuizItem from "../quiz/item";
+import ConversationItem from "../conversations/item";
 
 const LeftContent = props => <Avatar.Icon {...props} icon="school" />;
 
@@ -32,57 +33,61 @@ const UnitDetail = props => {
   const navigation = useNavigation();
   const [quizzes, setQuizzes] = useState(null);
   const [unit, setUnit] = useState(null);
+  const [conversations, setConversations] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // getUnitDetail();
+    let source = axios.CancelToken.source();
+    const getUnitDetail = async () => {
+      const unitId = id;
+      const username = props.username;
+      if (username !== null && unitId !== null) {
+        try {
+          setLoading(true);
+          const response = await axios.get(
+            `${localhost}/courses/units/${unitId}/${username}`,
+            { cancelToken: source.token }
+          );
+          setUnit(response.data[0]);
+          setQuizzes(response.data[0].quizzes);
+          progressBar();
+          setLoading(false);
+        } catch (err) {
+          if (axios.isCancel(error)) {
+            console.log("axios cancel error");
+          } else {
+            console.log("error occured in catch");
+            console.log(err);
+          }
+        }
+      }
+    };
     getUnitDetail();
-    // console.log("unit details");
+    return () => {
+      console.log("course detail unmounting");
+      source.cancel();
+    };
   }, []);
   const { id } = props.route.params;
 
-  const getUnitDetail = async () => {
-    const unitId = id;
-    const username = props.username;
-    if (username !== null && unitId !== null) {
-      try {
-        setLoading(true);
-        const response = await axios.get(
-          `${localhost}/courses/units/${unitId}/${username}`
-        );
-        setUnit(response.data[0]);
-        setQuizzes(response.data[0].quizzes);
-        // console.log(response.data[0]);
-        // resetQuiz();
-        // resetUnit();
-        // PushToLessonWhenOneLesson(
-        //   response.data[0].lessons[0].id,
-        //   response.data[0].lessons.length
-        // );
-        progressBar();
-        setLoading(false);
-      } catch (err) {
-        setError(err);
-        console.log(err);
-      }
-    }
-  };
-  const resetUnit = () => {
-    const data = {
-      unit: id
-    };
-    props.reSetCourseDetails(data);
-  };
-  const resetQuiz = () => {
-    const data = {
-      index: 0,
-      score: 0,
-      showAnswer: false,
-      answerList: [],
-      showScoreModal: false
-    };
-    props.handleStart(data);
-  };
+  // const resetUnit = () => {
+  //   const data = {
+  //     unit: id
+  //   };
+  //   props.reSetCourseDetails(data);
+  // };
+  // const resetQuiz = () => {
+  //   const data = {
+  //     index: 0,
+  //     score: 0,
+  //     showAnswer: false,
+  //     answerList: [],
+  //     showScoreModal: false
+  //   };
+  //   props.handleStart(data);
+  // };
 
   const PushToLessonWhenOneLesson = (lesson, lenght) => {
     if (lenght === 1) {
@@ -119,37 +124,17 @@ const UnitDetail = props => {
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
       {loading ? (
-        // <Loader />
-        <Text>unit detail loading</Text>
+        <>
+          <Text>Unit detail loading</Text>
+          <Loader />
+        </>
       ) : (
         <>
           <ScrollView>
             {unit && (
-              // <Card>
-              //   <Card.Title
-              //     title={unit.title}
-              //     subtitle={"UNIT " + unit.order}
-              //     titleStyle={{ fontSize: 18, fontWeight: "bold" }}
-              //     left={LeftContent}
-              //   />
-              //   <View>
-              //     <ProgressBar progress={progressBar()} color={COLORS.primary} />
-              //   </View>
-              // </Card>
               <Card style={{ marginHorizontal: 15, marginTop: 10 }}>
-                {/* <Card.Title
-                title="Card Title"
-                subtitle="Card Subtitle"
-                left={LeftContent}
-              /> */}
-
                 <Card.Cover source={{ uri: unit.photo }} />
-                {/* <View>
-                  <ProgressBar
-                    progress={progressBar()}
-                    color={COLORS.primary}
-                  />
-                </View> */}
+
                 <View
                   style={{
                     justifyContent: "center",
@@ -158,7 +143,6 @@ const UnitDetail = props => {
                     paddingHorizontal: 15
                   }}
                 >
-                  {/* <Card.Content> */}
                   <Text
                     style={{
                       fontSize: 16,
@@ -239,6 +223,19 @@ const UnitDetail = props => {
                     <LessonItem
                       key={index}
                       LessonItem={item}
+                      unitId={unit.id}
+                    />
+                  );
+                })}
+            </View>
+            <View>
+              {unit &&
+                unit.conversations &&
+                unit.conversations.map((item, index) => {
+                  return (
+                    <ConversationItem
+                      key={index}
+                      item={item}
                       unitId={unit.id}
                     />
                   );

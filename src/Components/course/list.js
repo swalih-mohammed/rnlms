@@ -38,33 +38,58 @@ const CourseList = props => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const source = axios.CancelToken.source();
+    const getCourses = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${localhost}/courses`, {
+          cancelToken: source.token
+        });
+        setLoading(false);
+        setCourses(response.data);
+      } catch (err) {
+        if (axios.isCancel(error)) {
+          console.log("axios cancel error");
+        } else {
+          console.log("error occured in catch");
+          console.log(err);
+        }
+      }
+    };
     getCourses();
+    return () => {
+      console.log("course list unmounting");
+      source.cancel();
+    };
   }, []);
 
-  const getCourses = async () => {
-    try {
-      // console.log("fetching");
-      setLoading(true);
-      const response = await axios.get(`${localhost}/courses`);
-      setCourses(response.data);
-      setGeneralEnglish(
-        response.data.filter(course => course.category === "GENERAL_ENGLISH")
-      );
-      setKeralaSchoolEnglihs(
-        response.data.filter(
-          course => course.category === "SCHOOL_ENGLISH_KERALA"
-        )
-      );
-      setArabicCourse(
-        response.data.filter(course => course.language === "ARABIC")
-      );
-      // console.log(response.data);
-      setLoading(false);
-    } catch (err) {
-      setError(err);
-      console.log(err);
-    }
-  };
+  // const getCourses = async source => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await axios.get(`${localhost}/courses`, { source });
+  //     setLoading(false);
+  //     setCourses(response.data);
+
+  //   } catch (err) {
+  //     setLoading(false);
+  //     setError(err);
+  //     console.log("error occured");
+  //   }
+  // };
+
+  // setLoading(false);
+  // setGeneralEnglish(
+  //   response.data.filter(course => course.category === "GENERAL_ENGLISH")
+  // );
+  // setKeralaSchoolEnglihs(
+  //   response.data.filter(
+  //     course => course.category === "SCHOOL_ENGLISH_KERALA"
+  //   )
+  // );
+  // setArabicCourse(
+  //   response.data.filter(course => course.language === "ARABIC")
+  // );
+  // console.log(response.data);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -85,98 +110,24 @@ const CourseList = props => {
                   /> */}
         </View>
       </Card>
-      {!props.token ? (
-        // <Loader />
-        <GetStarted />
-      ) : (
-        <>
-          {loading ? (
-            // <GetStarted />
-            <Loader />
-          ) : (
-            <>
-              {courses && (
-                <ScrollView>
-                  {generalEnglish.length > 0 ? (
-                    <List.Section
-                      style={{
-                        backgroundColor: "#ccd5ae",
-                        paddingBottom: 10,
-                        paddingHorizontal: 10
-                      }}
-                    >
-                      <List.Subheader>General English Courses</List.Subheader>
-                      <FlatList
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        ItemSeparatorComponent={() => (
-                          <View style={{ margin: 5 }} />
-                        )}
-                        data={generalEnglish}
-                        keyExtractor={item => item.id.toString()}
-                        renderItem={({ item }) => {
-                          return <CourseItem item={item} />;
-                        }}
-                      />
-                    </List.Section>
-                  ) : null}
-                  {keralaSchoolEnglihs.length > 0 ? (
-                    <List.Section
-                      style={{
-                        backgroundColor: "#d9ed92",
-                        paddingBottom: 10,
-                        paddingHorizontal: 10
-                      }}
-                    >
-                      <List.Subheader>Kerala School - English</List.Subheader>
-                      <FlatList
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        ItemSeparatorComponent={() => (
-                          <View style={{ margin: 4 }} />
-                        )}
-                        data={courses.filter(
-                          course => course.category === "SCHOOL_ENGLISH_KERALA"
-                        )}
-                        keyExtractor={item => item.id.toString()}
-                        renderItem={({ item }) => {
-                          return <CourseItem item={item} />;
-                        }}
-                      />
-                    </List.Section>
-                  ) : null}
-
-                  {arabiCourses.length > 0 ? (
-                    <List.Section
-                      style={{
-                        backgroundColor: "#d8e2dc",
-                        paddingBottom: 20,
-                        paddingHorizontal: 10
-                      }}
-                    >
-                      <List.Subheader>Arabic Courses</List.Subheader>
-                      <FlatList
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        ItemSeparatorComponent={() => (
-                          <View style={{ margin: 4 }} />
-                        )}
-                        data={courses.filter(
-                          course => course.language === "ARABIC"
-                        )}
-                        keyExtractor={item => item.id.toString()}
-                        renderItem={({ item }) => {
-                          return <CourseItem item={item} />;
-                        }}
-                      />
-                    </List.Section>
-                  ) : null}
-                </ScrollView>
-              )}
-            </>
-          )}
-        </>
-      )}
+      <>
+        {courses ? (
+          <FlatList
+            // horizontal
+            showsHorizontalScrollIndicator={false}
+            // ItemSeparatorComponent={() => (
+            //   <View style={{ margin: 5 }} />
+            // )}
+            data={courses}
+            keyExtractor={item => item.id.toString()}
+            renderItem={({ item }) => {
+              return <CourseItem item={item} />;
+            }}
+          />
+        ) : (
+          <Text>course list loading...</Text>
+        )}
+      </>
     </SafeAreaView>
   );
 };
@@ -194,3 +145,85 @@ export default connect(
 )(CourseList);
 
 // export default CourseList;
+
+// <ScrollView>
+//   {generalEnglish.length > 0 ? (
+//     <List.Section
+//       style={{
+//         backgroundColor: "#ccd5ae",
+//         paddingBottom: 10,
+//         paddingHorizontal: 10
+//       }}
+//     >
+//       <List.Subheader>
+//         General English Courses
+//       </List.Subheader>
+//       <FlatList
+//         horizontal
+//         showsHorizontalScrollIndicator={false}
+//         ItemSeparatorComponent={() => (
+//           <View style={{ margin: 5 }} />
+//         )}
+//         data={generalEnglish}
+//         keyExtractor={item => item.id.toString()}
+//         renderItem={({ item }) => {
+//           return <CourseItem item={item} />;
+//         }}
+//       />
+//     </List.Section>
+//   ) : null}
+//   {keralaSchoolEnglihs.length > 0 ? (
+//     <List.Section
+//       style={{
+//         backgroundColor: "#d9ed92",
+//         paddingBottom: 10,
+//         paddingHorizontal: 10
+//       }}
+//     >
+//       <List.Subheader>
+//         Kerala School - English
+//       </List.Subheader>
+//       <FlatList
+//         horizontal
+//         showsHorizontalScrollIndicator={false}
+//         ItemSeparatorComponent={() => (
+//           <View style={{ margin: 4 }} />
+//         )}
+//         data={courses.filter(
+//           course =>
+//             course.category === "SCHOOL_ENGLISH_KERALA"
+//         )}
+//         keyExtractor={item => item.id.toString()}
+//         renderItem={({ item }) => {
+//           return <CourseItem item={item} />;
+//         }}
+//       />
+//     </List.Section>
+//   ) : null}
+
+//   {arabiCourses.length > 0 ? (
+//     <List.Section
+//       style={{
+//         backgroundColor: "#d8e2dc",
+//         paddingBottom: 20,
+//         paddingHorizontal: 10
+//       }}
+//     >
+//       <List.Subheader>Arabic Courses</List.Subheader>
+//       <FlatList
+//         horizontal
+//         showsHorizontalScrollIndicator={false}
+//         ItemSeparatorComponent={() => (
+//           <View style={{ margin: 4 }} />
+//         )}
+//         data={courses.filter(
+//           course => course.language === "ARABIC"
+//         )}
+//         keyExtractor={item => item.id.toString()}
+//         renderItem={({ item }) => {
+//           return <CourseItem item={item} />;
+//         }}
+//       />
+//     </List.Section>
+//   ) : null}
+// </ScrollView>

@@ -32,14 +32,14 @@ import { handleStart } from "../../store/actions/quiz";
 // import { View as MotiView } from "moti";
 import Animated, { LightSpeedInRight } from "react-native-reanimated";
 
-const LessonItem = props => {
-  const { LessonItem, is_quiz } = props;
+const ConversationItem = props => {
+  const { item } = props;
   const { colors } = useTheme();
   const navigation = useNavigation();
 
   const handlePress = () => {
     resetQuiz();
-    navigation.navigate("Lesson Details", { id: LessonItem.id });
+    navigation.navigate("Conversation Details", { id: item.id });
   };
 
   const resetQuiz = () => {
@@ -59,8 +59,9 @@ const LessonItem = props => {
         width: 20,
         height: 20,
         borderRadius: 20 / 2,
-        backgroundColor: LessonItem.lessonCompleted
-          ? colors.primary
+        // backgroundColor: colors.primary,
+        backgroundColor: item.conversationCompleted
+          ? COLORS.primary
           : COLORS.enactive,
         justifyContent: "center",
         alignItems: "center",
@@ -97,8 +98,8 @@ const LessonItem = props => {
         >
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate("Lesson Details", {
-                id: LessonItem.id
+              navigation.navigate("Conversation Details", {
+                id: item.id
               })
             }
           >
@@ -115,7 +116,7 @@ const LessonItem = props => {
                   }}
                 >
                   <MaterialCommunityIcons
-                    name="google-classroom"
+                    name="wechat"
                     style={{
                       color: colors.primary,
                       fontSize: 35
@@ -133,13 +134,13 @@ const LessonItem = props => {
                     // paddingBottom:
                   }}
                 >
-                  {LessonItem.subtitle}
+                  {item.subtitle}
                 </Text>
 
                 <Text
                   style={{ fontSize: 15, fontWeight: "900", flexWrap: "wrap" }}
                 >
-                  {LessonItem.title}
+                  {item.title}
                 </Text>
               </View>
               <View style={styles.RightContainer}>
@@ -194,4 +195,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   null,
   mapDispatchToProps
-)(LessonItem);
+)(ConversationItem);

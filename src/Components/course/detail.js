@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
+
 import axios from "axios";
 import {
   View,
@@ -7,7 +9,8 @@ import {
   // SafeAreaView,
   StatusBar,
   FlatList,
-  Text
+  Text,
+  Image
 } from "react-native";
 import {
   Card,
@@ -15,7 +18,8 @@ import {
   ProgressBar,
   Paragraph,
   Title,
-  Button
+  Button,
+  Caption
 } from "react-native-paper";
 import { localhost } from "../../Helpers/urls";
 import SectionList from "../../Components/section/list";
@@ -25,38 +29,50 @@ import Loader from "../Utils/Loader";
 import { COLORS, SIZES } from "../../Helpers/constants";
 
 import { SafeAreaView } from "react-native-safe-area-context";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const LeftContent = props => <Avatar.Icon {...props} icon="school" />;
 
 const CourseDetail = props => {
+  const navigation = useNavigation();
+
   const [course, setCourse] = useState(null);
   const [units, setUnits] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(null);
 
   useEffect(() => {
+    // getCourseDetail();
+    let source = axios.CancelToken.source();
+    const getCourseDetail = async () => {
+      try {
+        setLoading(true);
+        const username = props.username;
+        const response = await axios.get(
+          `${localhost}/courses/${id}/${username}`,
+          { cancelToken: source.token }
+        );
+        setCourse(response.data);
+        setUnits(response.data.units);
+        // console.log(response.data);
+        setLoading(false);
+      } catch (err) {
+        if (axios.isCancel(error)) {
+          console.log("axios cancel error");
+        } else {
+          console.log("error occured in catch");
+          console.log(err);
+        }
+      }
+    };
     getCourseDetail();
+    return () => {
+      console.log("course detail unmounting");
+      source.cancel();
+    };
   }, []);
 
   const { id } = props.route.params;
-
-  const getCourseDetail = async () => {
-    // console.log(123);
-    try {
-      setLoading(true);
-      const username = props.username;
-      const response = await axios.get(
-        `${localhost}/courses/${id}/${username}`
-      );
-      setCourse(response.data);
-      setUnits(response.data.units);
-      // console.log(response.data);
-      setLoading(false);
-    } catch (err) {
-      setError(err);
-      console.log(err);
-    }
-  };
 
   const handlePressEnroll = () => {
     const data = {
@@ -103,23 +119,64 @@ const CourseDetail = props => {
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
       {loading ? (
-        <Loader />
+        <>
+          <Text>Course detail loading</Text>
+          <Loader />
+        </>
       ) : (
-        // <Text>course detail loading</Text>
         <>
           {course && (
             <>
-              <Card>
-                <Card.Title
+              <Card style={{ marginHorizontal: 10, marginTop: 10 }}>
+                <View
+                  style={{
+                    // flex: 1,
+                    flexDirection: "row",
+                    // backgroundColor: "red",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingTop: 20,
+                    marginLeft: 10
+                    // height: 100,
+                    // width: 100
+                  }}
+                >
+                  <View style={{ flex: 1, BoarderTop: 10 }}>
+                    {/* <Text>Certification</Text> */}
+                    <Image
+                      style={{ width: 110, height: 100 }}
+                      source={{
+                        uri: course.photo
+                      }}
+                    />
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate("Certificate")}
+                    >
+                      <Caption style={{ fontSize: 11 }}>
+                        Download Certificate
+                      </Caption>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={{ flex: 2 }}>
+                    {/* <Text>Certification</Text> */}
+                    <Card.Title
+                      title={course.title}
+                      subtitle={course.subtitle}
+                      // left={LeftContent}
+                    />
+                  </View>
+                </View>
+                {/* <Card.Title
                   title={course.title}
                   subtitle={course.subtitle}
                   left={LeftContent}
-                />
+                /> */}
                 <View
                   style={{
                     marginHorizontal: 25,
                     marginBottom: 20,
-                    marginTop: 10
+                    marginTop: 10,
+                    flex: 1
                   }}
                 >
                   {course.is_enrolled ? (

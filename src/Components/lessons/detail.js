@@ -30,24 +30,31 @@ function LessonDetail({ route }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    let source = axios.CancelToken.source();
+    const getLessonDetail = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${localhost}/lessons/${id}`, {
+          cancelToken: source.token
+        });
+        setLesson(response.data);
+        setLoading(false);
+      } catch (err) {
+        if (axios.isCancel(error)) {
+          console.log("axios cancel error");
+        } else {
+          console.log("error occured in catch");
+          console.log(err);
+        }
+      }
+    };
     getLessonDetail();
-    // console.log(lesson.Lesson_items);
+    return () => {
+      console.log("course detail unmounting");
+      source.cancel();
+    };
   }, []);
   const { id } = route.params;
-
-  const getLessonDetail = async () => {
-    // console.log("firing");
-    try {
-      setLoading(true);
-      const response = await axios.get(`${localhost}/lessons/${id}`);
-      setLesson(response.data);
-      // console.log(response.data);
-      setLoading(false);
-    } catch (err) {
-      setError(err);
-      console.log(err);
-    }
-  };
 
   return (
     <>
