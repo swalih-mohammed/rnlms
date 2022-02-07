@@ -181,14 +181,18 @@ const renderOptions = props => {
                   justifyContent: "space-between",
                   paddingHorizontal: 15,
                   marginVertical: 5,
-                  opacity:
-                    (showAnswer ? 1 : checkIfInBucketA(item.key)) || aDisabled
-                      ? 0.5
-                      : 1
+                  // opacity: item.key == selectedA ? 1 : 0.5
+                  opacity: showAnswer
+                    ? 1
+                    : checkIfInBucketA(item.key) || aDisabled
+                    ? 0.5
+                    : 1
                 }}
               >
                 <Paragraph style={{ fontSize: 14, color: "black" }}>
                   {item.word}
+                  {/* {item.key == selectedA ? "yes" : "no"} */}
+                  {/* {selectedA} */}
                 </Paragraph>
               </TouchableOpacity>
             ))}

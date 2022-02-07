@@ -12,7 +12,7 @@ import {
   Title,
   Caption
 } from "react-native-paper";
-import * as Animatable from "react-native-animatable";
+// import * as Animatable from "react-native-animatable";
 import { setCourseDetails } from "../../store/actions/course";
 import Animated, { LightSpeedInRight } from "react-native-reanimated";
 import { localhost } from "../../Helpers/urls";
@@ -20,7 +20,7 @@ import { useNavigation } from "@react-navigation/native";
 import UnitItem from "../unit/item";
 import UnitList from "../unit/list";
 import { useTheme } from "react-native-paper";
-import { MotiView } from "moti";
+// import { MotiView } from "moti";
 
 const SectionItem = props => {
   const { colors, fonts } = useTheme();

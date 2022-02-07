@@ -29,21 +29,21 @@ import { Audio } from "expo-av";
 import LottieView from "lottie-react-native";
 import MessageItem from "./messageItem";
 
-const LeftContent = props => <Avatar.Icon {...props} icon="school" />;
+// const LeftContent = props => <Avatar.Icon {...props} icon="school" />;
 
 const ConversationDetail = props => {
   // const navigation = useNavigation();
-  const sound = React.useRef(new Audio.Sound());
-  const animation = useRef(null);
+  // const sound = React.useRef(new Audio.Sound());
+  // const animation = useRef(null);
 
   const [conversation, setConversation] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [visibleList, setVisibleList] = useState([]);
-  const [current, setCurrent] = useState(0);
-  const [isPlaying, setIsplaying] = React.useState(false);
-  const [didJustFinish, setDidJustFinish] = React.useState(false);
-  const [messages, setMessages] = useState([]);
+  // const [visibleList, setVisibleList] = useState([]);
+  // const [current, setCurrent] = useState(0);
+  // const [isPlaying, setIsplaying] = React.useState(false);
+  // const [didJustFinish, setDidJustFinish] = React.useState(false);
+  // const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     // getConvDetail();
@@ -74,6 +74,10 @@ const ConversationDetail = props => {
       }
     };
     getConvDetail();
+    return () => {
+      console.log("conversation detail unmounting");
+      source.cancel();
+    };
   }, []);
 
   const { id } = props.route.params;

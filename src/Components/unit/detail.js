@@ -66,7 +66,7 @@ const UnitDetail = props => {
     };
     getUnitDetail();
     return () => {
-      console.log("course detail unmounting");
+      console.log("unit detail unmounting");
       source.cancel();
     };
   }, []);

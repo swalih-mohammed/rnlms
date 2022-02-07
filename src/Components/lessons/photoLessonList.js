@@ -9,7 +9,7 @@ import {
   ActivityIndicator
 } from "react-native";
 import { localhost } from "../../Helpers/urls";
-import * as Animatable from "react-native-animatable";
+// import * as Animatable from "react-native-animatable";
 import PhotoAudioLessonItem from "./PhotoAudioLessonItem";
 import Player from "../../Helpers/AudioPlayer";
 export default function PhotoLessonList({ route }) {

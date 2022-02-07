@@ -47,14 +47,17 @@ const ConversationDetail = props => {
   const [conversationCompleted, SetConversationCompleted] = React.useState(
     false
   );
+  const isMounted = useRef(null);
 
   useEffect(() => {
     // console.log("conv id", props.convId);
     // markConversationComplete();
+    isMounted.current = true;
     addToDisplay();
     LoadAudio();
 
     return () => {
+      isMounted.current = false;
       UnloadSound();
     };
   }, [current]);
@@ -74,6 +77,7 @@ const ConversationDetail = props => {
 
   const LoadAudio = async () => {
     // console.log("conv id from laod", convId);
+    if (!isMounted.current) return;
     try {
       if (messages[current].audio) {
         const audio = messages[current].audio;
@@ -98,6 +102,8 @@ const ConversationDetail = props => {
   };
 
   const PlayAudio = async () => {
+    if (!isMounted.current) return;
+
     try {
       const result = await sound.current.getStatusAsync();
       if (result.isLoaded) {

@@ -14,7 +14,7 @@ import { List, Card, Avatar, Button } from "react-native-paper";
 // import YoutubePlayer from "react-native-youtube-iframe";
 import { useNavigation } from "@react-navigation/native";
 import { Audio } from "expo-av";
-import Slider from "@react-native-community/slider";
+// import Slider from "@react-native-community/slider";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { localhost } from "../../Helpers/urls";
 import UnitItem from "../unit/item";

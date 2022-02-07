@@ -16,6 +16,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import Icon from "react-native-vector-icons/AntDesign";
 import { handleNext, handleValidate } from "../../../store/actions/quiz";
 import LottieView from "lottie-react-native";
+import Audio from "../../../Helpers/PlayerWithoutControl";
 import * as Haptics from "expo-haptics";
 
 // import console = require("console");
@@ -96,16 +97,22 @@ const renderOptions = props => {
         }}
       >
         {showMessage ? (
-          <LottieView
-            ref={animation}
-            source={
-              scored
-                ? require("../../../../assets/lotties/correct.json")
-                : require("../../../../assets/lotties/incorrect.json")
-            }
-            autoPlay={true}
-            loop={false}
-          />
+          <>
+            <LottieView
+              ref={animation}
+              source={
+                scored
+                  ? require("../../../../assets/lotties/correct.json")
+                  : require("../../../../assets/lotties/incorrect.json")
+              }
+              autoPlay={true}
+              loop={false}
+            />
+            <Audio
+              correct={scored ? true : false}
+              incorrect={scored ? false : true}
+            />
+          </>
         ) : null}
 
         <TouchableOpacity

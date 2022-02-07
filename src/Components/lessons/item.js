@@ -20,7 +20,7 @@ import {
 } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { COLORS, SIZES } from "../../Helpers/constants";
-import * as Animatable from "react-native-animatable";
+// import * as Animatable from "react-native-animatable";
 import { setCourseDetails } from "../../store/actions/course";
 import { localhost } from "../../Helpers/urls";
 import UnitItem from "../unit/item";

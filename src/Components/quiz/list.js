@@ -39,7 +39,7 @@ const QuizList = props => {
     };
     getTest();
     return () => {
-      console.log("course list unmounting");
+      console.log("quiz list unmounting");
       source.cancel();
     };
   }, []);

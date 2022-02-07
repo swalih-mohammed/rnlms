@@ -8,13 +8,22 @@ import {
   Dimensions
 } from "react-native";
 // import RNHTMLtoPDF from "react-native-html-to-pdf";
-import { Button, Paragraph, Card } from "react-native-paper";
+import { Button, Paragraph, Card, ProgressBar } from "react-native-paper";
 const { width, height } = Dimensions.get("window");
 import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../Helpers/constants";
 
-const CertificateScreen = () => {
+const CertificateScreen = props => {
   const navigation = useNavigation();
+  // console.log("route", props.route);
+  const {
+    student,
+    name,
+    progress,
+    date,
+    skill,
+    certificate
+  } = props.route.params;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -22,68 +31,55 @@ const CertificateScreen = () => {
         mode="elevated"
         style={{
           flex: 1,
-          //   marginHorizontal: 10,
-          //   marginVertical: 10,
+          marginVertical: 100,
+          // paddingBottom: 10,
           margin: 25,
-          //   backgroundColor: "#FFFFFF",
-          paddingHorizontal: 20,
-          paddingVertical: 20,
           elavation: 20
-          //   borderColor: COLORS.primary,
-          //   borderWidth: 3,
-          //   borderStyle: "dotted"
         }}
       >
-        {/* <Card> */}
         <View
           style={{
             flex: 1,
             // backgroundColor: "red",
-            justifyContent: "center"
+            justifyContent: "center",
+            paddingTop: 15
+            // paddingHorizontal: 20,
+            // paddingVertical: 20
             // marginVertical: "center"
           }}
         >
-          <View
-            Style={
-              {
-                //   width: 100,
-                //   height: 100
-                //   alignItems: "center"
-                //   backgroundColor: "red"
-              }
-            }
-          >
-            <Image
-              style={{ height: 70, width: 100, alignSelf: "center" }}
-              source={require("../../assets/logo_certification.png")}
-            />
-          </View>
+          {/* <View> */}
+          <Image
+            style={{ height: "80%", width: 70, alignSelf: "center" }}
+            source={require("../../assets/logo_nobg.png")}
+          />
+          {/* </View> */}
         </View>
         <View
           style={{
-            flex: 1,
+            flex: 2,
             // backgroundColor: "green",
             justifyContent: "center",
             alignItems: "center"
           }}
         >
-          <Paragraph style={{ fontSize: 14 }}>
+          <Paragraph style={{ fontSize: 14, fontWeight: "600" }}>
             This is to certify that
           </Paragraph>
           <Paragraph
-            style={{ fontSize: 14, fontWeight: "700", paddingTop: 10 }}
+            style={{ fontSize: 15, fontWeight: "700", paddingTop: 10 }}
           >
-            Femina VP
+            {student}
           </Paragraph>
-        </View>
-        <View
+
+          {/* <View
           style={{
-            flex: 1,
-            // backgroundColor: "red",
+            flex: 0.5,
+            backgroundColor: "red",
             justifyContent: "center",
             alignItems: "center"
           }}
-        >
+        > */}
           <Paragraph
             style={{
               alignContent: "center",
@@ -91,24 +87,30 @@ const CertificateScreen = () => {
               textAlign: "center",
               textAlignVertical: "center",
               fontSize: 12,
-              lineHeight: 18
+              lineHeight: 18,
+              paddingHorizontal: 20,
+              paddingVertical: 2
             }}
           >
             has succesfully completed all rquirements of this course, which
             incluses grammar, vocabulary and functional spoken English.
           </Paragraph>
         </View>
+        {/* </View> */}
         <View
           style={{
-            flex: 2.5,
+            flex: 1.8,
             // backgroundColor: "green",
             justifyContent: "center"
           }}
         >
           <View>
             <Image
-              style={{ height: 120, width: "40%", alignSelf: "center" }}
-              source={require("../../assets/english_A1_2.png")}
+              style={{ height: 100, width: "35%", alignSelf: "center" }}
+              // source={require("../../assets/english_A1_2.png")}
+              source={{
+                uri: certificate
+              }}
             />
           </View>
         </View>
@@ -121,65 +123,100 @@ const CertificateScreen = () => {
           }}
         >
           <Paragraph style={{ fontWeight: "700", fontSize: 15 }}>
-            A1 - BIGINNER - ENGLISH
+            {name}
           </Paragraph>
         </View>
         <View
           style={{
-            flex: 0.8,
+            flex: 0.5,
             // backgroundColor: "green",
-            justifyContent: "space-around",
-            alignItems: "center",
-            flexDirection: "row"
-          }}
-        >
-          <Paragraph style={{ fontSize: 12 }}>
-            Completed on 12/03/2021
-          </Paragraph>
-          <Paragraph style={{ fontSize: 12 }}>Signature</Paragraph>
-        </View>
-        <View
-          style={{
-            flex: 1.1,
-            // backgroundColor: "#b7b7a4",
-            justifyContent: "center",
-            alignItems: "flex-start",
-            paddingLeft: 10
+            justifyContent: "space-around"
+            // alignItems: "center"
             // flexDirection: "row"
           }}
         >
-          <Paragraph
-            style={{ fontSize: 10, fontWeight: "700", lineHeight: 15 }}
-          >
-            Language Skills:
-          </Paragraph>
-          <Paragraph style={{ fontSize: 10, lineHeight: 15 }}>
-            Student can understand and use familiar everyday expressions, can
-            introduce him/herself and others, can interact in a simple way
-            provided the other person talks slowly and clearly.
-          </Paragraph>
-        </View>
+          {/* <Paragraph style={{ fontSize: 12 }}> */}
+          {/* Completed on 12/03/2021 */}
+          {/* {progress} */}
+          {/* </Paragraph> */}
+          {/* <Paragraph style={{ fontSize: 12 }}>Signature</Paragraph> */}
 
+          <ProgressBar
+            style={{
+              height: 7,
+              borderRadius: 20,
+              marginHorizontal: 25,
+              paddingVertical: 5
+            }}
+            progress={progress}
+            color={COLORS.primary}
+          />
+        </View>
         <View
-          style={{
-            flex: 0.3,
-            justifyContent: "center",
-            alignItems: "center"
-            // paddingLeft: 10
-          }}
+          style={{ backgroundColor: "#134611", flex: 1.3, paddingBottom: 8 }}
         >
-          <Paragraph
-            style={{ fontSize: 10, fontWeight: "600", color: COLORS.primary }}
-          >
-            www.lakaters.com
-          </Paragraph>
-        </View>
+          <View
+            style={{
+              // flex: 1.1,
+              // backgroundColor: "#b7b7a4",
+              justifyContent: "center",
+              alignItems: "flex-start",
+              paddingLeft: 10
+              // paddingBottom: 10
 
-        {/* not part of cert */}
-        {/* </Card> */}
+              // flexDirection: "row"
+            }}
+          >
+            <Paragraph
+              style={{
+                fontSize: 10,
+                fontWeight: "700",
+                lineHeight: 15,
+                paddingTop: 5,
+                color: "#f5f3f4"
+              }}
+            >
+              Language Skills:
+            </Paragraph>
+            <Paragraph
+              style={{
+                fontSize: 10,
+                lineHeight: 15,
+                fontWeight: "600",
+                color: "#ffffff"
+              }}
+            >
+              Student can understand and use familiar everyday expressions, can
+              introduce him/herself and others, can interact in a simple way
+              provided the other person talks slowly and clearly.
+            </Paragraph>
+          </View>
+
+          <View
+            style={{
+              // flex: 0.3,
+              justifyContent: "center",
+              alignItems: "center",
+              marginBottom: 5
+              // paddingBottom: 10
+              // paddingLeft: 10
+            }}
+          >
+            <Paragraph
+              style={{
+                fontSize: 10,
+                fontWeight: "600",
+                // paddingBottom: 15,
+                color: COLORS.primary
+              }}
+            >
+              www.lakaters.com
+            </Paragraph>
+          </View>
+        </View>
       </Card>
 
-      <View
+      {/* <View
         style={{
           //   flex: 1,
           // backgroundColor: "green",
@@ -192,7 +229,7 @@ const CertificateScreen = () => {
         >
           Download Certificate
         </Button>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 };

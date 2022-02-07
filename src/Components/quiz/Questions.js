@@ -25,6 +25,7 @@ const Questions = props => {
   const navigation = useNavigation();
   // const { colors } = useTheme();
   const sound = React.useRef(new Audio.Sound());
+  const isMounted = React.useRef(null);
   const [isPlaying, setIsplaying] = React.useState(false);
   const [didJustFinish, setDidJustFinish] = React.useState(false);
   const [error, setError] = useState(null);
@@ -43,8 +44,10 @@ const Questions = props => {
   React.useEffect(() => {
     // console.log("question", allQuestions[props.index]);
     // console.log("question index", props.index);
+    isMounted.current = true;
     LoadAudio();
     return () => {
+      isMounted.current = false;
       UnloadSound();
     };
   }, [props.index]);
@@ -62,7 +65,6 @@ const Questions = props => {
 
   const LoadAudio = async () => {
     if (allQuestions[props.index].audio) {
-      // console.log("loading sound", props.index);
       try {
         const audio = allQuestions[props.index].audio.audio;
         const status = await sound.current.getStatusAsync();
@@ -89,12 +91,17 @@ const Questions = props => {
       if (result.isLoaded) {
         sound.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
         if (result.isPlaying === false && !didJustFinish) {
-          setIsplaying(true);
-          return sound.current.playAsync();
+          if (isMounted.current) {
+            setIsplaying(true);
+          }
+
+          return await sound.current.playAsync();
         }
         if (result.isPlaying === false && didJustFinish) {
-          setIsplaying(true);
-          return sound.current.replayAsync();
+          if (isMounted.current) {
+            setIsplaying(true);
+          }
+          return await sound.current.replayAsync();
         }
       }
       LoadAudio();
@@ -104,11 +111,13 @@ const Questions = props => {
   };
 
   const onPlaybackStatusUpdate = audio => {
-    if (audio.isLoaded) {
-      setDidJustFinish(false);
-      if (audio.didJustFinish) {
-        setDidJustFinish(true);
-        setIsplaying(false);
+    if (isMounted.current) {
+      if (audio.isLoaded) {
+        setDidJustFinish(false);
+        if (audio.didJustFinish) {
+          setDidJustFinish(true);
+          setIsplaying(false);
+        }
       }
     }
   };

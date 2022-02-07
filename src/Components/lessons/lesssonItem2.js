@@ -53,10 +53,13 @@ function lessonItem(props) {
 
   const sound = React.useRef(new Audio.Sound());
   const keySound = React.useRef(new Audio.Sound());
+  const isMounted = React.useRef(null);
 
   React.useEffect(() => {
+    isMounted.current = true;
     LoadAudio();
     return () => {
+      isMounted.current = false;
       UnloadSound();
     };
   }, [index]);
@@ -100,7 +103,9 @@ function lessonItem(props) {
         });
       }
     } catch (error) {
-      setIsplaying(false);
+      if (isMounted.current) {
+        setIsplaying(false);
+      }
     }
   };
 
@@ -118,34 +123,38 @@ function lessonItem(props) {
   }
 
   const onPlaybackStatusUpdate = audio => {
-    if (audio.isLoaded) {
-      setDidJustFinish(false);
-      setPositionMillis(audio.positionMillis);
-      setDurationMillis(audio.durationMillis);
-      if (audio.didJustFinish) {
-        setDidJustFinish(true);
-        setIsplaying(false);
+    if (isMounted.current) {
+      if (audio.isLoaded) {
+        setDidJustFinish(false);
+        setPositionMillis(audio.positionMillis);
+        setDurationMillis(audio.durationMillis);
+        if (audio.didJustFinish) {
+          setDidJustFinish(true);
+          setIsplaying(false);
+        }
       }
     }
   };
 
   const PlayAudio = async () => {
-    try {
-      const result = await sound.current.getStatusAsync();
-      sound.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-      if (result.isLoaded) {
-        if (result.isPlaying === false && !didJustFinish) {
-          setIsplaying(true);
-          return await sound.current.playAsync();
+    if (isMounted.current) {
+      try {
+        const result = await sound.current.getStatusAsync();
+        sound.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+        if (result.isLoaded) {
+          if (result.isPlaying === false && !didJustFinish) {
+            setIsplaying(true);
+            return await sound.current.playAsync();
+          }
+          if (result.isPlaying === false && didJustFinish) {
+            setIsplaying(true);
+            return await sound.current.replayAsync();
+          }
         }
-        if (result.isPlaying === false && didJustFinish) {
-          setIsplaying(true);
-          return await sound.current.replayAsync();
-        }
+        LoadAudio();
+      } catch (error) {
+        console.log(error);
       }
-      LoadAudio();
-    } catch (error) {
-      console.log(error);
     }
   };
   const PauseAudio = async () => {

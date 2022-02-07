@@ -31,7 +31,7 @@ import { COLORS, SIZES } from "../../Helpers/constants";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-const LeftContent = props => <Avatar.Icon {...props} icon="school" />;
+// const LeftContent = props => <Avatar.Icon {...props} icon="school" />;
 
 const CourseDetail = props => {
   const navigation = useNavigation();
@@ -150,10 +150,17 @@ const CourseDetail = props => {
                       }}
                     />
                     <TouchableOpacity
-                      onPress={() => navigation.navigate("Certificate")}
+                      onPress={() =>
+                        navigation.navigate("Certificate", {
+                          student: props.username,
+                          name: course.title,
+                          certificate: course.photo,
+                          progress: course.completed_units / course.total_units
+                        })
+                      }
                     >
-                      <Caption style={{ fontSize: 11 }}>
-                        Download Certificate
+                      <Caption style={{ fontSize: 11, alignSelf: "center" }}>
+                        Certificate
                       </Caption>
                     </TouchableOpacity>
                   </View>
