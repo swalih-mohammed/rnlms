@@ -126,7 +126,13 @@ export default function App() {
           <SafeAreaProvider>
             <NavigationContainer>
               <Stack.Navigator>
-                {/* <Stack.Screen name="DraggingQuiz" component={DraggingQuiz} /> */}
+                <Stack.Screen
+                  options={{
+                    headerShown: false
+                  }}
+                  name="Get Started"
+                  component={GetStartedScreen}
+                />
                 <Stack.Screen
                   name="Courses"
                   component={TabScreens}
@@ -194,13 +200,6 @@ export default function App() {
                   }}
                   name="Login"
                   component={LoginScreen}
-                />
-                <Stack.Screen
-                  options={{
-                    headerShown: false
-                  }}
-                  name="Get Started"
-                  component={GetStartedScreen}
                 />
 
                 <Stack.Screen

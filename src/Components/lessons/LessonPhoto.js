@@ -21,11 +21,14 @@ const { width, height } = Dimensions.get("window");
 // import { View as MotiView } from "moti";
 
 function LessonDetail({ photo, title }) {
+  // console.log(photo);
   return (
     <View
       style={{
         flex: 1,
-        justifyContent: "center"
+        justifyContent: "center",
+        // backgroundColor: "green"
+        alignItems: "center"
       }}
     >
       <View
@@ -34,7 +37,9 @@ function LessonDetail({ photo, title }) {
           shadowOffset: { width: 0, height: 1 },
           shadowOpacity: 0.8,
           shadowRadius: 2,
-          elevation: 10
+          elevation: 10,
+          justifyContent: "center",
+          alignItems: "center"
         }}
       >
         <Image
@@ -44,7 +49,7 @@ function LessonDetail({ photo, title }) {
           }}
         />
       </View>
-      <View>
+      <View style={{ paddingTop: 20 }}>
         <Title style={styles.title}>{title} </Title>
       </View>
     </View>
@@ -73,17 +78,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
-  ImgWrapper: {
-    width: width * 0.95,
-    height: height * 0.7,
-    marginTop: 5,
-    marginBottom: 25
-  },
-  photo: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 25
-  },
+  // ImgWrapper: {
+  //   width: width * 0.95,
+  //   height: height * 0.7,
+  //   marginTop: 5,
+  //   marginBottom: 25
+  // },
 
   text: {
     color: "rgba(255, 255, 255, 0.72)",
@@ -107,9 +107,11 @@ const styles = StyleSheet.create({
     marginBottom: 30
   },
   photo: {
-    width: "95%",
-    height: "85%",
-    margin: 5,
+    // width: "85%",
+    // height: "85%",
+    // margin: 5,
+    width: 320,
+    height: 420,
     borderRadius: 20
   },
   title: {

@@ -126,32 +126,34 @@ const CertificateScreen = props => {
             {name}
           </Paragraph>
         </View>
-        <View
-          style={{
-            flex: 0.5,
-            // backgroundColor: "green",
-            justifyContent: "space-around"
-            // alignItems: "center"
-            // flexDirection: "row"
-          }}
-        >
-          {/* <Paragraph style={{ fontSize: 12 }}> */}
-          {/* Completed on 12/03/2021 */}
-          {/* {progress} */}
-          {/* </Paragraph> */}
-          {/* <Paragraph style={{ fontSize: 12 }}>Signature</Paragraph> */}
-
-          <ProgressBar
+        {progress != 1 && (
+          <View
             style={{
-              height: 7,
-              borderRadius: 20,
-              marginHorizontal: 25,
-              paddingVertical: 5
+              flex: 0.5,
+              // backgroundColor: "green",
+              justifyContent: "space-around"
+              // alignItems: "center"
+              // flexDirection: "row"
             }}
-            progress={progress}
-            color={COLORS.primary}
-          />
-        </View>
+          >
+            {/* <Paragraph style={{ fontSize: 12 }}> */}
+            {/* Completed on 12/03/2021 */}
+            {/* {progress} */}
+            {/* </Paragraph> */}
+            {/* <Paragraph style={{ fontSize: 12 }}>Signature</Paragraph> */}
+
+            <ProgressBar
+              style={{
+                height: 7,
+                borderRadius: 20,
+                marginHorizontal: 25,
+                paddingVertical: 5
+              }}
+              progress={progress}
+              color={COLORS.primary}
+            />
+          </View>
+        )}
         <View
           style={{ backgroundColor: "#134611", flex: 1.3, paddingBottom: 8 }}
         >

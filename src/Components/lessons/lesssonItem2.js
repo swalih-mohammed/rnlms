@@ -59,6 +59,7 @@ function lessonItem(props) {
     isMounted.current = true;
     LoadAudio();
     return () => {
+      console.log("unmounting");
       isMounted.current = false;
       UnloadSound();
     };
@@ -140,6 +141,7 @@ function lessonItem(props) {
     if (isMounted.current) {
       try {
         const result = await sound.current.getStatusAsync();
+        sound.current.setStatusAsync({ progressUpdateIntervalMillis: 1000 });
         sound.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
         if (result.isLoaded) {
           if (result.isPlaying === false && !didJustFinish) {
@@ -257,7 +259,7 @@ function lessonItem(props) {
         />
 
         {durationMillis > 30000 ? (
-          <>
+          <View style={{ marginHorizontal: 20 }}>
             <Slider
               minimumValue={0}
               maximumValue={1}
@@ -289,7 +291,7 @@ function lessonItem(props) {
                 {durationMillis === 0 ? "00:00" : msToTime(durationMillis)}
               </Paragraph>
             </View>
-          </>
+          </View>
         ) : null}
       </Animated.View>
       <View

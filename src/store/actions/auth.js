@@ -97,8 +97,8 @@ export const authSignup = (
           token: res.data.key,
           username,
           userId: res.data.user,
-          is_student,
-          is_teacher: !is_student
+          is_student: true,
+          is_teacher: false
           // expirationDate: new Date(new Date().getTime() + 3600 * 1000)
         };
         // localStorage.setItem("user", JSON.stringify(user));

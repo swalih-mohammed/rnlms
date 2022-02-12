@@ -7,18 +7,19 @@ import {
   View,
   StatusBar
 } from "react-native";
-import BackGround from "../Components/Utils/BackGround";
-import Logo from "../Components/Utils/Logo";
+// import BackGround from "../Components/Utils/BackGround";
+// import Logo from "../Components/Utils/Logo";
 import Header from "../Components/Utils/Header";
 // import Button from "../Components/Utils/Button";
 import TextInput from "../Components/Utils/TextInput";
-import BackButton from "../Components/Utils/BackButton";
-import { useTheme } from "react-native-paper";
+// import BackButton from "../Components/Utils/BackButton";
+// import { useTheme, Button } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Loader from "../Components/Utils/Loader";
 import { COLORS, SIZES } from "../Helpers/constants";
-import { Card, Button } from "react-native-paper";
+import { Card, Button, Paragraph } from "react-native-paper";
+import Animated, { LightSpeedInRight } from "react-native-reanimated";
 
 import {
   emailValidator,
@@ -29,16 +30,25 @@ import {
 import * as actions from "../store/actions/auth";
 
 const LoginScreen = props => {
+  const navigation = useNavigation();
+
   useEffect(() => {
     // console.log(props.token);
     if (props.token) {
-      navigation.navigate("Home");
+      navigation.navigate("Courses");
     }
+    setTimeout(pushToHome, 1000);
   }, [props.token]);
-  // console.log(props.token);
-  const navigation = useNavigation();
 
-  const { colors } = useTheme();
+  function pushToHome() {
+    if (props.token) {
+      navigation.navigate("Courses");
+    }
+  }
+
+  // console.log(props.token);
+
+  // const { colors } = useTheme();
   // const [email, setEmail] = useState({ value: "", error: "" });
   const [username, setUsername] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
@@ -100,7 +110,7 @@ const LoginScreen = props => {
       }
     } catch (error) {
       setLoading(false);
-      setError(true);
+      // setError(true);
       console.log(error);
     }
   };
@@ -115,28 +125,36 @@ const LoginScreen = props => {
           <Loader />
         </>
       ) : (
-        <View style={styles.container}>
-          <>
-            {error && (
-              <Card
+        <Animated.View entering={LightSpeedInRight} style={styles.container}>
+          {error && (
+            <Card
+              style={{
+                width: SIZES.width * 0.9,
+                height: 50,
+                marginBottom: 25
+              }}
+            >
+              <View
                 style={{
-                  width: 300,
-                  height: 50
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flex: 1
                 }}
               >
-                <View
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flex: 1
-                  }}
-                >
-                  <Text style={{ alignSelf: "center", color: COLORS.error }}>
-                    An error occured, please retry to login
-                  </Text>
-                </View>
-              </Card>
-            )}
+                <Text style={{ alignSelf: "center", color: COLORS.error }}>
+                  An error occured, please retry to login
+                </Text>
+              </View>
+            </Card>
+          )}
+          <Card
+            style={{
+              width: SIZES.width * 0.9,
+              height: SIZES.height * 0.6,
+              paddingHorizontal: 25,
+              paddingHorizontal: 15
+            }}
+          >
             {/* <BackButton goBack={() => navigation.navigate("Home")} /> */}
             {/* <Logo /> */}
             <Header>Welcome back.</Header>
@@ -177,12 +195,12 @@ const LoginScreen = props => {
               <TouchableOpacity
                 onPress={() => navigation.navigate("ForgotPasswordScreen")}
               >
-                <Text style={{ color: colors.primary }}>
+                <Text style={{ color: COLORS.primary }}>
                   Forgot your password?
                 </Text>
               </TouchableOpacity>
             </View>
-            <Button
+            {/* <Button
               disabled={loading}
               mode="contained"
               onPress={_onLoginPressed}
@@ -191,15 +209,50 @@ const LoginScreen = props => {
               Login
             </Button>
             <Button
-              style={{ width: "100%" }}
+              style={{ width: "100%", height: 40 }}
               disabled={loading}
               mode="outlined"
               onPress={() => navigation.navigate("SignUp")}
             >
               Sign Up
-            </Button>
-          </>
-        </View>
+            </Button> */}
+            <TouchableOpacity
+              disabled={loading}
+              style={{
+                width: "100%",
+                height: 40,
+                borderRadius: 10,
+                backgroundColor: COLORS.primary,
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: 20
+              }}
+              onPress={_onLoginPressed}
+            >
+              <Paragraph style={{ color: "black", fontWeight: "700" }}>
+                LOGIN
+              </Paragraph>
+            </TouchableOpacity>
+            <TouchableOpacity
+              disabled={loading}
+              style={{
+                width: "100%",
+                height: 40,
+                borderRadius: 10,
+                backgroundColor: COLORS.white,
+                justifyContent: "center",
+                alignItems: "center",
+                borderColor: COLORS.primary,
+                borderWidth: 0.5
+              }}
+              onPress={() => navigation.navigate("SignUp")}
+            >
+              <Paragraph style={{ color: "black", fontWeight: "700" }}>
+                SIGN UP
+              </Paragraph>
+            </TouchableOpacity>
+          </Card>
+        </Animated.View>
       )}
     </SafeAreaView>
   );

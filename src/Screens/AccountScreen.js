@@ -39,23 +39,33 @@ const Account = props => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    getCourses();
-  }, []);
+    const source = axios.CancelToken.source();
 
-  const getCourses = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(
-        `${localhost}/courses/${props.username}`
-      );
-      setData(response.data);
-      // console.log(response.data);
-      setLoading(false);
-    } catch (err) {
-      setError(err);
-      console.log(err);
-    }
-  };
+    const getCourses = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          `${localhost}/courses/${props.username}`,
+          { cancelToken: source.token }
+        );
+        setData(response.data);
+        // console.log(response.data);
+        setLoading(false);
+      } catch (err) {
+        if (axios.isCancel(error)) {
+          console.log("axios cancel error");
+        } else {
+          console.log("error occured in catch");
+          console.log(err);
+        }
+      }
+    };
+    getCourses();
+    return () => {
+      console.log("account page unmounting");
+      source.cancel();
+    };
+  }, []);
 
   const handlePressContinue = id => {
     navigation.navigate("Course Details", { id: id });

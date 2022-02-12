@@ -11,7 +11,9 @@ import {
   Text,
   StatusBar,
   Image,
-  ScrollView
+  ScrollView,
+  TouchableOpacity
+
   // SectionList
 } from "react-native";
 import axios from "axios";
@@ -25,6 +27,9 @@ import LottieView from "lottie-react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 // import * as Speech from "expo-speech";
+
+const ITEM_WIDTH = SIZES.width * 0.4;
+const ITEM_HEIGHT = ITEM_WIDTH * 2;
 
 const CourseList = props => {
   const navigation = useNavigation();
@@ -47,6 +52,7 @@ const CourseList = props => {
         });
         setLoading(false);
         setCourses(response.data);
+        // console.log(response.data);
       } catch (err) {
         if (axios.isCancel(error)) {
           console.log("axios cancel error");
@@ -63,33 +69,48 @@ const CourseList = props => {
     };
   }, []);
 
-  // const getCourses = async source => {
-  //   try {
-  //     setLoading(true);
-  //     const response = await axios.get(`${localhost}/courses`, { source });
-  //     setLoading(false);
-  //     setCourses(response.data);
+  const FilterArabic = courses => {
+    if (courses) {
+      const data = courses.filter(course => course.language === "ARABIC");
+      return data;
+    }
+  };
 
-  //   } catch (err) {
-  //     setLoading(false);
-  //     setError(err);
-  //     console.log("error occured");
-  //   }
-  // };
+  const FilterEnglish = courses => {
+    if (courses) {
+      const data = courses.filter(course => course.language === "ENGLISH");
+      return data;
+    }
+  };
 
-  // setLoading(false);
-  // setGeneralEnglish(
-  //   response.data.filter(course => course.category === "GENERAL_ENGLISH")
-  // );
-  // setKeralaSchoolEnglihs(
-  //   response.data.filter(
-  //     course => course.category === "SCHOOL_ENGLISH_KERALA"
-  //   )
-  // );
-  // setArabicCourse(
-  //   response.data.filter(course => course.language === "ARABIC")
-  // );
-  // console.log(response.data);
+  const FilterOther = courses => {
+    if (courses) {
+      const data = courses.filter(course => course.language !== "ENGLISH");
+      // console.log(data.length);
+      const data1 = data.filter(course => course.language !== "ARABIC");
+      // console.log(data1.length);
+      return data1;
+    }
+  };
+
+  const loadingElement = () => {
+    if (loading) {
+      <Text>Course list loading...</Text>;
+      <Loader />;
+    }
+  };
+
+  const handlePress = id => {
+    if (props.token) {
+      const data = {
+        course: id
+      };
+      // props.setCourseDetails(data);
+      navigation.navigate("Course Details", { id: id });
+    } else {
+      // navigation.navigate("Get Started");
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -112,20 +133,183 @@ const CourseList = props => {
       </Card>
       <>
         {courses ? (
-          <FlatList
-            // horizontal
-            showsHorizontalScrollIndicator={false}
-            // ItemSeparatorComponent={() => (
-            //   <View style={{ margin: 5 }} />
-            // )}
-            data={courses}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({ item }) => {
-              return <CourseItem item={item} />;
-            }}
-          />
+          <ScrollView>
+            <View
+              style={{
+                // flex: 3,
+                marginVertical: 10,
+                marginHorizontal: 10
+                // backgroundColor: "red"
+              }}
+            >
+              <Text
+                style={{
+                  paddingLeft: 5,
+                  paddingVertical: 10,
+                  fontSize: 18,
+                  fontWeight: "700",
+                  opacity: 0.9,
+                  color: COLORS.enactive
+                }}
+              >
+                ENGLISH COURSES
+              </Text>
+              <FlatList
+                data={FilterEnglish(courses)}
+                keyExtractor={item => item.id.toString()}
+                // ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                snapToInterval={ITEM_WIDTH}
+                decelerationRate="fast"
+                renderItem={({ item }) => {
+                  // return <CourseItem item={item} />;
+                  return (
+                    <TouchableOpacity
+                      onPress={() => handlePress(item.id)}
+                      style={{
+                        width: 170,
+                        height: 275,
+                        margin: 8,
+                        flex: 1,
+                        overflow: "hidden",
+                        // backgroundColor: "red",
+                        borderRadius: 8
+                      }}
+                    >
+                      <Image
+                        style={{
+                          flex: 1,
+                          resizeMode: "cover"
+                        }}
+                        source={{
+                          uri: item.photo
+                        }}
+                      />
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            </View>
+            <View
+              style={{
+                // flex: 3,
+                marginTop: 10,
+                marginHorizontal: 10
+                // backgroundColor: "red"
+              }}
+            >
+              <Text
+                style={{
+                  paddingLeft: 5,
+                  paddingVertical: 10,
+                  fontSize: 18,
+                  fontWeight: "700",
+                  opacity: 0.9,
+                  color: COLORS.enactive
+                }}
+              >
+                ARABIC COURSES
+              </Text>
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
+                data={FilterArabic(courses)}
+                snapToInterval={ITEM_WIDTH}
+                decelerationRate="fast"
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => {
+                  // return <CourseItem item={item} />;
+                  return (
+                    <View
+                      style={{
+                        width: 170,
+                        height: 275,
+                        margin: 8,
+                        flex: 1,
+                        overflow: "hidden",
+                        borderRadius: 8
+                        // backgroundColor: "red"
+                      }}
+                    >
+                      <Image
+                        style={{
+                          flex: 1,
+                          resizeMode: "cover"
+                        }}
+                        source={{
+                          uri: item.photo
+                        }}
+                      />
+                    </View>
+                  );
+                }}
+              />
+            </View>
+            <View
+              style={{
+                // flex: 3,
+                marginTop: 10,
+                marginHorizontal: 10
+                // backgroundColor: "red"
+              }}
+            >
+              <Text
+                style={{
+                  paddingLeft: 5,
+                  paddingVertical: 10,
+                  fontSize: 18,
+                  fontWeight: "700",
+                  opacity: 0.9,
+                  color: COLORS.enactive
+                }}
+              >
+                OTHER LANGUAGES
+              </Text>
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                ItemSeparatorComponent={() => <View style={{ margin: 5 }} />}
+                data={FilterOther(courses)}
+                snapToInterval={ITEM_WIDTH}
+                decelerationRate="fast"
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => {
+                  // return <CourseItem item={item} />;
+                  return (
+                    <View
+                      style={{
+                        width: 170,
+                        height: 275,
+                        margin: 8,
+                        flex: 1,
+                        overflow: "hidden",
+                        borderRadius: 8
+                      }}
+                    >
+                      <Image
+                        style={{
+                          flex: 1,
+                          resizeMode: "cover"
+                        }}
+                        source={{
+                          uri: item.photo
+                        }}
+                      />
+                    </View>
+                  );
+                }}
+              />
+            </View>
+          </ScrollView>
         ) : (
-          <Text>course list loading...</Text>
+          // <Text>course list loading...</Text>
+          // <loadingElement />
+          <View>
+            {loadingElement()}
+            <Text>loading to start</Text>
+          </View>
         )}
       </>
     </SafeAreaView>
