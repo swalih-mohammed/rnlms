@@ -41,7 +41,7 @@ const GetStarted = props => {
       <View style={styles.TopContainer}>
         <Image
           style={styles.photo}
-          source={require("../../assets/logo_getting.png")}
+          source={require("../../assets/logo_gettingstarted1-removebg-preview.png")}
         />
       </View>
       <View style={styles.MiddleContainer}>
@@ -129,9 +129,9 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   photo: {
-    width: "50%",
+    width: "55%",
     height: "50%",
-    resizeMode: "contain"
+    resizeMode: "cover"
   },
   title: {
     fontWeight: "bold",

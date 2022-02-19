@@ -16,19 +16,28 @@ import DragAndDrop from "./DaragAndDrop/Dulingo";
 import Speaking from "./Speak/speak";
 import Writing from "./Write/write";
 import FillInBlank from "./MultipleChoice/FillInBlank";
-import { View, StatusBar, Dimensions, Text } from "react-native";
+import { Title, Paragraph, Button } from "react-native-paper";
+import LottieView from "lottie-react-native";
+import {
+  View,
+  StatusBar,
+  Dimensions,
+  Text,
+  ImageBackground
+} from "react-native";
 import { COLORS, SIZES } from "../../Helpers/constants";
 import ScoreModal from "./model";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Questions = props => {
   const navigation = useNavigation();
-  // const { colors } = useTheme();
   const sound = React.useRef(new Audio.Sound());
   const isMounted = React.useRef(null);
   const [isPlaying, setIsplaying] = React.useState(false);
   const [didJustFinish, setDidJustFinish] = React.useState(false);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(null);
+
   const {
     questions,
     testID,
@@ -36,7 +45,8 @@ const Questions = props => {
     username,
     lessonId,
     unitId,
-    sectionId
+    sectionId,
+    is_completed
   } = props;
 
   const allQuestions = questions;
@@ -44,6 +54,7 @@ const Questions = props => {
   React.useEffect(() => {
     // console.log("question", allQuestions[props.index]);
     // console.log("question index", props.index);
+    // console.log(is_completed);
     isMounted.current = true;
     LoadAudio();
     return () => {
@@ -125,46 +136,63 @@ const Questions = props => {
   const handleSubmitTest = () => {
     UnloadSound();
     // props.handleStart();
-    if (props.lesson !== null) {
-      console.log("lesson exist");
-      const data = {
-        username: props.username,
-        lessonId: props.lesson
-      };
-      axios.defaults.headers = {
-        "Content-Type": "application/json",
-        Authorization: `Token ${props.token}`
-      };
-      axios
-        .post(`${localhost}/lessons/lesson-completed-create/`, data)
-        .then(res => {
-          console.log("lesson completed");
-        })
-        .catch(err => {
-          setError(err);
-        });
-    } else if (props.unit !== null) {
-      console.log("unit exist");
-      const data = {
-        username: props.username,
-        quizId: props.quiz
-      };
-      axios.defaults.headers = {
-        "Content-Type": "application/json",
-        Authorization: `Token ${props.token}`
-      };
-      axios
-        .post(`${localhost}/quizzes/quiz-completed-create/`, data)
-        .then(res => {
-          console.log("lesson completed");
-        })
-        .catch(err => {
-          setError(err);
-        });
+    if (!is_completed) {
+      try {
+        if (props.lesson !== null) {
+          setLoading(true);
+          console.log("lesson exist");
+          const data = {
+            username: props.username,
+            lessonId: props.lesson
+          };
+          axios.defaults.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Token ${props.token}`
+          };
+          axios
+            .post(`${localhost}/lessons/lesson-completed-create/`, data)
+            .then(res => {
+              console.log("lesson completed");
+              setLoading(false);
+            })
+            .catch(err => {
+              setError(err);
+              console.log("error in posting complet lesson", error);
+            });
+        } else if (props.unit !== null) {
+          console.log("unit exist");
+          setLoading(true);
+          const data = {
+            username: props.username,
+            quizId: props.quiz
+          };
+          axios.defaults.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Token ${props.token}`
+          };
+          axios
+            .post(`${localhost}/quizzes/quiz-completed-create/`, data)
+            .then(res => {
+              console.log("lesson completed");
+              setLoading(false);
+            })
+            .catch(err => {
+              // setError(err);
+              console.log("error in posting complet lesson", err);
+            });
+        } else {
+          console.log("lesson and unit not null ");
+        }
+        if (!loading) {
+          navigation.navigate("Unit Details", { id: props.unit });
+        }
+      } catch (error) {
+        console.log("error in catch while complet lesson/ quiz", error);
+        navigation.navigate("Unit Details", { id: props.unit });
+      }
     } else {
-      console.log("lesson and unit not null ");
+      navigation.navigate("Unit Details", { id: props.unit });
     }
-    navigation.navigate("Unit Details", { id: props.unit });
   };
 
   const Tokenize = text => {
@@ -342,6 +370,69 @@ const Questions = props => {
           qlength={allQuestions.length}
         />
       ) : null}
+
+      {/* {props.showScoreModal ? (
+        <View style={{ flex: 1, marginVertical: 5 }}>
+          <ImageBackground
+            source={require("../../../assets/goodjob.jpg")}
+            resizeMode="cover"
+            style={{ flex: 1, justifyContent: "center", opacity: 0.9 }}
+          >
+            <View
+              style={{
+                flex: 2,
+                justifyContent: "flex-end",
+                alignItems: "center"
+              }}
+            >
+              <Title
+                style={{ color: COLORS.white, fontSize: 30, fontWeight: "900" }}
+              >
+                Lesson Completed!
+              </Title>
+              <Paragraph
+                style={{ color: COLORS.white, fontSize: 18, fontWeight: "900" }}
+              >
+                Keep up the good work
+              </Paragraph>
+            </View>
+            <View style={{ flex: 2 }}>
+              <LottieView
+                // ref={animation}
+                source={require("../../../assets/lotties/successGreenRight.json")}
+                autoPlay={true}
+                loop={false}
+                autoPlay
+              />
+              <Audio correct={true} />
+            </View>
+            <View style={{ flex: 1, marginHorizontal: 20 }}>
+              <Button
+                // onPress={watchAgain}
+                style={{
+                  borderRadius: 8,
+                  marginBottom: 20,
+                  borderColor: COLORS.primary,
+                  paddingVertical: 5
+                }}
+                mode="outlined"
+              >
+                Watch again
+              </Button>
+              <Button
+                // onPress={redirectToUnit}
+                style={{
+                  borderRadius: 8,
+                  paddingVertical: 5
+                }}
+                mode="contained"
+              >
+                Go back to unit
+              </Button>
+            </View>
+          </ImageBackground>
+        </View>
+      ) : null} */}
     </SafeAreaView>
   );
 };

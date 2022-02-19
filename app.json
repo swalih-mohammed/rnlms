@@ -4,11 +4,11 @@
     "slug": "Lakaters",
     "description": "A Platform Interactive Language Learning",
     "version": "1.1.1",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
     "splash": {
-      "image": "./assets/splash1.png",
-      "resizeMode": "contain",
+      "image": "./assets/Android_splash_2.png",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "updates": {

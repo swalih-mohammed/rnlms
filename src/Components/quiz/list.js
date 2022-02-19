@@ -22,9 +22,12 @@ const QuizList = props => {
     const getTest = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${localhost}/quizzes/${QuizId}`, {
-          cancelToken: source.token
-        });
+        const response = await axios.get(
+          `${localhost}/quizzes/${QuizId}/${props.username}`,
+          {
+            cancelToken: source.token
+          }
+        );
         setQuiz(response.data);
         // console.log(response.data);
         setLoading(false);
@@ -54,6 +57,7 @@ const QuizList = props => {
         <>
           {quiz ? (
             <Questions
+              is_completed={quiz.is_completed}
               questions={quiz.questions}
               quiz={quiz.id}
               lesson={quiz.lesson}
@@ -73,8 +77,13 @@ const mapDispatchToProps = dispatch => {
     handleStart: data => dispatch(handleStart(data))
   };
 };
-
+const mapStateToProps = state => {
+  return {
+    username: state.auth.username
+    // token: state.auth.token
+  };
+};
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(QuizList);

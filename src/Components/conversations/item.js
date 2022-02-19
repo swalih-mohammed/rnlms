@@ -88,66 +88,71 @@ const ConversationItem = props => {
         borderRadius: 15
       }}
     >
-      <TouchableOpacity onPress={handlePress}>
+      <TouchableOpacity
+        style={{ justifyContent: "center", alignItems: "center" }}
+        onPress={handlePress}
+      >
         <Card
           mode="elevated"
           style={{
             elevation: 10,
-            borderRadius: 15
+            borderRadius: 15,
+            height: 80,
+            width: 320
           }}
         >
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() =>
               navigation.navigate("Conversation Details", {
                 id: item.id
               })
             }
-          >
-            <View style={styles.container}>
-              <View style={styles.LeftContainer}>
-                <View
+          > */}
+          <View style={styles.container}>
+            <View style={styles.LeftContainer}>
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20 / 2,
+                  // backgroundColor: colors.primary,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                <MaterialCommunityIcons
+                  name="wechat"
                   style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20 / 2,
-                    // backgroundColor: colors.primary,
-                    justifyContent: "center",
-                    alignItems: "center"
+                    color: colors.primary,
+                    fontSize: 35
                   }}
-                >
-                  <MaterialCommunityIcons
-                    name="wechat"
-                    style={{
-                      color: colors.primary,
-                      fontSize: 35
-                    }}
-                  />
-                </View>
-              </View>
-              <View style={styles.MiddleContainer}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "500",
-                    color: COLORS.primary,
-                    opacity: 0.9
-                    // paddingBottom:
-                  }}
-                >
-                  {item.subtitle}
-                </Text>
-
-                <Text
-                  style={{ fontSize: 15, fontWeight: "900", flexWrap: "wrap" }}
-                >
-                  {item.title}
-                </Text>
-              </View>
-              <View style={styles.RightContainer}>
-                <Completed />
+                />
               </View>
             </View>
-          </TouchableOpacity>
+            <View style={styles.MiddleContainer}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "500",
+                  color: COLORS.primary,
+                  opacity: 0.9
+                  // paddingBottom:
+                }}
+              >
+                {item.subtitle}
+              </Text>
+
+              <Text
+                style={{ fontSize: 15, fontWeight: "900", flexWrap: "wrap" }}
+              >
+                {item.title}
+              </Text>
+            </View>
+            <View style={styles.RightContainer}>
+              <Completed />
+            </View>
+          </View>
+          {/* </TouchableOpacity> */}
         </Card>
       </TouchableOpacity>
     </Animated.View>

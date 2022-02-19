@@ -31,6 +31,7 @@ import { handleStart } from "../../store/actions/quiz";
 
 // import { View as MotiView } from "moti";
 import Animated, { LightSpeedInRight } from "react-native-reanimated";
+import item from "../section/item";
 
 const LessonItem = props => {
   const { LessonItem, is_quiz } = props;
@@ -87,66 +88,63 @@ const LessonItem = props => {
         borderRadius: 15
       }}
     >
-      <TouchableOpacity onPress={handlePress}>
+      <TouchableOpacity
+        style={{ justifyContent: "center", alignItems: "center" }}
+        onPress={handlePress}
+      >
         <Card
           mode="elevated"
           style={{
             elevation: 10,
-            borderRadius: 15
+            borderRadius: 10,
+            height: 80,
+            width: 320
           }}
         >
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("Lesson Details", {
-                id: LessonItem.id
-              })
-            }
-          >
-            <View style={styles.container}>
-              <View style={styles.LeftContainer}>
-                <View
+          <View style={styles.container}>
+            <View style={styles.LeftContainer}>
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20 / 2,
+                  // backgroundColor: colors.primary,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                <MaterialCommunityIcons
+                  name="google-classroom"
                   style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20 / 2,
-                    // backgroundColor: colors.primary,
-                    justifyContent: "center",
-                    alignItems: "center"
+                    color: colors.primary,
+                    fontSize: 35
                   }}
-                >
-                  <MaterialCommunityIcons
-                    name="google-classroom"
-                    style={{
-                      color: colors.primary,
-                      fontSize: 35
-                    }}
-                  />
-                </View>
-              </View>
-              <View style={styles.MiddleContainer}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "500",
-                    color: COLORS.primary,
-                    opacity: 0.9
-                    // paddingBottom:
-                  }}
-                >
-                  {LessonItem.subtitle}
-                </Text>
-
-                <Text
-                  style={{ fontSize: 15, fontWeight: "900", flexWrap: "wrap" }}
-                >
-                  {LessonItem.title}
-                </Text>
-              </View>
-              <View style={styles.RightContainer}>
-                <Completed />
+                />
               </View>
             </View>
-          </TouchableOpacity>
+            <View style={styles.MiddleContainer}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "500",
+                  color: COLORS.primary,
+                  opacity: 0.9
+                  // paddingBottom:
+                }}
+              >
+                {LessonItem.subtitle}
+              </Text>
+
+              <Text
+                style={{ fontSize: 15, fontWeight: "900", flexWrap: "wrap" }}
+              >
+                {LessonItem.title}
+              </Text>
+            </View>
+            <View style={styles.RightContainer}>
+              <Completed />
+            </View>
+          </View>
         </Card>
       </TouchableOpacity>
     </Animated.View>

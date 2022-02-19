@@ -90,12 +90,17 @@ const QuizItem = props => {
         borderRadius: 15
       }}
     >
-      <TouchableOpacity onPress={handlePressQuizItem}>
+      <TouchableOpacity
+        style={{ justifyContent: "center", alignItems: "center" }}
+        onPress={handlePressQuizItem}
+      >
         <Card
           mode="elevated"
           style={{
             elevation: 10,
-            borderRadius: 15
+            borderRadius: 15,
+            height: 80,
+            width: 320
           }}
         >
           <View style={styles.container}>
@@ -104,6 +109,7 @@ const QuizItem = props => {
                 style={{
                   width: 40,
                   height: 40,
+
                   borderRadius: 20 / 2,
                   // backgroundColor: colors.primary,
                   justifyContent: "center",

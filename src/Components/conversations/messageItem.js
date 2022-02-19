@@ -40,8 +40,14 @@ const ConversationItem = props => {
   const animation = React.useRef(null);
   const { item, is_speaking, is_playing, did_finish } = props;
   // console.log(item);
-
   // console.log("current item", item.id, is_speaking);
+
+  useEffect(() => {
+    if (is_speaking) {
+      animation.current.play(10, 20);
+      // animation.current.pause();
+    }
+  }, []);
 
   return (
     <Animated.View
@@ -77,43 +83,31 @@ const ConversationItem = props => {
               <>
                 <View
                   style={{
-                    flex: 2,
+                    flex: 3,
                     justifyContent: "center",
                     alignItems: "center",
                     marginLeft: 5
+                    // backgroundColor: "red"
                   }}
                 >
-                  <Avatar.Image
-                    size={50}
-                    source={require("../../../assets/ramu.png")}
+                  <LottieView
+                    ref={animation}
+                    source={require("../../../assets/lotties/podcast-speaker.json")}
+                    autoPlay={true}
+                    loop={false}
                   />
                 </View>
                 <View style={{ flex: 6 }}>
-                  <View style={{ flex: 1 }}>
-                    <View style={{ flex: 1 }}>
-                      {is_speaking ? (
-                        <LottieView
-                          ref={animation}
-                          source={require("../../../assets/lotties/audioPlaying.json")}
-                          autoPlay={true}
-                          loop={true}
-                        />
-                      ) : null}
-                    </View>
-
-                    <View style={{ flex: 3 }}>
-                      <Paragraph
-                        style={{
-                          padding: 10,
-                          alignSelf: "flex-start",
-                          fontWeight: "700",
-                          color: "#001219"
-                        }}
-                      >
-                        {item.content}
-                      </Paragraph>
-                    </View>
-                  </View>
+                  <Paragraph
+                    style={{
+                      padding: 10,
+                      alignSelf: "flex-start",
+                      fontWeight: "700",
+                      color: "#001219"
+                    }}
+                  >
+                    {item.content}
+                  </Paragraph>
                 </View>
               </>
             ) : (
@@ -122,43 +116,34 @@ const ConversationItem = props => {
                   style={{
                     flex: 6,
                     justifyContent: "center"
-                    //   backgroundColor: "red"
+                    // backgroundColor: "red"
                   }}
                 >
-                  <View style={{ flex: 1 }}>
-                    <View style={{ flex: 1 }}>
-                      {is_speaking && !did_finish ? (
-                        <LottieView
-                          ref={animation}
-                          source={require("../../../assets/lotties/audioPlaying.json")}
-                          autoPlay={true}
-                          loop={true}
-                        />
-                      ) : null}
-                    </View>
-                    <View style={{ flex: 3 }}>
-                      <Paragraph
-                        style={{
-                          padding: 10,
-                          alignSelf: "flex-start",
-                          fontWeight: "700",
-                          color: "#001219"
-                        }}
-                      >
-                        {item.content}
-                      </Paragraph>
-                      {/* <Text>{is_speaking ? "speaking" : "not speaking"}</Text> */}
-                    </View>
-                  </View>
+                  <Paragraph
+                    style={{
+                      padding: 10,
+                      alignSelf: "flex-start",
+                      fontWeight: "700",
+                      color: "#001219"
+                    }}
+                  >
+                    {item.content}
+                    {/* {is_speaking ? "speaking" : "not speaking"} */}
+                  </Paragraph>
                 </View>
 
                 <View
-                  style={{ flex: 2, justifyContent: "center", marginRight: 5 }}
+                  style={{
+                    flex: 3,
+                    justifyContent: "center",
+                    marginRight: 5
+                  }}
                 >
-                  <Avatar.Image
-                    size={50}
-                    source={require("../../../assets/komu.png")}
-                    style={{ alignSelf: "flex-end" }}
+                  <LottieView
+                    ref={animation}
+                    source={require("../../../assets/lotties/talking_beared_man.json")}
+                    autoPlay={true}
+                    loop={false}
                   />
                 </View>
               </>

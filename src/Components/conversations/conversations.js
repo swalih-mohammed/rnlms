@@ -122,6 +122,7 @@ const ConversationDetail = props => {
   };
 
   const PauseAudio = async () => {
+    if (!isMounted.current) return;
     try {
       const result = await sound.current.getStatusAsync();
       if (result.isLoaded) {
@@ -137,9 +138,10 @@ const ConversationDetail = props => {
   };
 
   const onPlaybackStatusUpdate = audio => {
+    if (!isMounted.current) return;
     // console.log("play status update");
     if (audio.isLoaded) {
-      setDidJustFinish(false);
+      // setDidJustFinish(false);
       if (audio.didJustFinish) {
         // UnloadSound();
         setDidJustFinish(true);
@@ -205,8 +207,7 @@ const ConversationDetail = props => {
                 <MessageItem
                   item={item}
                   key={item.id}
-                  is_speaking={item.id === current && !didJustFinish}
-                  is_playing={isPlaying && !didJustFinish}
+                  is_speaking={item.id === current && isPlaying}
                 />
               ))
             : null}

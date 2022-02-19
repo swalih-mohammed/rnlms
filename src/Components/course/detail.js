@@ -6,11 +6,11 @@ import axios from "axios";
 import {
   View,
   StyleSheet,
-  // SafeAreaView,
   StatusBar,
   FlatList,
   Text,
-  Image
+  Image,
+  ActivityIndicator
 } from "react-native";
 import {
   Card,
@@ -114,113 +114,126 @@ const CourseDetail = props => {
       return "";
     }
   };
+  const loadingElement = () => {
+    if (loading) {
+      return (
+        <>
+          <Text>Course detail loading...</Text>
+          {/* <Loader /> */}
+        </>
+      );
+    }
+  };
+
+  // if (loading) {
+  //   return <Loader />;
+  // }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
-      {loading ? (
+
+      {course ? (
         <>
-          <Text>Course detail loading</Text>
-          <Loader />
-        </>
-      ) : (
-        <>
-          {course && (
-            <>
-              <Card style={{ marginHorizontal: 10, marginTop: 10 }}>
-                <View
-                  style={{
-                    // flex: 1,
-                    flexDirection: "row",
-                    // backgroundColor: "red",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    paddingTop: 20,
-                    marginLeft: 10
-                    // height: 100,
-                    // width: 100
-                  }}
+          <Card style={{ marginHorizontal: 10, marginTop: 10 }}>
+            <View
+              style={{
+                // flex: 1,
+                flexDirection: "row",
+                // backgroundColor: "red",
+                justifyContent: "center",
+                alignItems: "center",
+                paddingTop: 20,
+                marginLeft: 10
+                // height: 100,
+                // width: 100
+              }}
+            >
+              <View style={{ flex: 1, BoarderTop: 10 }}>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("Certificate", {
+                      student: props.username,
+                      name: course.title,
+                      certificate: course.certificate,
+                      progress: course.completed_units / course.total_units
+                    })
+                  }
                 >
-                  <View style={{ flex: 1, BoarderTop: 10 }}>
-                    {/* <Text>Certification</Text> */}
-                    <Image
-                      style={{ width: 110, height: 100 }}
-                      source={{
-                        uri: course.photo
-                      }}
-                    />
-                    <TouchableOpacity
-                      onPress={() =>
-                        navigation.navigate("Certificate", {
-                          student: props.username,
-                          name: course.title,
-                          certificate: course.photo,
-                          progress: course.completed_units / course.total_units
-                        })
-                      }
-                    >
-                      <Caption style={{ fontSize: 11, alignSelf: "center" }}>
+                  {/* <Text>Certification</Text> */}
+                  <Image
+                    style={{ width: 110, height: 100 }}
+                    // source={require("../../../assets/english_kg_cert1.png")}
+
+                    source={{
+                      uri: course.certificate
+                    }}
+                  />
+
+                  {/* <Caption style={{ fontSize: 11, alignSelf: "center" }}>
                         Certificate
-                      </Caption>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={{ flex: 2 }}>
-                    {/* <Text>Certification</Text> */}
-                    <Card.Title
-                      title={course.title}
-                      subtitle={course.subtitle}
-                      // left={LeftContent}
-                    />
-                  </View>
-                </View>
-                {/* <Card.Title
+                      </Caption> */}
+                </TouchableOpacity>
+              </View>
+              <View style={{ flex: 2 }}>
+                {/* <Text>Certification</Text> */}
+                <Card.Title
+                  title={course.title}
+                  subtitle={course.subtitle}
+                  // left={LeftContent}
+                />
+              </View>
+            </View>
+            {/* <Card.Title
                   title={course.title}
                   subtitle={course.subtitle}
                   left={LeftContent}
                 /> */}
-                <View
-                  style={{
-                    marginHorizontal: 25,
-                    marginBottom: 20,
-                    marginTop: 10,
-                    flex: 1
-                  }}
-                >
-                  {course.is_enrolled ? (
-                    <>
-                      <View style={{ flexDirection: "row" }}>
-                        <View style={{ flex: 1 }}>
-                          <Paragraph>{CalculateReminingUnits()}</Paragraph>
-                        </View>
-                        <View style={{ justifyContent: "flex-end" }}>
-                          <Paragraph>{progress()}</Paragraph>
-                        </View>
-                      </View>
-                      <View>
-                        <ProgressBar
-                          progress={progressBar()}
-                          color={COLORS.primary}
-                        />
-                      </View>
-                    </>
-                  ) : (
-                    <Button onPress={handlePressEnroll}>Enroll</Button>
-                  )}
-                </View>
-              </Card>
-              {units && (
-                <FlatList
-                  data={units}
-                  showsHorizontalScrollIndicator={false}
-                  keyExtractor={item => item.id.toString()}
-                  renderItem={({ item }) => {
-                    return <UnitItem item={item} />;
-                  }}
-                />
+            <View
+              style={{
+                marginHorizontal: 25,
+                marginBottom: 20,
+                marginTop: 10,
+                flex: 1
+              }}
+            >
+              {course.is_enrolled ? (
+                <>
+                  <View style={{ flexDirection: "row" }}>
+                    <View style={{ flex: 1 }}>
+                      <Paragraph>{CalculateReminingUnits()}</Paragraph>
+                    </View>
+                    <View style={{ justifyContent: "flex-end" }}>
+                      <Paragraph>{progress()}</Paragraph>
+                    </View>
+                  </View>
+                  <View>
+                    <ProgressBar
+                      progress={progressBar()}
+                      color={COLORS.primary}
+                    />
+                  </View>
+                </>
+              ) : (
+                <Button onPress={handlePressEnroll}>Enroll</Button>
               )}
-            </>
+            </View>
+          </Card>
+          {units && (
+            <FlatList
+              data={units}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={item => item.id.toString()}
+              renderItem={({ item }) => {
+                return <UnitItem item={item} />;
+              }}
+            />
           )}
         </>
+      ) : (
+        // <Text>course detail loading...</Text>
+
+        <ActivityIndicator animating={true} color={COLORS.primary} />
       )}
     </SafeAreaView>
   );

@@ -15,7 +15,6 @@ import Icon from "react-native-vector-icons/AntDesign";
 import { COLORS, SIZES } from "../../../Helpers/constants";
 import { MARGIN_TOP } from "../DaragAndDrop/Layout";
 import { Button, Title, Paragraph } from "react-native-paper";
-
 import LottieView from "lottie-react-native";
 import * as Haptics from "expo-haptics";
 

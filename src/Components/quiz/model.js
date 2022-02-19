@@ -1,9 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { connect } from "react-redux";
-import { Modal, View, TouchableOpacity, Text, Dimensions } from "react-native";
+import {
+  Modal,
+  View,
+  TouchableOpacity,
+  Text,
+  Dimensions,
+  ImageBackground
+} from "react-native";
 import { COLORS, SIZES } from "../../Helpers/constants";
 import { handleStart } from "../../store/actions/quiz";
-import { Button, Title } from "react-native-paper";
+import { Button, Title, Paragraph } from "react-native-paper";
 const { width, height } = Dimensions.get("window");
 import LottieView from "lottie-react-native";
 import Loader from "../Utils/Loader";
@@ -14,16 +21,19 @@ const ScoreModal = props => {
 
   const animation = useRef(null);
   useEffect(() => {
-    // animation.current.play(0, 100);
     if (animation.current) {
       animation.current.play(0, 100);
     }
-    // console.log(props.unit);
   }, []);
 
   const restartQuiz = () => {
     props.handleStart();
   };
+
+  const icon =
+    (props.score / qlength) * 100 > 79
+      ? require("../../../assets/goodjob.jpg")
+      : require("../../../assets/sad_cat.jpg");
 
   return (
     <Modal
@@ -31,127 +41,104 @@ const ScoreModal = props => {
       // transparent={true}
       visible={true}
     >
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: COLORS.primary,
-          alignItems: "center",
-          justifyContent: "center"
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: COLORS.white,
-            width: width * 0.95,
-            hight: height * 0.6,
-            borderRadius: 20,
-            padding: 20,
-            alignItems: "center"
-          }}
+      <View style={{ flex: 1, marginVertical: 5, marginHorizontal: 5 }}>
+        <ImageBackground
+          source={icon}
+          // source={require("../../../assets/goodjob.jpg")}
+          resizeMode="cover"
+          style={{ flex: 1, justifyContent: "center", opacity: 0.9 }}
         >
-          <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-            {(props.score / qlength) * 100 > 79 ? "Congratulations!" : "Oops!"}
-          </Text>
-          {/* <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-            {props.score}
-          </Text> */}
-
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "flex-start",
-              alignItems: "center",
-              marginVertical: 20
-            }}
-          >
-            {(props.score / qlength) * 100 < 79 ? (
-              <>
-                <Text
-                  style={{
-                    fontSize: 30,
-                    color: COLORS.error
-                  }}
-                >
-                  {props.score}
-                </Text>
-                <Text
-                  style={{
-                    marginLeft: 2,
-                    fontSize: 20,
-                    color: COLORS.error
-                  }}
-                >
-                  %
-                </Text>
-              </>
-            ) : (
-              <Text
-                style={{
-                  fontSize: 50,
-                  color: "#DB9D00"
-                }}
-              >
-                {props.score}
-              </Text>
-            )}
-          </View>
-          <View
-            style={{
-              width: width * 0.6,
-              hight: 300,
-              // borderRadius: 20,
-              padding: 100,
+              flex: 1.5,
+              justifyContent: "space-evenly",
               alignItems: "center"
             }}
           >
+            <Title
+              style={{
+                color:
+                  (props.score / qlength) * 100 > 79 ? COLORS.white : "#001219",
+                fontSize: 30,
+                fontWeight: "900"
+              }}
+            >
+              {(props.score / qlength) * 100 > 79
+                ? "Congratulations!"
+                : "Oops!"}
+
+              {/* Lesson Completed! */}
+            </Title>
+            <Title
+              style={{
+                color:
+                  (props.score / qlength) * 100 > 79
+                    ? COLORS.primary
+                    : COLORS.error,
+                fontSize: 30,
+                fontWeight: "900",
+                marginTop: 10
+              }}
+            >
+              {(props.score / qlength) * 100 + " %"}
+            </Title>
+          </View>
+          <View
+            style={{ flex: 2, justifyContent: "center", alignItems: "center" }}
+          >
             {(props.score / qlength) * 100 > 79 ? (
               <LottieView
-                ref={animation}
-                source={require("../../../assets/lotties/coin_box.json")}
+                // ref={animation}
+                source={require("../../../assets/lotties/successGreenRight.json")}
                 autoPlay={true}
                 loop={false}
                 autoPlay
               />
             ) : (
               <LottieView
-                ref={animation}
-                source={require("../../../assets/lotties/failure.json")}
+                // ref={animation}
+                source={require("../../../assets/lotties/unapproved-cross.json")}
                 autoPlay={true}
                 loop={false}
+                autoPlay
               />
             )}
+
+            <AudioPlayerWithoutControl
+              success={(props.score / qlength) * 100 > 79 ? true : false}
+              failure={(props.score / qlength) * 100 > 79 ? false : true}
+            />
           </View>
-          <AudioPlayerWithoutControl
-            success={(props.score / qlength) * 100 > 79 ? true : false}
-            failure={(props.score / qlength) * 100 > 79 ? false : true}
-          />
-
-          {/* Retry Quiz button */}
-
-          <TouchableOpacity
-            onPress={
-              (props.score / qlength) * 100 > 79
-                ? () => props.handleSubmitTest()
-                : () => restartQuiz()
-            }
-            style={{
-              backgroundColor: COLORS.primary,
-              padding: 10,
-              width: "95%",
-              borderRadius: 10
-            }}
-          >
-            <Text
+          <View style={{ flex: 1, marginHorizontal: 20 }}>
+            <Button
+              onPress={() => restartQuiz()}
               style={{
-                textAlign: "center",
-                color: COLORS.white,
-                fontSize: 20
+                borderRadius: 8,
+                marginBottom: 20,
+                borderColor: COLORS.primary,
+                paddingVertical: 5
               }}
+              mode={
+                (props.score / qlength) * 100 < 79 ? "contained" : "outlined"
+              }
             >
-              {(props.score / qlength) * 100 > 79 ? "Next Lesson" : "Try Again"}
-            </Text>
-          </TouchableOpacity>
-        </View>
+              {(props.score / qlength) * 100 > 79 ? "Do it agian" : "Try again"}
+            </Button>
+            {(props.score / qlength) * 100 > 79 && (
+              <Button
+                onPress={() => props.handleSubmitTest()}
+                disabled={(props.score / qlength) * 100 < 79}
+                style={{
+                  borderRadius: 8,
+                  paddingVertical: 5
+                }}
+                mode="contained"
+              >
+                continue
+              </Button>
+            )}
+          </View>
+        </ImageBackground>
       </View>
     </Modal>
   );

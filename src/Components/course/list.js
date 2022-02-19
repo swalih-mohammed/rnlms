@@ -12,7 +12,8 @@ import {
   StatusBar,
   Image,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 
   // SectionList
 } from "react-native";
@@ -31,6 +32,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const ITEM_WIDTH = SIZES.width * 0.4;
 const ITEM_HEIGHT = ITEM_WIDTH * 2;
 
+const isLoading = loading => {
+  if (loading) {
+    return <Loader />;
+  }
+};
+
 const CourseList = props => {
   const navigation = useNavigation();
   const [testData, setTestData] = useState(null);
@@ -47,10 +54,13 @@ const CourseList = props => {
     const getCourses = async () => {
       try {
         setLoading(true);
+        console.log("loading bnf fetch", loading);
         const response = await axios.get(`${localhost}/courses`, {
           cancelToken: source.token
         });
         setLoading(false);
+        console.log("loading aftr fetch", loading);
+
         setCourses(response.data);
         // console.log(response.data);
       } catch (err) {
@@ -93,13 +103,6 @@ const CourseList = props => {
     }
   };
 
-  const loadingElement = () => {
-    if (loading) {
-      <Text>Course list loading...</Text>;
-      <Loader />;
-    }
-  };
-
   const handlePress = id => {
     if (props.token) {
       const data = {
@@ -109,6 +112,16 @@ const CourseList = props => {
       navigation.navigate("Course Details", { id: id });
     } else {
       // navigation.navigate("Get Started");
+    }
+  };
+  const loadingElement = () => {
+    if (loading) {
+      return (
+        <>
+          <Text>Course list loading...</Text>
+          {/* <Loader /> */}
+        </>
+      );
     }
   };
 
@@ -125,10 +138,6 @@ const CourseList = props => {
           }}
         >
           <Title>{"Lakaters"}</Title>
-          {/* <Image
-                    // style={{ width: "100%", height: "100%" }}
-                    source={require("../../../assets/Group 5.png")}
-                  /> */}
         </View>
       </Card>
       <>
@@ -304,12 +313,12 @@ const CourseList = props => {
             </View>
           </ScrollView>
         ) : (
-          // <Text>course list loading...</Text>
-          // <loadingElement />
-          <View>
-            {loadingElement()}
-            <Text>loading to start</Text>
-          </View>
+          <>
+            {/* <Text> courses loading</Text>
+            <Loader /> */}
+            {/* {isLoading(loading)} */}
+            <ActivityIndicator animating={true} color={COLORS.primary} />
+          </>
         )}
       </>
     </SafeAreaView>
@@ -318,8 +327,8 @@ const CourseList = props => {
 
 const mapStateToProps = state => {
   return {
-    token: state.auth.token,
-    tokenLoading: state.auth.loading
+    token: state.auth.token
+    // tokenLoading: state.auth.loading
   };
 };
 
@@ -327,87 +336,3 @@ export default connect(
   mapStateToProps,
   null
 )(CourseList);
-
-// export default CourseList;
-
-// <ScrollView>
-//   {generalEnglish.length > 0 ? (
-//     <List.Section
-//       style={{
-//         backgroundColor: "#ccd5ae",
-//         paddingBottom: 10,
-//         paddingHorizontal: 10
-//       }}
-//     >
-//       <List.Subheader>
-//         General English Courses
-//       </List.Subheader>
-//       <FlatList
-//         horizontal
-//         showsHorizontalScrollIndicator={false}
-//         ItemSeparatorComponent={() => (
-//           <View style={{ margin: 5 }} />
-//         )}
-//         data={generalEnglish}
-//         keyExtractor={item => item.id.toString()}
-//         renderItem={({ item }) => {
-//           return <CourseItem item={item} />;
-//         }}
-//       />
-//     </List.Section>
-//   ) : null}
-//   {keralaSchoolEnglihs.length > 0 ? (
-//     <List.Section
-//       style={{
-//         backgroundColor: "#d9ed92",
-//         paddingBottom: 10,
-//         paddingHorizontal: 10
-//       }}
-//     >
-//       <List.Subheader>
-//         Kerala School - English
-//       </List.Subheader>
-//       <FlatList
-//         horizontal
-//         showsHorizontalScrollIndicator={false}
-//         ItemSeparatorComponent={() => (
-//           <View style={{ margin: 4 }} />
-//         )}
-//         data={courses.filter(
-//           course =>
-//             course.category === "SCHOOL_ENGLISH_KERALA"
-//         )}
-//         keyExtractor={item => item.id.toString()}
-//         renderItem={({ item }) => {
-//           return <CourseItem item={item} />;
-//         }}
-//       />
-//     </List.Section>
-//   ) : null}
-
-//   {arabiCourses.length > 0 ? (
-//     <List.Section
-//       style={{
-//         backgroundColor: "#d8e2dc",
-//         paddingBottom: 20,
-//         paddingHorizontal: 10
-//       }}
-//     >
-//       <List.Subheader>Arabic Courses</List.Subheader>
-//       <FlatList
-//         horizontal
-//         showsHorizontalScrollIndicator={false}
-//         ItemSeparatorComponent={() => (
-//           <View style={{ margin: 4 }} />
-//         )}
-//         data={courses.filter(
-//           course => course.language === "ARABIC"
-//         )}
-//         keyExtractor={item => item.id.toString()}
-//         renderItem={({ item }) => {
-//           return <CourseItem item={item} />;
-//         }}
-//       />
-//     </List.Section>
-//   ) : null}
-// </ScrollView>

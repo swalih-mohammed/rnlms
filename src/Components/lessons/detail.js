@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
 import axios from "axios";
-
 import {
   ActivityIndicator,
   View,
@@ -18,12 +18,14 @@ const { width, height } = Dimensions.get("window");
 import { localhost } from "../../Helpers/urls";
 import { useNavigation } from "@react-navigation/native";
 import LessonItem from "./lesssonItem2";
+import VideoPlayer from "./VideoPlayer";
 import { COLORS, SIZES } from "../../Helpers/constants";
 // import Loader from "../Utils/Loader";
 
-function LessonDetail({ route }) {
+function LessonDetail(props) {
   // console.log("lesson detail");
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
+  const { id } = props.route.params;
 
   const [lesson, setLesson] = useState(false);
   const [error, setError] = useState(false);
@@ -34,10 +36,15 @@ function LessonDetail({ route }) {
     const getLessonDetail = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${localhost}/lessons/${id}`, {
-          cancelToken: source.token
-        });
+        const response = await axios.get(
+          `${localhost}/lessons/${id}/${props.username}`,
+          {
+            cancelToken: source.token
+          }
+        );
         setLesson(response.data);
+        // console.log(lesson);
+        // console.log("items", lesson.Lesson_items[0].video);
         setLoading(false);
       } catch (err) {
         if (axios.isCancel(error)) {
@@ -54,31 +61,35 @@ function LessonDetail({ route }) {
       source.cancel();
     };
   }, []);
-  const { id } = route.params;
 
   return (
     <>
-      {loading ? (
-        // <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
-        <Loader
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      {lesson && lesson.Lesson_items[0].video ? (
+        <VideoPlayer
+          videoLink={lesson.Lesson_items[0].video}
+          unit={lesson.unit}
         />
       ) : lesson && lesson.Lesson_items ? (
         <LessonItem
           lessonId={lesson.id}
           unitId={lesson.unit}
           sectionId={lesson.section}
-          language={lesson.language1 ? lesson.language1 : lesson.language2}
           hasQuiz={lesson.has_quiz}
           lessonItems={lesson.Lesson_items}
           QuizId={lesson.has_quiz ? lesson.quiz[0].id : 0}
         />
-      ) : // <View style={{ justifyContent: "center", alignItems: "center" }}>
-      //   <Text>hi</Text>
-      // </View>
-      null}
+      ) : null}
     </>
   );
 }
 
-export default LessonDetail;
+const mapStateToProps = state => {
+  return {
+    username: state.auth.username
+    // token: state.auth.token
+  };
+};
+export default connect(
+  mapStateToProps,
+  null
+)(LessonDetail);
